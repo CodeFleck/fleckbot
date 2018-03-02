@@ -478,8 +478,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
    * @throws TradingApiException      if an unexpected error occurred contacting the exchange.
    * @throws ExchangeNetworkException if a request to the exchange has timed out.
    */
-  private BigDecimal getAmountOfBaseCurrencyToBuyForGivenCounterCurrencyAmount(BigDecimal amountOfCounterCurrencyToTrade) throws
-      TradingApiException, ExchangeNetworkException {
+  private BigDecimal getAmountOfBaseCurrencyToBuyForGivenCounterCurrencyAmount(BigDecimal amountOfCounterCurrencyToTrade) throws TradingApiException, ExchangeNetworkException {
 
     LOG.info(() -> market.getName() + " Calculating amount of base currency (BTC) to buy for amount of counter currency " +
         new DecimalFormat("#.########").format(amountOfCounterCurrencyToTrade) + " " + market.getCounterCurrency());

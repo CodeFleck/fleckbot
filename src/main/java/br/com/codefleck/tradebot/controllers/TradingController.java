@@ -41,7 +41,7 @@ public class TradingController {
             model.addObject("botStatus", fleckBot.isRunning());
         }
 
-        model.setViewName("noticias/noticias");
+        model.setViewName("trading/trading");
         return model;
     }
 
@@ -53,7 +53,7 @@ public class TradingController {
             model.addObject("botStatus", fleckBot.isRunning());
         }
 
-        model.setViewName("noticias/noticias");
+        model.setViewName("trading/trading");
         return model;
     }
 

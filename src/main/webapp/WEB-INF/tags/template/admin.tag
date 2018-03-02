@@ -36,6 +36,12 @@
             <li class="nav-item">
                 <a class="nav-link" href="<c:url value='/carteiras'/>">Carteiras</a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" href="<c:url value='/trading'/>">Trading</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="<c:url value='/analise'/>">Analise</a>
+            </li>
         </ul>
         <form class="form-inline my-4 my-lg-0">
             <div id="botStatus">

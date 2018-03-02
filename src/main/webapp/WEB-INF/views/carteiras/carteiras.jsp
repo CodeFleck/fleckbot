@@ -39,7 +39,7 @@
 
 
         <div class="container-fluid">
-            <div class="col-md-6 float-left">
+            <div class="col-md-5 float-left">
                 <table class="table table-hover">
                     <thead>
                     <tr>
@@ -121,7 +121,7 @@
                     </tbody>
                 </table>
             </div>
-            <div class="col-md-6 float-right">
+            <div class="col-md-7 float-right">
                 <div id="piechart" style="width: 900px; height: 500px; background: #f8f9fa;"></div>
             </div>
         </div>
