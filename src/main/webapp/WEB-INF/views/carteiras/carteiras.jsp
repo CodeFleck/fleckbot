@@ -51,38 +51,38 @@
                     </thead>
                     <tbody>
                     <tr>
-                        <th scope="row"><img src="http://www.teacherfiles.com/downloads/money/US_1Dollar_front.png" alt="usd" width="32" height="22"/></th>
+                        <th scope="row"><img src="/assets/imagens/coins/usd.png" alt="usd" width="32" height="32"/></th>
                         <td>US Dolar</td>
                         <td>${carteiras.balancesAvailable.get("USD")}</td>
                         <td>${carteiras.balancesOnHold.get("USD")}</td>
                     </tr>
                     <tr>
-                        <th scope="row"><img src="https://files.coinmarketcap.com/static/img/coins/32x32/bitcoin.png" alt="Bitcoin" width="32" height="32"/></th>
+                        <th scope="row"><img src="/assets/imagens/coins/btc.png" alt="Bitcoin" width="32" height="32"/></th>
                         <td>Bitcoin</td>
                         <td>${carteiras.balancesAvailable.get("BTC")}</td>
                         <td>${carteiras.balancesOnHold.get("BTC")}</td>
                     </tr>
                     <tr>
-                        <th scope="row"><img src="https://files.coinmarketcap.com/static/img/coins/32x32/bitcoin-cash.png" alt="Bitcoin Cash" width="32" height="32"/></th>
+                        <th scope="row"><img src="/assets/imagens/coins/bch.png" alt="Bitcoin Cash" width="32" height="32"/></th>
                         <td>Bitcoin Cash</td>
                         <td>${carteiras.balancesAvailable.get("BCH")}</td>
                         <td>${carteiras.balancesOnHold.get("BCH")}</td>
                     </tr>
                     <tr>
-                        <th scope="row"><img src="https://files.coinmarketcap.com/static/img/coins/32x32/dash.png" alt="Dash" width="32" height="32"/></th>
+                        <th scope="row"><img src="/assets/imagens/coins/dash.png" alt="Dash" width="32" height="32"/></th>
                         <td>Dash</td>
                         <td>${carteiras.balancesAvailable.get("DSH")}</td>
                         <td>${carteiras.balancesOnHold.get("DSH")}</td>
                     </tr>
                     <tr>
-                        <th scope="row"><img src="https://files.coinmarketcap.com/static/img/coins/32x32/iota.png" alt="Iota" width="32" height="32"/></th>
+                        <th scope="row"><img src="/assets/imagens/coins/miota.png" alt="Iota" width="32" height="32"/></th>
                         <td>Iota</td>
                         <td>${carteiras.balancesAvailable.get("IOT")}</td>
                         <td>${carteiras.balancesOnHold.get("IOT")}</td>
                     </tr>
                     <tr>
                         <th
-                                scope="row"><img src="https://files.coinmarketcap.com/static/img/coins/32x32/litecoin.png" alt="Litecoin" width="32"
+                                scope="row"><img src="/assets/imagens/coins/ltc.png" alt="Litecoin" width="32"
                                                  height="32"/></th>
                         <td>Litecoin</td>
                         <td>${carteiras.balancesAvailable.get("LTC")}</td>
@@ -90,7 +90,7 @@
                     </tr>
                     <tr>
                         <th
-                                scope="row"><img src="https://files.coinmarketcap.com/static/img/coins/32x32/quantum.png" alt="Quantum" width="32"
+                                scope="row"><img src="/assets/imagens/coins/qtum.png" alt="Quantum" width="32"
                                                  height="32"/></th>
                         <td>Quantum</td>
                         <td>${carteiras.balancesAvailable.get("QTM")}</td>
@@ -98,7 +98,7 @@
                     </tr>
                     <tr>
                         <th
-                                scope="row"><img src="https://files.coinmarketcap.com/static/img/coins/32x32/santiment.png" alt="Santiment" width="32"
+                                scope="row"><img src="/assets/imagens/coins/san.png" alt="Santiment" width="32"
                                                  height="32"/></th>
                         <td>Santiment</td>
                         <td>${carteiras.balancesAvailable.get("SAN")}</td>
@@ -106,14 +106,14 @@
                     </tr>
                     <tr>
                         <th
-                                scope="row"><img src="https://files.coinmarketcap.com/static/img/coins/32x32/monero.png" alt="Monero" width="32" height="32"/></th>
+                                scope="row"><img src="/assets/imagens/coins/xmr.png" alt="Monero" width="32" height="32"/></th>
                         <td>Monero</td>
                         <td>${carteiras.balancesAvailable.get("XMR")}</td>
                         <td>${carteiras.balancesOnHold.get("XMR")}</td>
                     </tr>
                     <tr>
                         <th
-                                scope="row"><img src="https://files.coinmarketcap.com/static/img/coins/32x32/ripple.png" alt="Ripple" width="32" height="32"/></th>
+                                scope="row"><img src="/assets/imagens/coins/xrp.png" alt="Ripple" width="32" height="32"/></th>
                         <td>Ripple</td>
                         <td>${carteiras.balancesAvailable.get("XRP")}</td>
                         <td>${carteiras.balancesOnHold.get("XRP")}</td>

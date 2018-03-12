@@ -40,5 +40,22 @@
                 </script>
             </div>
             <!-- TradingView Widget END -->
+        <p>*************</p>
+        <div>
+            <h6>Bitcoin USD: </h6>
+            <div id="btc"></div>
+        </div>
+        <p>*************</p>
+        <div>
+            <h6>Livro de Ofertas: </h6>
+            <h6>Compra</h6>
+            <div id="orderBookBid"></div>
+            <h6>Venda</h6>
+            <div id="orderBookAsk"></div>
+        </div>
+
+
+        <script src="/assets/js/connectBitfinex.js"></script>
+        <script src="/assets/js/bitfinexDataProvider.js"></script>
     </jsp:body>
 </template:admin>

@@ -7,8 +7,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
+import org.ta4j.core.TimeSeries;
 
 import br.com.codefleck.tradebot.core.engine.TradingEngine;
+import br.com.codefleck.tradebot.core.util.CsvBarsLoader;
 
 @Controller
 @RequestMapping("/trading")
@@ -27,6 +29,9 @@ public class TradingController {
         } else {
             model.addObject("botStatus", false);
         }
+
+        TimeSeries series = CsvBarsLoader.loadCoinBaseSeriesForMiniTesting();
+        model.addObject("series", series);
 
         model.setViewName("trading/trading");
         return model;
@@ -56,7 +61,4 @@ public class TradingController {
         model.setViewName("trading/trading");
         return model;
     }
-
-
-
 }

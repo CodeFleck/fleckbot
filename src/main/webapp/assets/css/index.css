@@ -61,3 +61,20 @@ div.widgetbar-page active{
 div.tradingview-widget-container{
     margin: 0 0 0 0;
 }
+/*div.scrollgraph {*/
+    /*background-color: #333;*/
+    /*overflow: auto;*/
+    /*white-space: nowrap;*/
+/*}*/
+
+/*div.scrollgraph a {*/
+    /*display: inline-block;*/
+    /*color: white;*/
+    /*text-align: center;*/
+    /*padding: 14px;*/
+    /*text-decoration: none;*/
+/*}*/
+
+/*div.scrollgraph a:hover {*/
+    /*background-color: #777;*/
+/*}*/

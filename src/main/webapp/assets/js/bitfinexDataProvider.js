@@ -70,8 +70,6 @@
     var HIGH = data[9];
     var LOW = data[10];
 
-    populateGraph(data);
-
     document.getElementById("btc").innerHTML = "PREÇO: " + LAST_PRICE + "<br> COMPRA: " + ASK + " | VENDA: " + BID
       + "<br> VOLUME: " + VOLUME + "<br> ALTA: " + HIGH + "  |  BAIXA: " + LOW;
   }
