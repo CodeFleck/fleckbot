@@ -31,6 +31,7 @@ import br.com.codefleck.tradebot.services.EngineConfigService;
 import br.com.codefleck.tradebot.services.ExchangeConfigService;
 import br.com.codefleck.tradebot.services.MarketConfigService;
 import br.com.codefleck.tradebot.services.StrategyConfigService;
+import br.com.codefleck.tradebot.strategyapi.StrategyException;
 import br.com.codefleck.tradebot.strategyapi.TradingStrategy;
 import br.com.codefleck.tradebot.tradingapi.BalanceInfo;
 import br.com.codefleck.tradebot.tradingapi.ExchangeNetworkException;
@@ -160,15 +161,6 @@ public class TradingEngine {
 
         new Thread(this::runMainControlLoop).start();
 
-//        Runnable r = new Runnable() {
-//            public void run() {
-//                runMainControlLoop();
-//            }
-//        };
-//
-//        ExecutorService executor = Executors.newCachedThreadPool();
-//        executor.submit(r);
-
     }
 
     public void initConfig() {
@@ -205,7 +197,7 @@ public class TradingEngine {
                 // Execute the Trading Strategies
                 for (final TradingStrategy tradingStrategy : tradingStrategiesToExecute) {
                     LOG.info(() -> "Executing Trading Strategy ---> " + tradingStrategy.getClass().getSimpleName());
-                    //tradingStrategy.execute();
+                    tradingStrategy.execute();
                 }
 
                 LOG.info(() -> "*** Sleeping " + tradeExecutionInterval + "s til next trade cycle... ***");
@@ -237,19 +229,19 @@ public class TradingEngine {
                         DETAILS_ERROR_MSG_LABEL + e.getMessage() +
                         CAUSE_ERROR_MSG_LABEL + e.getCause(), e));
                 keepAlive = false;
-                //      } catch (StrategyException e) {
-                //
-                //        /*
-                //         * A serious issue has occurred in the Trading Strategy.
-                //         * Current policy is to log it, send email alert if required, and shutdown bot.
-                //         */
-                //        final String FATAL_ERROR_MSG = "A FATAL error has occurred in Trading Strategy!";
-                //        LOG.fatal(FATAL_ERROR_MSG, e);
-                //        emailAlerter.sendMessage(CRITICAL_EMAIL_ALERT_SUBJECT,
-                //            buildCriticalEmailAlertMsgContent(FATAL_ERROR_MSG +
-                //                DETAILS_ERROR_MSG_LABEL + e.getMessage() +
-                //                CAUSE_ERROR_MSG_LABEL + e.getCause(), e));
-                //        keepAlive = false;
+                      } catch (StrategyException e) {
+
+                        /*
+                         * A serious issue has occurred in the Trading Strategy.
+                         * Current policy is to log it, send email alert if required, and shutdown bot.
+                         */
+                        final String FATAL_ERROR_MSG = "A FATAL error has occurred in Trading Strategy!";
+                        LOG.fatal(FATAL_ERROR_MSG, e);
+                        emailAlerter.sendMessage(CRITICAL_EMAIL_ALERT_SUBJECT,
+                            buildCriticalEmailAlertMsgContent(FATAL_ERROR_MSG +
+                                DETAILS_ERROR_MSG_LABEL + e.getMessage() +
+                                CAUSE_ERROR_MSG_LABEL + e.getCause(), e));
+                        keepAlive = false;
             } catch (Exception e) {
 
                 /*
