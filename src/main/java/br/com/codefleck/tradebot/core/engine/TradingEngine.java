@@ -197,7 +197,7 @@ public class TradingEngine {
                 // Execute the Trading Strategies
                 for (final TradingStrategy tradingStrategy : tradingStrategiesToExecute) {
                     LOG.info(() -> "Executing Trading Strategy ---> " + tradingStrategy.getClass().getSimpleName());
-                   // tradingStrategy.execute();
+//                    tradingStrategy.execute();
                 }
 
                 LOG.info(() -> "*** Sleeping " + tradeExecutionInterval + "s til next trade cycle... ***");
@@ -230,18 +230,18 @@ public class TradingEngine {
                         CAUSE_ERROR_MSG_LABEL + e.getCause(), e));
                 keepAlive = false;
 //                      } catch (StrategyException e) {
-
-                        /*
-                         * A serious issue has occurred in the Trading Strategy.
-                         * Current policy is to log it, send email alert if required, and shutdown bot.
-                         */
+//
+//                        /*
+//                         * A serious issue has occurred in the Trading Strategy.
+//                         * Current policy is to log it, send email alert if required, and shutdown bot.
+//                         */
 //                        final String FATAL_ERROR_MSG = "A FATAL error has occurred in Trading Strategy!";
-                        LOG.fatal(FATAL_ERROR_MSG, e);
-                        emailAlerter.sendMessage(CRITICAL_EMAIL_ALERT_SUBJECT,
-                            buildCriticalEmailAlertMsgContent(FATAL_ERROR_MSG +
-                                DETAILS_ERROR_MSG_LABEL + e.getMessage() +
-                                CAUSE_ERROR_MSG_LABEL + e.getCause(), e));
-                        keepAlive = false;
+//                        LOG.fatal(FATAL_ERROR_MSG, e);
+//                        emailAlerter.sendMessage(CRITICAL_EMAIL_ALERT_SUBJECT,
+//                            buildCriticalEmailAlertMsgContent(FATAL_ERROR_MSG +
+//                                DETAILS_ERROR_MSG_LABEL + e.getMessage() +
+//                                CAUSE_ERROR_MSG_LABEL + e.getCause(), e));
+//                        keepAlive = false;
             } catch (Exception e) {
 
                 /*
