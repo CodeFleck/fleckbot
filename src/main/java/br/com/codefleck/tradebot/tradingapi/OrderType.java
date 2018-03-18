@@ -1,27 +1,31 @@
 package br.com.codefleck.tradebot.tradingapi;
 
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+
 /**
  * Defines the different order types for sending to the exchange.
  */
 public enum OrderType {
 
-  /**
-   * Buy order.
-   */
-  BUY("Buy"),
+    /**
+     * Buy order.
+     */
+    BUY("Buy"),
 
-  /**
-   * Sell order.
-   */
-  SELL("Sell");
+    /**
+     * Sell order.
+     */
+    SELL("Sell");
 
-  private final String orderType;
+    private final String orderType;
 
-  OrderType(String orderType) {
-    this.orderType = orderType;
-  }
+    OrderType(String orderType) {
+        this.orderType = orderType;
+    }
 
-  public String getStringValue() {
-    return orderType;
-  }
+    @Enumerated(EnumType.STRING)
+    public String getStringValue() {
+        return orderType;
+    }
 }

@@ -3,6 +3,8 @@ package br.com.codefleck.tradebot.tradingapi;
 
 import java.math.BigDecimal;
 
+import javax.persistence.Entity;
+
 /**
  * <p>
  * Represents a Market Order on the exchange.

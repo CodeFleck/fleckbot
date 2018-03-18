@@ -1,5 +1,7 @@
 package br.com.codefleck.tradebot.controllers;
 
+import javax.transaction.Transactional;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,7 @@ import br.com.codefleck.tradebot.core.util.CsvBarsLoader;
 
 @Controller
 @RequestMapping("/trading")
+@Transactional
 public class TradingController {
 
     final Logger LOG = LogManager.getLogger();
@@ -30,8 +33,8 @@ public class TradingController {
             model.addObject("botStatus", false);
         }
 
-        TimeSeries series = CsvBarsLoader.loadCoinBaseSeriesForMiniTesting();
-        model.addObject("series", series);
+//        TimeSeries series = CsvBarsLoader.loadCoinBaseSeriesForMiniTesting();
+//        model.addObject("series", series);
 
         model.setViewName("trading/trading");
         return model;
@@ -61,4 +64,7 @@ public class TradingController {
         model.setViewName("trading/trading");
         return model;
     }
+
+
+
 }
