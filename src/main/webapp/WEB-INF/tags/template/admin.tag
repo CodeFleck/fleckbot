@@ -43,6 +43,9 @@
             <li class="nav-item">
                 <a class="nav-link" href="<c:url value='/analise'/>">Analise</a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" href="<c:url value='/playground'/>">Playground</a>
+            </li>
         </ul>
         <form class="form-inline my-4 my-lg-0">
             <div id="botStatus">
