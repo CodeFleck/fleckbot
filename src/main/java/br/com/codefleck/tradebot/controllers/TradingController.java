@@ -33,9 +33,6 @@ public class TradingController {
             model.addObject("botStatus", false);
         }
 
-//        TimeSeries series = CsvBarsLoader.loadCoinBaseSeriesForMiniTesting();
-//        model.addObject("series", series);
-
         model.setViewName("trading/trading");
         return model;
     }
