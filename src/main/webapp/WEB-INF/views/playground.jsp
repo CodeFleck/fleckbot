@@ -1,5 +1,6 @@
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@taglib tagdir="/WEB-INF/tags/template" prefix="template" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <template:admin>
     <jsp:attribute name="extraScripts" />
 
@@ -8,6 +9,7 @@
             <div class ="container container"><br>
                 <h2 class="basic-title">Playground para testes</h2><br>
                 <div class="well">
+                    <form:form method="POST" action="/playground/load" modelAttribute="dataSet">
                     <table class="table table-condensed table-bordered table-striped table-hover">
                         <thead>
                         <tr>
@@ -30,15 +32,6 @@
                                 <td>08/01/2018</td>
                                 <td>3 anos, 1 m&ecirc;s e 8 dias</td>
                             </tr>
-                            <tr>
-                                <td><input type="radio" name="dataSizeName" id="coinbaseMini"></td>
-                                <td>Coinbase</td>
-                                <td>USD</td>
-                                <td>BTC</td>
-                                <td>0X/XX/20XX</td>
-                                <td>08/01/2018</td>
-                                <td>X anos, X m&ecirc;s e X dias</td>
-                            </tr>
                         </tbody>
                     </table>
                     <br>
@@ -51,13 +44,13 @@
                         </thead>
                         <tbody>
                         <tr>
-                            <td><input type="radio" name="StrategyName" id="movingMomentumStrategy"></td>
+                            <td><input type="radio" name="strategyName" id="movingMomentumStrategy"></td>
                             <td>MovingMomentumStrategy</td>
                         </tr>
                         </tbody>
                     </table>
-                    <a href="<c:url value='/playground/load'/>" class="btn btn-success"><span class="glyphicon glyphicon-plus-sign"></span> Carregas
-                        dados</a>
+                        <button type="submit" class="btn btn-primary">Carregar Dados</button>
+                    </form:form>
                 </div>
             </div>
         </div>

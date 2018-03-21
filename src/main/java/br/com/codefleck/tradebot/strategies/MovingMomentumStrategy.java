@@ -38,44 +38,44 @@ public class MovingMomentumStrategy {
 
         // Entry rule
         Rule entryRule = new UnderIndicatorRule(shortEma, longEma) // Trend
-            .and(new CrossedDownIndicatorRule(closePrice, Decimal.valueOf(calculatedPorcentageBuyEma.multipliedBy(0.95)))); // Signal 1
+            .and(new CrossedDownIndicatorRule(closePrice, Decimal.valueOf(calculatedPorcentageBuyEma.multipliedBy(0.99)))); // Signal 1
 
         // Exit rule
         Rule exitRule = new OverIndicatorRule(shortEma, longEma) // Trend
-            .and(new CrossedUpIndicatorRule(closePrice,Decimal.valueOf(calculatedPorcentageSellEma.multipliedBy(1.05)))); // Signal 1
+            .and(new CrossedUpIndicatorRule(closePrice,Decimal.valueOf(calculatedPorcentageSellEma.multipliedBy(1.01)))); // Signal 1
 
-        return new BaseStrategy(entryRule, exitRule, 4);
+        return new BaseStrategy(entryRule, exitRule, 1);
     }
 
-    public static void main(String[] args) {
-
-        // Getting the time series
-        TimeSeries series = CsvTradesLoader.loadBitfinexSeries();
-
-        // Building the trading strategy
-        Strategy strategy = buildStrategy(series);
-
-        // Running the strategy
-        TimeSeriesManager seriesManager = new TimeSeriesManager(series);
-        TradingRecord tradingRecord = seriesManager.run(strategy);
-        System.out.println("Number of trades for the strategy: " + tradingRecord.getTradeCount());
-
-        // Analysis
-        System.out.println("Total profit for the strategy: " + new TotalProfitCriterion().calculate(series, tradingRecord));
-
-        // Getting the cash flow of the resulting trades
-        CashFlow cashFlow = new CashFlow(series, tradingRecord);
-
-        // Getting the profitable trades ratio
-        AnalysisCriterion profitTradesRatio = new AverageProfitableTradesCriterion();
-        System.out.println("Profitable trades ratio: " + profitTradesRatio.calculate(series, tradingRecord));
-        // Getting the reward-risk ratio
-        AnalysisCriterion rewardRiskRatio = new RewardRiskRatioCriterion();
-        System.out.println("Reward-risk ratio: " + rewardRiskRatio.calculate(series, tradingRecord));
-
-        // Total profit of our strategy
-        // vs total profit of a buy-and-hold strategy
-        AnalysisCriterion vsBuyAndHold = new VersusBuyAndHoldCriterion(new TotalProfitCriterion());
-        System.out.println("Our profit vs buy-and-hold profit: " + vsBuyAndHold.calculate(series, tradingRecord));
-    }
+//    public static void main(String[] args) {
+//
+//        // Getting the time series
+//        TimeSeries series = CsvTradesLoader.loadBitfinexSeries();
+//
+//        // Building the trading strategy
+//        Strategy strategy = buildStrategy(series);
+//
+//        // Running the strategy
+//        TimeSeriesManager seriesManager = new TimeSeriesManager(series);
+//        TradingRecord tradingRecord = seriesManager.run(strategy);
+//        System.out.println("Number of trades for the strategy: " + tradingRecord.getTradeCount());
+//
+//        // Analysis
+//        System.out.println("Total profit for the strategy: " + new TotalProfitCriterion().calculate(series, tradingRecord));
+//
+//        // Getting the cash flow of the resulting trades
+//        CashFlow cashFlow = new CashFlow(series, tradingRecord);
+//
+//        // Getting the profitable trades ratio
+//        AnalysisCriterion profitTradesRatio = new AverageProfitableTradesCriterion();
+//        System.out.println("Profitable trades ratio: " + profitTradesRatio.calculate(series, tradingRecord));
+//        // Getting the reward-risk ratio
+//        AnalysisCriterion rewardRiskRatio = new RewardRiskRatioCriterion();
+//        System.out.println("Reward-risk ratio: " + rewardRiskRatio.calculate(series, tradingRecord));
+//
+//        // Total profit of our strategy
+//        // vs total profit of a buy-and-hold strategy
+//        AnalysisCriterion vsBuyAndHold = new VersusBuyAndHoldCriterion(new TotalProfitCriterion());
+//        System.out.println("Our profit vs buy-and-hold profit: " + vsBuyAndHold.calculate(series, tradingRecord));
+//    }
 }
