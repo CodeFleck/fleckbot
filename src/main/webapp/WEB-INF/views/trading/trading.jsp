@@ -5,10 +5,14 @@
     <jsp:attribute name="extraScripts">
     </jsp:attribute>
     <jsp:body>
-
-
-
-
+    <br>
+        <div class="container">
+            <c:if test="${not empty logEntryList}">
+            <c:forEach items="${logEntryList}" var="logEntryList">
+                <p>Log: ${logEntryList.description}</p>
+            </c:forEach>
+            </c:if>
+        </div>
 
 
 
@@ -28,62 +32,62 @@
 
         <%--for (i = 0; i < ${series.barCount}; i++) {--%>
 
-          <%--var str = "${series.getBar(0).getBeginTime()}";--%>
-          <%--var date1 = str.substring(0, 9);--%>
+        <%--var str = "${series.getBar(0).getBeginTime()}";--%>
+        <%--var date1 = str.substring(0, 9);--%>
 
-          <%--populatedDataPoint.push({--%>
-              <%--date :  "date1",--%>
-               <%--open : "${series.getBar(0).getOpenPrice()}",--%>
-               <%--high : "${series.getBar(0).getMaxPrice()}",--%>
-               <%--low : "${series.getBar(0).getMinPrice()}",--%>
-               <%--close : "${series.getBar(0).getClosePrice()}"--%>
-          <%--});--%>
+        <%--populatedDataPoint.push({--%>
+        <%--date :  "date1",--%>
+        <%--open : "${series.getBar(0).getOpenPrice()}",--%>
+        <%--high : "${series.getBar(0).getMaxPrice()}",--%>
+        <%--low : "${series.getBar(0).getMinPrice()}",--%>
+        <%--close : "${series.getBar(0).getClosePrice()}"--%>
+        <%--});--%>
         <%--}--%>
 
         <%--console.log('populatedDataPoint: ', populatedDataPoint);--%>
 
         <%--var chart = AmCharts.makeChart( "chartdiv", {--%>
-            <%--"type": "serial",--%>
-            <%--"theme": "light",--%>
-            <%--"dataDateFormat":"YYYY-MM-DD",--%>
-            <%--"valueAxes": [ {--%>
-                <%--"position": "left"--%>
-            <%--} ],--%>
-            <%--"graphs": [ {--%>
-            <%--"id": "g1",--%>
-            <%--"balloonText": "Open:<b>[[open]]</b><br>Low:<b>[[low]]</b><br>High:<b>[[high]]</b><br>Close:<b>[[close]]</b><br>",--%>
-            <%--"closeField": "close",--%>
-            <%--"fillColors": "#7f8da9",--%>
-            <%--"highField": "high",--%>
-            <%--"lineColor": "#7f8da9",--%>
-            <%--"lineAlpha": 1,--%>
-            <%--"lowField": "low",--%>
-            <%--"fillAlphas": 0.9,--%>
-            <%--"negativeFillColors": "#db4c3c",--%>
-            <%--"negativeLineColor": "#db4c3c",--%>
-            <%--"openField": "open",--%>
-            <%--"title": "Price:",--%>
-            <%--"type": "candlestick",--%>
-            <%--"valueField": "close"--%>
-            <%--} ],--%>
-            <%--"chartScrollbar": {--%>
-            <%--"graph": "g1",--%>
-            <%--"graphType": "line",--%>
-            <%--"scrollbarHeight": 30--%>
-            <%--},--%>
-            <%--"chartCursor": {--%>
-            <%--"valueLineEnabled": true,--%>
-            <%--"valueLineBalloonEnabled": true--%>
-            <%--},--%>
-            <%--"categoryField": "date",--%>
-            <%--"categoryAxis": {--%>
-            <%--"parseDates": true--%>
-            <%--},--%>
-            <%--"dataProvider": populatedDataPoint,--%>
-            <%--"export": {--%>
-            <%--"enabled": true,--%>
-            <%--"position": "bottom-right"--%>
-            <%--}--%>
+        <%--"type": "serial",--%>
+        <%--"theme": "light",--%>
+        <%--"dataDateFormat":"YYYY-MM-DD",--%>
+        <%--"valueAxes": [ {--%>
+        <%--"position": "left"--%>
+        <%--} ],--%>
+        <%--"graphs": [ {--%>
+        <%--"id": "g1",--%>
+        <%--"balloonText": "Open:<b>[[open]]</b><br>Low:<b>[[low]]</b><br>High:<b>[[high]]</b><br>Close:<b>[[close]]</b><br>",--%>
+        <%--"closeField": "close",--%>
+        <%--"fillColors": "#7f8da9",--%>
+        <%--"highField": "high",--%>
+        <%--"lineColor": "#7f8da9",--%>
+        <%--"lineAlpha": 1,--%>
+        <%--"lowField": "low",--%>
+        <%--"fillAlphas": 0.9,--%>
+        <%--"negativeFillColors": "#db4c3c",--%>
+        <%--"negativeLineColor": "#db4c3c",--%>
+        <%--"openField": "open",--%>
+        <%--"title": "Price:",--%>
+        <%--"type": "candlestick",--%>
+        <%--"valueField": "close"--%>
+        <%--} ],--%>
+        <%--"chartScrollbar": {--%>
+        <%--"graph": "g1",--%>
+        <%--"graphType": "line",--%>
+        <%--"scrollbarHeight": 30--%>
+        <%--},--%>
+        <%--"chartCursor": {--%>
+        <%--"valueLineEnabled": true,--%>
+        <%--"valueLineBalloonEnabled": true--%>
+        <%--},--%>
+        <%--"categoryField": "date",--%>
+        <%--"categoryAxis": {--%>
+        <%--"parseDates": true--%>
+        <%--},--%>
+        <%--"dataProvider": populatedDataPoint,--%>
+        <%--"export": {--%>
+        <%--"enabled": true,--%>
+        <%--"position": "bottom-right"--%>
+        <%--}--%>
         <%--} );--%>
 
         <%--chart.addListener( "rendered", zoomChart );--%>

@@ -13,8 +13,14 @@ import br.com.codefleck.tradebot.models.PaginatedList;
 @Repository
 public class LogEntryImplDao {
 
+    public LogEntryImplDao(){
+        super();
+    }
+
     @PersistenceContext
     private EntityManager manager;
+
+    LogEntryImpl logEntryImpl = new LogEntryImpl();
 
     public List<LogEntryImpl> all()
     {

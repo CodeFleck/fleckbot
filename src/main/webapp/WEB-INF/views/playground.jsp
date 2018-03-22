@@ -45,7 +45,7 @@
                         <tbody>
                         <tr>
                             <td><input type="radio" name="strategyName" id="movingMomentumStrategy"></td>
-                            <td>MovingMomentumStrategy</td>
+                            <td>Minha estrategia</td>
                         </tr>
                         </tbody>
                     </table>

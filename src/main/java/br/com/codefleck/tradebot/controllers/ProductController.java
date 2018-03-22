@@ -16,8 +16,7 @@ import br.com.codefleck.tradebot.models.Product;
 @Controller
 @RequestMapping("/product")
 @Transactional
-public class ProductController
-{
+public class ProductController {
 
    @Autowired
    private ProductDao productDao;

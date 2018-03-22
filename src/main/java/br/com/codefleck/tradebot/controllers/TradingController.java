@@ -13,6 +13,8 @@ import org.ta4j.core.TimeSeries;
 
 import br.com.codefleck.tradebot.core.engine.TradingEngine;
 import br.com.codefleck.tradebot.core.util.CsvBarsLoader;
+import br.com.codefleck.tradebot.daos.LogEntryImplDao;
+import br.com.codefleck.tradebot.exchanges.trading.api.impl.LogEntryImpl;
 
 @Controller
 @RequestMapping("/trading")
@@ -24,17 +26,15 @@ public class TradingController {
     @Autowired
     TradingEngine fleckBot;
 
+    @Autowired
+    LogEntryImplDao logEntryImplDao;
+
     @GetMapping
-    public ModelAndView tradingConfig(ModelAndView model){
+    public ModelAndView tradingConfig(){
 
-        if (fleckBot.isRunning()){
-            model.addObject("botStatus", true);
-        } else {
-            model.addObject("botStatus", false);
-        }
+        ModelAndView modelAndView = new ModelAndView("trading/trading");
 
-        model.setViewName("trading/trading");
-        return model;
+        return loadEntries(modelAndView);
     }
 
     @GetMapping("/ligar")
@@ -60,6 +60,17 @@ public class TradingController {
 
         model.setViewName("trading/trading");
         return model;
+    }
+
+    private ModelAndView loadEntries(ModelAndView modelAndView)
+    {
+        if (fleckBot.isRunning()){
+            modelAndView.addObject("botStatus", true);
+        } else {
+            modelAndView.addObject("botStatus", false);
+        }
+        modelAndView.addObject("logEntryList", logEntryImplDao.all());
+        return modelAndView;
     }
 
 

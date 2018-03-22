@@ -31,7 +31,6 @@ import br.com.codefleck.tradebot.services.EngineConfigService;
 import br.com.codefleck.tradebot.services.ExchangeConfigService;
 import br.com.codefleck.tradebot.services.MarketConfigService;
 import br.com.codefleck.tradebot.services.StrategyConfigService;
-import br.com.codefleck.tradebot.strategyapi.StrategyException;
 import br.com.codefleck.tradebot.strategyapi.TradingStrategy;
 import br.com.codefleck.tradebot.tradingapi.BalanceInfo;
 import br.com.codefleck.tradebot.tradingapi.ExchangeNetworkException;
@@ -128,7 +127,6 @@ public class TradingEngine {
     private final StrategyConfigService strategyConfigService;
     private final MarketConfigService marketConfigService;
 
-
     @Autowired
     public TradingEngine(ExchangeConfigService exchangeConfigService, EngineConfigService engineConfigService,
                          StrategyConfigService strategyConfigService, MarketConfigService marketConfigService,
@@ -160,7 +158,6 @@ public class TradingEngine {
         engineThread = Thread.currentThread();
 
         new Thread(this::runMainControlLoop).start();
-
     }
 
     public void initConfig() {

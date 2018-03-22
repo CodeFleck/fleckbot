@@ -13,8 +13,8 @@ public class LogEntryImpl {
     private Integer id;
     private String description;
 
-    public LogEntryImpl(String description) {
-        this.description = description;
+    public LogEntryImpl() {
+        super();
     }
 
     public Integer getId() {

@@ -11,8 +11,7 @@ import br.com.codefleck.tradebot.models.PaginatedList;
 import br.com.codefleck.tradebot.models.Product;
 
 @Repository
-public class ProductDao
-{
+public class ProductDao {
 
    @PersistenceContext
    private EntityManager manager;
