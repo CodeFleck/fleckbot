@@ -1,5 +1,7 @@
 package br.com.codefleck.tradebot.controllers;
 
+import java.util.List;
+
 import javax.transaction.Transactional;
 
 import org.apache.logging.log4j.LogManager;
@@ -54,6 +56,11 @@ public class TradingController {
     public ModelAndView desligarBot(ModelAndView model){
 
         if (fleckBot.isRunning()) {
+
+            for (LogEntryImpl logEntry : fleckBot.logEntryList) {
+                logEntryImplDao.save(logEntry);
+            }
+            model.addObject("lastestLogEntryList", logEntryImplDao.all());
             fleckBot.shutdown();
             model.addObject("botStatus", fleckBot.isRunning());
         }

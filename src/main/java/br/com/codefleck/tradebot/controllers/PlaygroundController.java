@@ -9,10 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.ta4j.core.*;
 import org.ta4j.core.analysis.CashFlow;
-import org.ta4j.core.analysis.criteria.AverageProfitableTradesCriterion;
-import org.ta4j.core.analysis.criteria.RewardRiskRatioCriterion;
-import org.ta4j.core.analysis.criteria.TotalProfitCriterion;
-import org.ta4j.core.analysis.criteria.VersusBuyAndHoldCriterion;
+import org.ta4j.core.analysis.criteria.*;
 
 import br.com.codefleck.tradebot.core.engine.TradingEngine;
 import br.com.codefleck.tradebot.core.util.CsvBarsLoader;
@@ -49,8 +46,8 @@ public class PlaygroundController {
         TimeSeries series = new CustomTimeSeries();
 
 //        series = CsvBarsLoader.loadCoinBaseSeriesForMiniTesting();
-        series = CsvBarsLoader.loadCoinBaseSeriesForTesting();
-//          series = CsvBarsLoader.loadCoinBaseSeries();
+          series = CsvBarsLoader.loadCoinBaseSeriesForTesting();
+//        series = CsvBarsLoader.loadCoinBaseSeries();
 
 
         MovingMomentumStrategy movingMomentumStrategy = new MovingMomentumStrategy();
@@ -75,6 +72,12 @@ public class PlaygroundController {
         // Analysis
         System.out.println("Total profit for the strategy: " + new TotalProfitCriterion().calculate(series, tradingRecord));
 
+        // Number of bars
+        System.out.println("Number of bars: " + new NumberOfBarsCriterion().calculate(series, tradingRecord));
+
+        // Average profit (per bar)
+        System.out.println("Average profit (per bar): " + new AverageProfitCriterion().calculate(series, tradingRecord));
+
         // Getting the cash flow of the resulting trades
         CashFlow cashFlow = new CashFlow(series, tradingRecord);
 
@@ -90,6 +93,24 @@ public class PlaygroundController {
         AnalysisCriterion vsBuyAndHold = new VersusBuyAndHoldCriterion(new TotalProfitCriterion());
         System.out.println("Our profit vs buy-and-hold profit: " + vsBuyAndHold.calculate(series, tradingRecord));
 
+        /*
+          Analysis criteria
+         */
+
+        // Number of trades
+        System.out.println("Number of trades: " + new NumberOfTradesCriterion().calculate(series, tradingRecord));
+        // Profitable trades ratio
+        System.out.println("Profitable trades ratio: " + new AverageProfitableTradesCriterion().calculate(series, tradingRecord));
+        // Maximum drawdown
+        System.out.println("Maximum drawdown: " + new MaximumDrawdownCriterion().calculate(series, tradingRecord));
+        // Total transaction cost
+        System.out.println("Total transaction cost (from $1000): " + new LinearTransactionCostCriterion(1000, 0.1).calculate(series, tradingRecord));
+        // Buy-and-hold
+        System.out.println("Buy-and-hold: " + new BuyAndHoldCriterion().calculate(series, tradingRecord));
+        // Total profit vs buy-and-hold
+        TotalProfitCriterion totalProfit = new TotalProfitCriterion();
+        System.out.println("Total profit: " + totalProfit.calculate(series, tradingRecord));
+        System.out.println("Custom strategy profit vs buy-and-hold strategy profit: " + new VersusBuyAndHoldCriterion(totalProfit).calculate(series, tradingRecord));
 
         return model;
 

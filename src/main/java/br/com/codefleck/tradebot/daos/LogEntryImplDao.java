@@ -20,8 +20,6 @@ public class LogEntryImplDao {
     @PersistenceContext
     private EntityManager manager;
 
-    LogEntryImpl logEntryImpl = new LogEntryImpl();
-
     public List<LogEntryImpl> all()
     {
         return manager.createQuery("select l from LogEntryImpl l", LogEntryImpl.class).getResultList();

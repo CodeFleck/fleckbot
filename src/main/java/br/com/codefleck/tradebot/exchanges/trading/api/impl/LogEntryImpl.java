@@ -1,5 +1,7 @@
 package br.com.codefleck.tradebot.exchanges.trading.api.impl;
 
+import java.util.Date;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -11,10 +13,16 @@ public class LogEntryImpl {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    private Date created;
     private String description;
 
     public LogEntryImpl() {
         super();
+    }
+
+    public LogEntryImpl(String description) {
+        this.created = new Date();
+        this.description = description;
     }
 
     public Integer getId() {
@@ -25,6 +33,10 @@ public class LogEntryImpl {
         this.id = id;
     }
 
+    public Date getCreated() { return created; }
+
+    public void setCreated(Date created) { this.created = created; }
+
     public String getDescription() {
         return description;
     }
@@ -33,8 +45,4 @@ public class LogEntryImpl {
         this.description = description;
     }
 
-    @Override
-    public String toString() {
-        return "LogEntryImpl{" + "id=" + id + ", description='" + description + '\'' + '}';
-    }
 }

@@ -5,13 +5,25 @@
     <jsp:attribute name="extraScripts">
     </jsp:attribute>
     <jsp:body>
-    <br>
+        <br>
         <div class="container">
-            <c:if test="${not empty logEntryList}">
-            <c:forEach items="${logEntryList}" var="logEntryList">
-                <p>Log: ${logEntryList.description}</p>
-            </c:forEach>
-            </c:if>
+            <div>
+                <h5>Logs recentes:</h5>
+                <c:if test="${not empty lastestLogEntryList}">
+                    <c:forEach items="${lastestLogEntryList}" var="lastestLogEntryList">
+                        <p>${lastestLogEntryList.id} | ${lastestLogEntryList.created} | ${lastestLogEntryList.description}</p>
+                    </c:forEach>
+                </c:if>
+            </div>
+            <br>
+            <div>
+                <h5>Logs antigos</h5>
+                <c:if test="${not empty logEntryList}">
+                    <c:forEach items="${logEntryList}" var="logEntryList">
+                        <p>${logEntryList.id} | ${logEntryList.created} | ${logEntryList.description}</p>
+                    </c:forEach>
+                </c:if>
+            </div>
         </div>
 
 
