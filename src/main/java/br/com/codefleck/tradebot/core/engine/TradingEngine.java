@@ -305,7 +305,6 @@ public class TradingEngine {
     //  public synchronized boolean isRunning() {
     public boolean isRunning() {
         LOG.info(() -> "isRunning: " + isRunning);
-        logEntryList.add(new LogEntryImpl("isRunning: " + isRunning));
         return isRunning;
     }
 

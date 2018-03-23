@@ -2,30 +2,39 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib tagdir="/WEB-INF/tags/template" prefix="template" %>
 <template:admin>
-    <jsp:attribute name="extraScripts">
-    </jsp:attribute>
+<jsp:attribute name="extraStyles">
+<link rel="stylesheet" href="<c:url value='/assets/css/pagination/jqpagination.css'/>" />
+</jsp:attribute>
+<jsp:attribute name="extraScripts">
+<script src="<c:url value='/assets/js/vendors/jquery.jqpagination.js'/>"></script>
+</jsp:attribute>
     <jsp:body>
-        <br>
-        <div class="container">
-            <div>
-                <h5>Logs recentes:</h5>
-                <c:if test="${not empty lastestLogEntryList}">
-                    <c:forEach items="${lastestLogEntryList}" var="lastestLogEntryList">
-                        <p>${lastestLogEntryList.id} | ${lastestLogEntryList.created} | ${lastestLogEntryList.description}</p>
-                    </c:forEach>
-                </c:if>
-            </div>
-            <br>
-            <div>
-                <h5>Logs antigos</h5>
-                <c:if test="${not empty logEntryList}">
-                    <c:forEach items="${logEntryList}" var="logEntryList">
-                        <p>${logEntryList.id} | ${logEntryList.created} | ${logEntryList.description}</p>
-                    </c:forEach>
-                </c:if>
+        <div>
+            <div class ="container min-container">
+                <h5 class="basic-title">Logs: </h5>
+                <div class="well">
+                    <table class="table table-condensed table-bordered table-striped table-hover">
+                        <thead>
+                        <tr>
+                            <td>id</td>
+                            <td>data e hora</td>
+                            <td>descricao</td>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <c:forEach items='${paginatedList.currentList}' var='object'>
+                            <tr>
+                                <td>${object.id}</td>
+                                <td>${object.created}</td>
+                                <td>${object.description}</td>
+                            </tr>
+                        </c:forEach>
+                        </tbody>
+                    </table>
+                    <template:paginationComponent paginatedList="${paginatedList}" page="${param.page}" action="/trading"/>
+                </div>
             </div>
         </div>
-
 
 
 
