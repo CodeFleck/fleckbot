@@ -1,15 +1,24 @@
 package br.com.codefleck.tradebot.controllers;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
 import javax.transaction.Transactional;
-import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.ta4j.core.*;
 import org.ta4j.core.analysis.CashFlow;
 import org.ta4j.core.analysis.criteria.*;
+
+import com.google.common.base.Stopwatch;
 
 import br.com.codefleck.tradebot.core.engine.TradingEngine;
 import br.com.codefleck.tradebot.core.util.CsvBarsLoader;
@@ -34,20 +43,22 @@ public class PlaygroundController {
     }
 
     @PostMapping("/load")
-    public ModelAndView loadData(@Valid @ModelAttribute("dataSet")String algumaCoisa,
-                                 @RequestParam("dataSizeName") String dataSize,
-                                 @RequestParam("strategyName") String strategyNome) {
+    public ModelAndView loadData(@RequestParam("strategyName") String strategyNome,
+                                 @RequestParam("beginDate") String beginDate,
+                                 @RequestParam("endDate") String endDate) throws ParseException {
 
         ModelAndView model = new ModelAndView("playground");
 
+        SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
+
         String strategyName = strategyNome;
-        String dataSizeForTesting = dataSize;
+
+        Date begingDate = formato.parse(beginDate);
+        Date endingDate = formato.parse(endDate);
 
         TimeSeries series = new CustomTimeSeries();
 
-//        series = CsvBarsLoader.loadCoinBaseSeriesForMiniTesting();
-          series = CsvBarsLoader.loadCoinBaseSeriesForTesting();
-//        series = CsvBarsLoader.loadCoinBaseSeries();
+        series = CsvBarsLoader.loadCoinBaseSeries(begingDate, endingDate);
 
 
         MovingMomentumStrategy movingMomentumStrategy = new MovingMomentumStrategy();
@@ -58,16 +69,24 @@ public class PlaygroundController {
         // Running the strategy
         TimeSeriesManager seriesManager = new TimeSeriesManager(series);
 
-        long startTime = System.currentTimeMillis();
-        System.out.println("Start time: " + startTime);
 
+        Stopwatch timer = Stopwatch.createStarted();
+        System.out.println("Start time: " + timer);
         TradingRecord tradingRecord = seriesManager.run(strategy);
 
-        long endTime = System.currentTimeMillis();
-        long totalTimeInSeconds = (endTime - startTime)/1000;
-        System.out.println("That took " + totalTimeInSeconds + " sec");
+        List<Trade> tradesList = tradingRecord.getTrades();
 
-        System.out.println("Number of trades for the strategy: " + tradingRecord.getTradeCount());
+        for (Trade trade : tradesList) {
+            System.out.print("Entry : " + trade.getEntry());
+            System.out.print(" | Exit : " + trade.getExit());
+            Double lucro = trade.getEntry().getPrice().doubleValue();
+            lucro -= (trade.getExit().getPrice().doubleValue());
+            System.out.println(" | Lucro: " + lucro*(-1));
+        }
+        
+        
+        System.out.println("Method took: " + timer.stop());
+        System.out.println("Total number of trades for the strategy: " + tradingRecord.getTradeCount());
 
         // Analysis
         System.out.println("Total profit for the strategy: " + new TotalProfitCriterion().calculate(series, tradingRecord));
@@ -110,7 +129,6 @@ public class PlaygroundController {
         // Total profit vs buy-and-hold
         TotalProfitCriterion totalProfit = new TotalProfitCriterion();
         System.out.println("Total profit: " + totalProfit.calculate(series, tradingRecord));
-        System.out.println("Custom strategy profit vs buy-and-hold strategy profit: " + new VersusBuyAndHoldCriterion(totalProfit).calculate(series, tradingRecord));
 
         return model;
 

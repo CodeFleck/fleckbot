@@ -1,4 +1,4 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html" pageEncoding="ISO-8859-1" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib tagdir="/WEB-INF/tags/template" prefix="template" %>
 <template:admin>
@@ -45,7 +45,7 @@
                     <tr>
                         <th scope="col"></th>
                         <th scope="col">Carteiras</th>
-                        <th scope="col">DisponÃ­vel</th>
+                        <th scope="col">Disponível</th>
                         <th scope="col">Em uso</th>
                     </tr>
                     </thead>

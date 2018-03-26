@@ -2,9 +2,9 @@
 <%@attribute name="extraStyles" fragment="true"%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <!DOCTYPE html>
-<html >
+<html>
 <head>
-    <meta charset="UTF-8">
+    <meta charset="ISO-8859-1">
     <title>FleckBot</title>
 
     <!-- bootstrap -->
@@ -32,7 +32,7 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item">
-                <a class="nav-link" href="<c:url value='/noticias'/>">Noticias</a>
+                <a class="nav-link" href="<c:url value='/noticias'/>">Notícias</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="<c:url value='/carteiras'/>">Carteiras</a>
@@ -41,7 +41,7 @@
                 <a class="nav-link" href="<c:url value='/trading'/>">Trading</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="<c:url value='/analise'/>">Analise</a>
+                <a class="nav-link" href="<c:url value='/analise'/>">Análise</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="<c:url value='/playground'/>">Playground</a>
