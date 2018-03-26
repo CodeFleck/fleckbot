@@ -45,9 +45,6 @@ public class LogEntryImplDao {
         manager.merge(LogEntryImpl);
     }
 
-    public PaginatedList paginated(int page, int max)
-    {
-        return new PaginatorQueryHelper().list(manager, LogEntryImpl.class, page, max);
-    }
+    public PaginatedList paginated(int page, int max) { return new PaginatorQueryHelper().list(manager, LogEntryImpl.class, page, max); }
 
 }

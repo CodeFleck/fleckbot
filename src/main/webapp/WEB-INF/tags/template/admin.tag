@@ -35,16 +35,16 @@
                 <a class="nav-link" href="<c:url value='/noticias'/>">Notícias</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="<c:url value='/carteiras'/>">Carteiras</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="<c:url value='/trading'/>">Trading</a>
-            </li>
-            <li class="nav-item">
                 <a class="nav-link" href="<c:url value='/analise'/>">Análise</a>
             </li>
             <li class="nav-item">
+                <a class="nav-link" href="<c:url value='/carteiras'/>">Carteiras</a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link" href="<c:url value='/playground'/>">Playground</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="<c:url value='/trading'/>">Logs</a>
             </li>
         </ul>
         <form class="form-inline my-4 my-lg-0">

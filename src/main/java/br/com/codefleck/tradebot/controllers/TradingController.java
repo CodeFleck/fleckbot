@@ -37,6 +37,7 @@ public class TradingController {
             modelAndView.addObject("botStatus", fleckBot.isRunning());
         }
         loadEntries(modelAndView);
+
         return "redirect:/trading";
     }
 
@@ -52,26 +53,36 @@ public class TradingController {
             modelAndView.addObject("botStatus", fleckBot.isRunning());
         }
         loadEntries(modelAndView);
+
         return "redirect:/trading";
     }
 
     private ModelAndView loadEntries(ModelAndView modelAndView) {
+
         if (fleckBot.isRunning()){
             modelAndView.addObject("botStatus", true);
         } else {
             modelAndView.addObject("botStatus", false);
         }
+
         modelAndView.addObject("logEntryList", logEntryImplDao.all());
+
         return modelAndView;
     }
 
     @GetMapping
     public ModelAndView list(@RequestParam(defaultValue = "0", required = false) int page) {
+
         ModelAndView modelAndView = new ModelAndView("trading");
-        loadEntries(modelAndView);
-        modelAndView.addObject("paginatedList", logEntryImplDao.paginated(page, 20));
+
+        if (fleckBot.isRunning()){
+            modelAndView.addObject("botStatus", true);
+        } else {
+            modelAndView.addObject("botStatus", false);
+        }
+
+        modelAndView.addObject("paginatedList", logEntryImplDao.paginated(page, 50));
+
         return modelAndView;
     }
-
-
 }
