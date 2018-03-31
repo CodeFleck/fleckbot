@@ -53,9 +53,9 @@ div.widgetbar-page active{
     width: 50% !important;
 }
 #chartdiv {
-    width		: 100%;
+    width		: 95%;
     height		: 500px;
-    font-size	: 11px;
+    margin: 0 auto;
 }
 
 div.tradingview-widget-container{

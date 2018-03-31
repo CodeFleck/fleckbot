@@ -15,7 +15,7 @@ import org.ta4j.core.trading.rules.UnderIndicatorRule;
 
 import br.com.codefleck.tradebot.core.util.CsvTradesLoader;
 
-public class MovingMomentumStrategy {
+public class MyStrategy {
 
     /**
      * @param series a time series
@@ -44,7 +44,7 @@ public class MovingMomentumStrategy {
         Rule exitRule = new OverIndicatorRule(shortEma, longEma) // Trend
             .and(new CrossedUpIndicatorRule(closePrice,Decimal.valueOf(calculatedPorcentageSellEma.multipliedBy(1.01)))); // Signal 1
 
-        return new BaseStrategy(entryRule, exitRule, 1);
+        return new BaseStrategy(entryRule, exitRule);
     }
 
 //    public static void main(String[] args) {

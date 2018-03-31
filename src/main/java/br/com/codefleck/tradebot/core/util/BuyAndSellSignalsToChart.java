@@ -20,7 +20,7 @@ import org.jfree.ui.RefineryUtilities;
 import org.ta4j.core.*;
 import org.ta4j.core.indicators.helpers.ClosePriceIndicator;
 
-import br.com.codefleck.tradebot.strategies.MovingMomentumStrategy;
+import br.com.codefleck.tradebot.strategies.MyStrategy;
 
 /**
  * This class builds a graphical chart showing the buy/sell signals of a strategy.
@@ -94,7 +94,7 @@ public class BuyAndSellSignalsToChart {
         // Getting the time series
         TimeSeries series = CsvTradesLoader.loadBitfinexSeries();
         // Building the trading strategy
-        Strategy strategy = MovingMomentumStrategy.buildStrategy(series);
+        Strategy strategy = MyStrategy.buildStrategy(series);
 
         /*
           Building chart datasets

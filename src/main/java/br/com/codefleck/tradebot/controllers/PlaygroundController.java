@@ -1,5 +1,6 @@
 package br.com.codefleck.tradebot.controllers;
 
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -7,6 +8,8 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,20 +18,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.ta4j.core.*;
-import org.ta4j.core.analysis.CashFlow;
 import org.ta4j.core.analysis.criteria.*;
 
 import com.google.common.base.Stopwatch;
 
 import br.com.codefleck.tradebot.core.engine.TradingEngine;
 import br.com.codefleck.tradebot.core.util.CsvBarsLoader;
-import br.com.codefleck.tradebot.core.util.CustomTimeSeries;
-import br.com.codefleck.tradebot.strategies.MovingMomentumStrategy;
+import br.com.codefleck.tradebot.core.util.DownSamplingTimeSeries;
+import br.com.codefleck.tradebot.strategies.MyStrategy;
 
 @Controller
 @RequestMapping("/playground")
 @Transactional
 public class PlaygroundController {
+
+    private static final Logger LOG = LogManager.getLogger();
 
     @Autowired
     TradingEngine fleckBot;
@@ -47,7 +51,7 @@ public class PlaygroundController {
                                  @RequestParam("beginDate") String beginDate,
                                  @RequestParam("endDate") String endDate) throws ParseException {
 
-        ModelAndView model = new ModelAndView("playground");
+        ModelAndView modelAndView = new ModelAndView("playground");
 
         SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -56,81 +60,79 @@ public class PlaygroundController {
         Date begingDate = formato.parse(beginDate);
         Date endingDate = formato.parse(endDate);
 
-        TimeSeries series = new CustomTimeSeries();
+        TimeSeries series = CsvBarsLoader.loadCoinBaseSeries(begingDate, endingDate);
+        modelAndView.addObject("periodoEscolhido", series.getSeriesPeriodDescription());
 
-        series = CsvBarsLoader.loadCoinBaseSeries(begingDate, endingDate);
+//        DownSamplingTimeSeries downSamplingTimeSeries = new DownSamplingTimeSeries();
 
+//        TimeSeries weeklyTimeSeries = downSamplingTimeSeries.aggregateTimeSeriesDtoW(series);
 
-        MovingMomentumStrategy movingMomentumStrategy = new MovingMomentumStrategy();
+        MyStrategy myStrategy = new MyStrategy();
 
         // Building the trading strategy
-        Strategy strategy = movingMomentumStrategy.buildStrategy(series);
+        Strategy strategy = myStrategy.buildStrategy(series);
 
         // Running the strategy
         TimeSeriesManager seriesManager = new TimeSeriesManager(series);
 
-
         Stopwatch timer = Stopwatch.createStarted();
-        System.out.println("Start time: " + timer);
-        TradingRecord tradingRecord = seriesManager.run(strategy);
+        System.out.println("Start Time: " + timer);
+        modelAndView.addObject("startTime", timer);
+
+//     Strategy strategy, OrderType orderType, Decimal amount, int startIndex, int finishIndex
+        TradingRecord tradingRecord = seriesManager.run(strategy, Order.OrderType.BUY, Decimal.valueOf(10000), series.getBeginIndex(), series.getEndIndex());
 
         List<Trade> tradesList = tradingRecord.getTrades();
-
+        Double lucroBruto=0d;
+        Double totallucroBruto=0d;
         for (Trade trade : tradesList) {
             System.out.print("Entry : " + trade.getEntry());
             System.out.print(" | Exit : " + trade.getExit());
-            Double lucro = trade.getEntry().getPrice().doubleValue();
-            lucro -= (trade.getExit().getPrice().doubleValue());
-            System.out.println(" | Lucro: " + lucro*(-1));
-        }
-        
-        
-        System.out.println("Method took: " + timer.stop());
-        System.out.println("Total number of trades for the strategy: " + tradingRecord.getTradeCount());
 
-        // Analysis
-        System.out.println("Total profit for the strategy: " + new TotalProfitCriterion().calculate(series, tradingRecord));
+            lucroBruto = trade.getEntry().getPrice().doubleValue();
+            lucroBruto -= (trade.getExit().getPrice().doubleValue());
+            totallucroBruto += lucroBruto;
+        }
+        DecimalFormat numberFormat = new DecimalFormat("##.00");
+        modelAndView.addObject("lucroBruto", numberFormat.format(totallucroBruto*(-1)));
+        modelAndView.addObject("tradeList", tradesList);
+
+        System.out.println("Method took: " + timer.stop());
+        modelAndView.addObject("stopTime", timer);
+
+        int qtdOrdens = (int) tradingRecord.getTradeCount();
+        modelAndView.addObject("numberOfTrades", qtdOrdens);
 
         // Number of bars
-        System.out.println("Number of bars: " + new NumberOfBarsCriterion().calculate(series, tradingRecord));
-
-        // Average profit (per bar)
-        System.out.println("Average profit (per bar): " + new AverageProfitCriterion().calculate(series, tradingRecord));
+        int numberOfBars = (int) new NumberOfBarsCriterion().calculate(series, tradingRecord);
+        modelAndView.addObject("numberOfBars", numberOfBars);
 
         // Getting the cash flow of the resulting trades
-        CashFlow cashFlow = new CashFlow(series, tradingRecord);
+//        CashFlow cashFlow = new CashFlow(series, tradingRecord);
+//        List<Decimal> moneyList = new ArrayList<>();
+//        System.out.println("/n***   CASH FLOW   ***");
+//        for (int i = 0; i <= cashFlow.getSize(); i++){
+//            moneyList.add(cashFlow.getValue(i));
+//            System.out.println("$$$: " + cashFlow.getValue(i));
+//        }
+//        modelAndView.addObject("moneyList", moneyList);
 
         // Getting the profitable trades ratio
         AnalysisCriterion profitTradesRatio = new AverageProfitableTradesCriterion();
-        System.out.println("Profitable trades ratio: " + profitTradesRatio.calculate(series, tradingRecord));
-        // Getting the reward-risk ratio
-        AnalysisCriterion rewardRiskRatio = new RewardRiskRatioCriterion();
-        System.out.println("Reward-risk ratio: " + rewardRiskRatio.calculate(series, tradingRecord));
+        modelAndView.addObject("profitableTradesRatio", profitTradesRatio.calculate(series, tradingRecord));
 
-        // Total profit of our strategy
-        // vs total profit of a buy-and-hold strategy
+        // Total profit of our strategy vs total profit of a buy-and-hold strategy
         AnalysisCriterion vsBuyAndHold = new VersusBuyAndHoldCriterion(new TotalProfitCriterion());
-        System.out.println("Our profit vs buy-and-hold profit: " + vsBuyAndHold.calculate(series, tradingRecord));
+        modelAndView.addObject("profitVsBuyAndHold", vsBuyAndHold.calculate(series, tradingRecord));
 
-        /*
-          Analysis criteria
-         */
-
-        // Number of trades
-        System.out.println("Number of trades: " + new NumberOfTradesCriterion().calculate(series, tradingRecord));
-        // Profitable trades ratio
-        System.out.println("Profitable trades ratio: " + new AverageProfitableTradesCriterion().calculate(series, tradingRecord));
         // Maximum drawdown
-        System.out.println("Maximum drawdown: " + new MaximumDrawdownCriterion().calculate(series, tradingRecord));
-        // Total transaction cost
-        System.out.println("Total transaction cost (from $1000): " + new LinearTransactionCostCriterion(1000, 0.1).calculate(series, tradingRecord));
-        // Buy-and-hold
-        System.out.println("Buy-and-hold: " + new BuyAndHoldCriterion().calculate(series, tradingRecord));
-        // Total profit vs buy-and-hold
-        TotalProfitCriterion totalProfit = new TotalProfitCriterion();
-        System.out.println("Total profit: " + totalProfit.calculate(series, tradingRecord));
+        modelAndView.addObject("maximumDrawdown", new MaximumDrawdownCriterion().calculate(series, tradingRecord));
 
-        return model;
+        // Total transaction cost
+        double linearTransactionCostCriterion = new LinearTransactionCostCriterion(0, 0.1).calculate(series, tradingRecord);
+        modelAndView.addObject("totalTransactionCosts", new LinearTransactionCostCriterion(0, 0.1).calculate(series, tradingRecord));
+
+        return modelAndView;
 
     }
 }
