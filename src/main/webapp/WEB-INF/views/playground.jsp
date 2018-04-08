@@ -17,7 +17,8 @@
                                 <td>Moeda Base</td>
                                 <td>Ativo</td>
                                 <td>De</td>
-                                <td>At&eacute;</td>
+                                <td>Até</td>
+                                <td>Período</td>
                             </tr>
                             </thead>
                             <tbody>
@@ -27,6 +28,20 @@
                                 <td>BTC</td>
                                 <td> <input type="date" name="beginDate" min="2014-01-01" max="2018-01-08"></td>
                                 <td><input type="date" name="endDate" min="2014-01-01" max="2018-01-08"></td>
+                                <td><select class="selectpicker" id="duration">
+                                    <option>1 minuto</option>
+                                    <option>5 minutos</option>
+                                    <option>15 minutos</option>
+                                    <option>30 minutos</option>
+                                    <option>1 hora</option>
+                                    <option>2 horas</option>
+                                    <option>3 horas</option>
+                                    <option>4 horas</option>
+                                    <option>1 dia</option>
+                                    <option>1 semana</option>
+                                    <option>1 mês</option>
+                                </select>
+                                </td>
                             </tr>
                             </tbody>
                         </table>
@@ -34,14 +49,12 @@
                         <table class="table table-condensed table-bordered table-striped table-hover">
                             <thead>
                             <tr>
-                                <td></td>
-                                <td>Estrat&eacute;gia</td>
+                                <td>Estratégia</td>
                             </tr>
                             </thead>
                             <tbody>
                             <tr>
-                                <td><input type="radio" name="strategyName" id="myStrategy"></td>
-                                <td>Minha estrategia</td>
+                                <td>Minha estratégia</td>
                             </tr>
                             </tbody>
                         </table>
@@ -54,37 +67,45 @@
                 <h2 class="basic-title">Resultados</h2><br>
                 <div class="well">
                     <p>Tempo de execução dos testes: ${stopTime}</p>
-                    <p>Quantidade de barras percorridos: ${numberOfBars}</p>
+                    <p>Quantidade de barras percorridas: ${numberOfBars}</p>
                     <p>Número total de ordens efetuadas: ${numberOfTrades}</p>
-                    <p>Período escolhido: ${periodoEscolhido}</p>
+
                     <br><p>***   ORDENS   ***</p>
                     <c:forEach items='${tradeList}' var='object'>
                         <tr>
-                            <td>Compra: $${object.entry.price}</td>
-                            <td> | Venda: $${object.exit.price}</td>
-                            <td> | Lucro Bruto: $${object.exit.price - object.entry.price}</td>
-                            <td> | Lucro Bruto: $${object.exit.price - object.entry.price}</td>
-                            <br>
+                            <td><b>Compra</b></td><br>
+                            <td><b>Data compra:</b> ${series.getBar(object.entry.index).beginTime}</td><br>
+                            <td><b>Preço: </b>$${object.entry.price}</td><br>
+                            <td><b>Quantia:</b> USD$${object.entry.amount} (FAZER ESTE VALOR DINAMICO)</td><br>
                         </tr>
+                        <tr>
+                            <td><b>Venda</b></td><br>
+                            <td><b>Data venda: </b>${series.getBar(object.exit.index).endTime}</td><br>
+                            <td><b>Preço:</b> $${object.exit.price}</td>
+                            <td><b>Quantia:</b> USD$${object.exit.amount}(FAZER ESTE VALOR DINAMICO)</td><br>
+                            <c:set var = "lucroBruto" scope = "session" value = "${object.exit.price - object.entry.price}"/>
+                            <td><b>Lucro Bruto:</b> $<c:out value = "${lucroBruto}"/></td>
+                            <c:set var = "taxa" scope = "session" value = "${lucroBruto - (lucroBruto*0.999)}"/>
+                            <td> | <b>Taxa (0,1%):</b> $ <c:out value = "${taxa}"/></td>
+                            <c:set var = "lucroLiquido" scope = "session" value = "${lucroBruto*0.999}"/>
+                            <td> | <b>Lucro Líquido:</b> $<c:out value = "${lucroLiquido}"/></td>
+                        </tr><br><br>
                     </c:forEach>
                     <br>
-                    <p>Lucro bruto: $${lucroBruto} (sobre 1 btc)</p>
-                    <p>relação de lucratividade de ordens: ${profitableTradesRatio}</p>
-                    <p>Diferença entre trade e HODL: ${profitVsBuyAndHold}</p>
-                    <p>Máximo de retração: ${maximumDrawdown} (Medida de declínio depois de atingir um ponto máximo)</p>
-                    <p>Total de custo de taxas: ${totalTransactionCosts} (valor suspeito de estar errado)</p>
+                    <p><b>Lucro bruto Total:</b> $${totalGrossProfit}</p>
+                    <p><b>Total pago em taxas:</b> $${totalFees}</p>
+                    <p><b>Lucro líquido Total:</b> $${totalNetProfit}</p>
+
+                    <p><b>Diferença trade X HODL: </b>
+                        HODL: $${buyAndHoldResult} |
+                        Trade: $${buyAndHoldResult + totalNetProfit}</p>
                 </div>
             </div>
 
             <br><br>
 
-            <!-- Resources -->
-            <script src="https://www.amcharts.com/lib/3/amcharts.js"></script>
-            <script src="https://www.amcharts.com/lib/3/serial.js"></script>
-            <script src="https://www.amcharts.com/lib/3/amstock.js"></script>
-            <script src="https://www.amcharts.com/lib/3/plugins/export/export.min.js"></script>
-            <link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
-            <script src="https://www.amcharts.com/lib/3/themes/light.js"></script>
+            <!-- HTML -->
+            <div id="chartdiv" class="col-md-12"></div>
 
             <!-- Chart code -->
             <script>
@@ -259,10 +280,13 @@
               } );
             </script>
 
-            <!-- HTML -->
-            <div id="chartdiv" class="col-md-12"></div>
-
-
+            <!-- Resources -->
+            <script src="https://www.amcharts.com/lib/3/amcharts.js"></script>
+            <script src="https://www.amcharts.com/lib/3/serial.js"></script>
+            <script src="https://www.amcharts.com/lib/3/amstock.js"></script>
+            <script src="https://www.amcharts.com/lib/3/plugins/export/export.min.js"></script>
+            <link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
+            <script src="https://www.amcharts.com/lib/3/themes/light.js"></script>
         </div>
     </jsp:body>
 </template:admin>
