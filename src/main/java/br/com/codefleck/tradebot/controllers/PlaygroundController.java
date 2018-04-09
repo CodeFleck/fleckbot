@@ -1,24 +1,28 @@
 package br.com.codefleck.tradebot.controllers;
 
-import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import javax.transaction.Transactional;
+import javax.xml.validation.Validator;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.ta4j.core.*;
-import org.ta4j.core.analysis.criteria.*;
+import org.ta4j.core.analysis.criteria.NumberOfBarsCriterion;
 
 import com.google.common.base.Stopwatch;
 
@@ -38,64 +42,65 @@ public class PlaygroundController {
     TradingEngine fleckBot;
 
     @GetMapping
-    public ModelAndView noticiasLandingDataProvider(ModelAndView model) {
+    public ModelAndView playgroundLandingDataProvider(ModelAndView model) {
 
         model.addObject("botStatus", fleckBot.isRunning());
         model.setViewName("/playground");
-
         return model;
     }
 
     @PostMapping("/load")
-    public ModelAndView loadData(@RequestParam("strategyName") String strategyNome,
-                                 @RequestParam("beginDate") String beginDate,
+    public ModelAndView loadData(@RequestParam("beginDate") String beginDate,
                                  @RequestParam("endDate") String endDate) throws ParseException {
 
         ModelAndView modelAndView = new ModelAndView("playground");
 
         SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
 
-        String strategyName = strategyNome;
-
         Date begingDate = formato.parse(beginDate);
         Date endingDate = formato.parse(endDate);
 
         TimeSeries series = CsvBarsLoader.loadCoinBaseSeries(begingDate, endingDate);
-        modelAndView.addObject("periodoEscolhido", series.getSeriesPeriodDescription());
 
-//        DownSamplingTimeSeries downSamplingTimeSeries = new DownSamplingTimeSeries();
+        DownSamplingTimeSeries downSamplingTimeSeries = new DownSamplingTimeSeries();
 
-//        TimeSeries weeklyTimeSeries = downSamplingTimeSeries.aggregateTimeSeriesDtoW(series);
-
-        MyStrategy myStrategy = new MyStrategy();
+        TimeSeries customTimeSeries = downSamplingTimeSeries.aggregateTimeSeriesToHour(series);
 
         // Building the trading strategy
-        Strategy strategy = myStrategy.buildStrategy(series);
+        MyStrategy myStrategy = new MyStrategy();
+        Strategy strategy = myStrategy.buildStrategy(customTimeSeries);
 
         // Running the strategy
-        TimeSeriesManager seriesManager = new TimeSeriesManager(series);
+        TimeSeriesManager seriesManager = new TimeSeriesManager(customTimeSeries);
 
         Stopwatch timer = Stopwatch.createStarted();
-        System.out.println("Start Time: " + timer);
-        modelAndView.addObject("startTime", timer);
 
 //     Strategy strategy, OrderType orderType, Decimal amount, int startIndex, int finishIndex
-        TradingRecord tradingRecord = seriesManager.run(strategy, Order.OrderType.BUY, Decimal.valueOf(10000), series.getBeginIndex(), series.getEndIndex());
+        TradingRecord tradingRecord = seriesManager.run(strategy, Order.OrderType.BUY, Decimal.valueOf(1), customTimeSeries.getBeginIndex(), customTimeSeries.getEndIndex());
 
         List<Trade> tradesList = tradingRecord.getTrades();
-        Double lucroBruto=0d;
-        Double totallucroBruto=0d;
-        for (Trade trade : tradesList) {
-            System.out.print("Entry : " + trade.getEntry());
-            System.out.print(" | Exit : " + trade.getExit());
 
-            lucroBruto = trade.getEntry().getPrice().doubleValue();
-            lucroBruto -= (trade.getExit().getPrice().doubleValue());
-            totallucroBruto += lucroBruto;
+        Double grossProfit=0d;
+        Double netProfit=0d;
+        Double totalGrossProfit=0d;
+        Double totalNetProfit=0d;
+        Double fee=0d;
+        Double totalFees=0d;
+
+        for (Trade trade : tradesList) {
+            grossProfit = trade.getExit().getPrice().doubleValue() - trade.getEntry().getPrice().doubleValue();
+            totalGrossProfit += grossProfit;
+            netProfit = grossProfit * 0.999;
+            totalNetProfit += netProfit;
+            fee = grossProfit - netProfit;
+            totalFees += fee;
         }
-        DecimalFormat numberFormat = new DecimalFormat("##.00");
-        modelAndView.addObject("lucroBruto", numberFormat.format(totallucroBruto*(-1)));
+
+        modelAndView.addObject("series", customTimeSeries);
         modelAndView.addObject("tradeList", tradesList);
+        modelAndView.addObject("totalGrossProfit",totalGrossProfit);
+        modelAndView.addObject("totalNetProfit",totalNetProfit);
+        modelAndView.addObject("totalFees",totalFees);
 
         System.out.println("Method took: " + timer.stop());
         modelAndView.addObject("stopTime", timer);
@@ -104,7 +109,7 @@ public class PlaygroundController {
         modelAndView.addObject("numberOfTrades", qtdOrdens);
 
         // Number of bars
-        int numberOfBars = (int) new NumberOfBarsCriterion().calculate(series, tradingRecord);
+        int numberOfBars = (int) new NumberOfBarsCriterion().calculate(customTimeSeries, tradingRecord);
         modelAndView.addObject("numberOfBars", numberOfBars);
 
         // Getting the cash flow of the resulting trades
@@ -117,22 +122,20 @@ public class PlaygroundController {
 //        }
 //        modelAndView.addObject("moneyList", moneyList);
 
-        // Getting the profitable trades ratio
-        AnalysisCriterion profitTradesRatio = new AverageProfitableTradesCriterion();
-        modelAndView.addObject("profitableTradesRatio", profitTradesRatio.calculate(series, tradingRecord));
-
         // Total profit of our strategy vs total profit of a buy-and-hold strategy
-        AnalysisCriterion vsBuyAndHold = new VersusBuyAndHoldCriterion(new TotalProfitCriterion());
-        modelAndView.addObject("profitVsBuyAndHold", vsBuyAndHold.calculate(series, tradingRecord));
-
-        // Maximum drawdown
-        modelAndView.addObject("maximumDrawdown", new MaximumDrawdownCriterion().calculate(series, tradingRecord));
-
-        // Total transaction cost
-        double linearTransactionCostCriterion = new LinearTransactionCostCriterion(0, 0.1).calculate(series, tradingRecord);
-        modelAndView.addObject("totalTransactionCosts", new LinearTransactionCostCriterion(0, 0.1).calculate(series, tradingRecord));
+        Decimal buyAndHoldResul = calculateBuyAndHold(customTimeSeries);
+        modelAndView.addObject("buyAndHoldResult", buyAndHoldResul);
 
         return modelAndView;
 
     }
+
+        public Decimal calculateBuyAndHold(TimeSeries customTimeSeries){
+            Decimal beginPrice = customTimeSeries.getFirstBar().getClosePrice();
+            Decimal beginPriceMinusTax = beginPrice.multipliedBy(0.999);
+            Decimal endPrice = customTimeSeries.getLastBar().getClosePrice();
+            endPrice = endPrice.minus(beginPriceMinusTax).multipliedBy(0.999);
+
+            return endPrice;
+        }
 }

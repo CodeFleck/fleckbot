@@ -60,6 +60,115 @@ public class DownSamplingTimeSeries {
         return new BaseTimeSeries(series.getName(), aggBars);
     }
 
+    public TimeSeries aggregateTimeSeriesToFourHours(TimeSeries series) {
+        Objects.requireNonNull(series);
+        List<Bar> aggBars = new ArrayList<Bar>();
+        for(int i=series.getBeginIndex(); i<=series.getEndIndex(); i++){
+            Bar currentBar = series.getBar(i);
+            Decimal currentOpen = currentBar.getOpenPrice();
+            Decimal currentMax = currentBar.getMaxPrice();
+            Decimal currentMin = currentBar.getMinPrice();
+            Decimal currentVolume = currentBar.getVolume();
+
+            ZonedDateTime nextFourHours = currentBar.getEndTime().plusHours(4).minusMinutes(1);
+
+            while(series.getEndIndex()>i && (series.getBar(i).getEndTime().isBefore(nextFourHours))){
+                i++;
+                currentBar = series.getBar(i); // nextBar
+                currentMax = currentMax.max(currentBar.getMaxPrice());
+                currentMin = currentMin.min(currentBar.getMinPrice());
+                currentVolume = currentVolume.plus(currentBar.getVolume());
+            }
+            ZonedDateTime currentEndTime = currentBar.getEndTime();
+            Decimal currentClose = currentBar.getClosePrice();
+            aggBars.add(new BaseBar(currentEndTime,currentOpen,currentMax,currentMin,
+                currentClose,currentVolume));
+        }
+        return new BaseTimeSeries(series.getName(), aggBars);
+    }
+
+    public TimeSeries aggregateTimeSeriesToThreeHours(TimeSeries series) {
+        Objects.requireNonNull(series);
+        List<Bar> aggBars = new ArrayList<Bar>();
+        for(int i=series.getBeginIndex(); i<=series.getEndIndex(); i++){
+            Bar currentBar = series.getBar(i);
+            Decimal currentOpen = currentBar.getOpenPrice();
+            Decimal currentMax = currentBar.getMaxPrice();
+            Decimal currentMin = currentBar.getMinPrice();
+            Decimal currentVolume = currentBar.getVolume();
+
+            ZonedDateTime nextFourHours = currentBar.getEndTime().plusHours(3).minusMinutes(1);
+
+            while(series.getEndIndex()>i && (series.getBar(i).getEndTime().isBefore(nextFourHours))){
+                i++;
+                currentBar = series.getBar(i); // nextBar
+                currentMax = currentMax.max(currentBar.getMaxPrice());
+                currentMin = currentMin.min(currentBar.getMinPrice());
+                currentVolume = currentVolume.plus(currentBar.getVolume());
+            }
+            ZonedDateTime currentEndTime = currentBar.getEndTime();
+            Decimal currentClose = currentBar.getClosePrice();
+            aggBars.add(new BaseBar(currentEndTime,currentOpen,currentMax,currentMin,
+                currentClose,currentVolume));
+        }
+        return new BaseTimeSeries(series.getName(), aggBars);
+    }
+
+    public TimeSeries aggregateTimeSeriesToTwoHours(TimeSeries series) {
+        Objects.requireNonNull(series);
+        List<Bar> aggBars = new ArrayList<Bar>();
+        for(int i=series.getBeginIndex(); i<=series.getEndIndex(); i++){
+            Bar currentBar = series.getBar(i);
+            Decimal currentOpen = currentBar.getOpenPrice();
+            Decimal currentMax = currentBar.getMaxPrice();
+            Decimal currentMin = currentBar.getMinPrice();
+            Decimal currentVolume = currentBar.getVolume();
+
+            ZonedDateTime nextFourHours = currentBar.getEndTime().plusHours(2).minusMinutes(1);
+
+            while(series.getEndIndex()>i && (series.getBar(i).getEndTime().isBefore(nextFourHours))){
+                i++;
+                currentBar = series.getBar(i); // nextBar
+                currentMax = currentMax.max(currentBar.getMaxPrice());
+                currentMin = currentMin.min(currentBar.getMinPrice());
+                currentVolume = currentVolume.plus(currentBar.getVolume());
+            }
+            ZonedDateTime currentEndTime = currentBar.getEndTime();
+            Decimal currentClose = currentBar.getClosePrice();
+            aggBars.add(new BaseBar(currentEndTime,currentOpen,currentMax,currentMin,
+                currentClose,currentVolume));
+        }
+        return new BaseTimeSeries(series.getName(), aggBars);
+    }
+
+    public TimeSeries aggregateTimeSeriesToHour(TimeSeries series) {
+        Objects.requireNonNull(series);
+        List<Bar> aggBars = new ArrayList<Bar>();
+        for(int i=series.getBeginIndex(); i<=series.getEndIndex(); i++){
+            Bar currentBar = series.getBar(i);
+            Decimal currentOpen = currentBar.getOpenPrice();
+            Decimal currentMax = currentBar.getMaxPrice();
+            Decimal currentMin = currentBar.getMinPrice();
+            Decimal currentVolume = currentBar.getVolume();
+
+            ZonedDateTime nextFourHours = currentBar.getEndTime().plusHours(1).minusMinutes(1);
+
+            while(series.getEndIndex()>i && (series.getBar(i).getEndTime().isBefore(nextFourHours))){
+                i++;
+                currentBar = series.getBar(i); // nextBar
+                currentMax = currentMax.max(currentBar.getMaxPrice());
+                currentMin = currentMin.min(currentBar.getMinPrice());
+                currentVolume = currentVolume.plus(currentBar.getVolume());
+            }
+            ZonedDateTime currentEndTime = currentBar.getEndTime();
+            Decimal currentClose = currentBar.getClosePrice();
+            aggBars.add(new BaseBar(currentEndTime,currentOpen,currentMax,currentMin,
+                currentClose,currentVolume));
+        }
+        return new BaseTimeSeries(series.getName(), aggBars);
+    }
+
+
     private int getDay(Bar bar){
         return bar.getEndTime().get(IsoFields.DAY_OF_QUARTER);
     }

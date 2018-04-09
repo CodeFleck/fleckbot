@@ -104,8 +104,7 @@
 
             <br><br>
 
-            <!-- HTML -->
-            <div id="chartdiv" class="col-md-12"></div>
+
 
             <!-- Chart code -->
             <script>
@@ -279,6 +278,9 @@
                 }
               } );
             </script>
+
+            <!-- HTML -->
+            <div id="chartdiv" class="col-md-12"></div>
 
             <!-- Resources -->
             <script src="https://www.amcharts.com/lib/3/amcharts.js"></script>
