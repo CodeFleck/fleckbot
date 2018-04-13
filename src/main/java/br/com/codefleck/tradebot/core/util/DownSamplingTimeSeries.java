@@ -97,9 +97,9 @@ public class DownSamplingTimeSeries {
             Decimal currentMin = currentBar.getMinPrice();
             Decimal currentVolume = currentBar.getVolume();
 
-            ZonedDateTime nextFourHours = currentBar.getEndTime().plusHours(3).minusMinutes(1);
+            ZonedDateTime nextThreeHours = currentBar.getEndTime().plusHours(3).minusMinutes(1);
 
-            while(series.getEndIndex()>i && (series.getBar(i).getEndTime().isBefore(nextFourHours))){
+            while(series.getEndIndex()>i && (series.getBar(i).getEndTime().isBefore(nextThreeHours))){
                 i++;
                 currentBar = series.getBar(i); // nextBar
                 currentMax = currentMax.max(currentBar.getMaxPrice());
@@ -124,9 +124,9 @@ public class DownSamplingTimeSeries {
             Decimal currentMin = currentBar.getMinPrice();
             Decimal currentVolume = currentBar.getVolume();
 
-            ZonedDateTime nextFourHours = currentBar.getEndTime().plusHours(2).minusMinutes(1);
+            ZonedDateTime nextTwoHours = currentBar.getEndTime().plusHours(2).minusMinutes(1);
 
-            while(series.getEndIndex()>i && (series.getBar(i).getEndTime().isBefore(nextFourHours))){
+            while(series.getEndIndex()>i && (series.getBar(i).getEndTime().isBefore(nextTwoHours))){
                 i++;
                 currentBar = series.getBar(i); // nextBar
                 currentMax = currentMax.max(currentBar.getMaxPrice());
@@ -151,9 +151,117 @@ public class DownSamplingTimeSeries {
             Decimal currentMin = currentBar.getMinPrice();
             Decimal currentVolume = currentBar.getVolume();
 
-            ZonedDateTime nextFourHours = currentBar.getEndTime().plusHours(1).minusMinutes(1);
+            ZonedDateTime nexHour = currentBar.getEndTime().plusHours(1).minusMinutes(1);
 
-            while(series.getEndIndex()>i && (series.getBar(i).getEndTime().isBefore(nextFourHours))){
+            while(series.getEndIndex()>i && (series.getBar(i).getEndTime().isBefore(nexHour))){
+                i++;
+                currentBar = series.getBar(i); // nextBar
+                currentMax = currentMax.max(currentBar.getMaxPrice());
+                currentMin = currentMin.min(currentBar.getMinPrice());
+                currentVolume = currentVolume.plus(currentBar.getVolume());
+            }
+            ZonedDateTime currentEndTime = currentBar.getEndTime();
+            Decimal currentClose = currentBar.getClosePrice();
+            aggBars.add(new BaseBar(currentEndTime,currentOpen,currentMax,currentMin,
+                currentClose,currentVolume));
+        }
+        return new BaseTimeSeries(series.getName(), aggBars);
+    }
+
+    public TimeSeries aggregateTimeSeriesToThirtyMinutes(TimeSeries series) {
+        Objects.requireNonNull(series);
+        List<Bar> aggBars = new ArrayList<Bar>();
+        for(int i=series.getBeginIndex(); i<=series.getEndIndex(); i++){
+            Bar currentBar = series.getBar(i);
+            Decimal currentOpen = currentBar.getOpenPrice();
+            Decimal currentMax = currentBar.getMaxPrice();
+            Decimal currentMin = currentBar.getMinPrice();
+            Decimal currentVolume = currentBar.getVolume();
+
+            ZonedDateTime nextThirtyMinutes = currentBar.getEndTime().plusMinutes(29);
+
+            while(series.getEndIndex()>i && (series.getBar(i).getEndTime().isBefore(nextThirtyMinutes))){
+                i++;
+                currentBar = series.getBar(i); // nextBar
+                currentMax = currentMax.max(currentBar.getMaxPrice());
+                currentMin = currentMin.min(currentBar.getMinPrice());
+                currentVolume = currentVolume.plus(currentBar.getVolume());
+            }
+            ZonedDateTime currentEndTime = currentBar.getEndTime();
+            Decimal currentClose = currentBar.getClosePrice();
+            aggBars.add(new BaseBar(currentEndTime,currentOpen,currentMax,currentMin,
+                currentClose,currentVolume));
+        }
+        return new BaseTimeSeries(series.getName(), aggBars);
+    }
+
+    public TimeSeries aggregateTimeSeriesToFifteenMinutes(TimeSeries series) {
+        Objects.requireNonNull(series);
+        List<Bar> aggBars = new ArrayList<Bar>();
+        for(int i=series.getBeginIndex(); i<=series.getEndIndex(); i++){
+            Bar currentBar = series.getBar(i);
+            Decimal currentOpen = currentBar.getOpenPrice();
+            Decimal currentMax = currentBar.getMaxPrice();
+            Decimal currentMin = currentBar.getMinPrice();
+            Decimal currentVolume = currentBar.getVolume();
+
+            ZonedDateTime nextThirtyMinutes = currentBar.getEndTime().plusMinutes(14);
+
+            while(series.getEndIndex()>i && (series.getBar(i).getEndTime().isBefore(nextThirtyMinutes))){
+                i++;
+                currentBar = series.getBar(i); // nextBar
+                currentMax = currentMax.max(currentBar.getMaxPrice());
+                currentMin = currentMin.min(currentBar.getMinPrice());
+                currentVolume = currentVolume.plus(currentBar.getVolume());
+            }
+            ZonedDateTime currentEndTime = currentBar.getEndTime();
+            Decimal currentClose = currentBar.getClosePrice();
+            aggBars.add(new BaseBar(currentEndTime,currentOpen,currentMax,currentMin,
+                currentClose,currentVolume));
+        }
+        return new BaseTimeSeries(series.getName(), aggBars);
+    }
+
+    public TimeSeries aggregateTimeSeriesToTenMinutes(TimeSeries series) {
+        Objects.requireNonNull(series);
+        List<Bar> aggBars = new ArrayList<Bar>();
+        for(int i=series.getBeginIndex(); i<=series.getEndIndex(); i++){
+            Bar currentBar = series.getBar(i);
+            Decimal currentOpen = currentBar.getOpenPrice();
+            Decimal currentMax = currentBar.getMaxPrice();
+            Decimal currentMin = currentBar.getMinPrice();
+            Decimal currentVolume = currentBar.getVolume();
+
+            ZonedDateTime nextThirtyMinutes = currentBar.getEndTime().plusMinutes(9);
+
+            while(series.getEndIndex()>i && (series.getBar(i).getEndTime().isBefore(nextThirtyMinutes))){
+                i++;
+                currentBar = series.getBar(i); // nextBar
+                currentMax = currentMax.max(currentBar.getMaxPrice());
+                currentMin = currentMin.min(currentBar.getMinPrice());
+                currentVolume = currentVolume.plus(currentBar.getVolume());
+            }
+            ZonedDateTime currentEndTime = currentBar.getEndTime();
+            Decimal currentClose = currentBar.getClosePrice();
+            aggBars.add(new BaseBar(currentEndTime,currentOpen,currentMax,currentMin,
+                currentClose,currentVolume));
+        }
+        return new BaseTimeSeries(series.getName(), aggBars);
+    }
+
+    public TimeSeries aggregateTimeSeriesToFiveMinutes(TimeSeries series) {
+        Objects.requireNonNull(series);
+        List<Bar> aggBars = new ArrayList<Bar>();
+        for(int i=series.getBeginIndex(); i<=series.getEndIndex(); i++){
+            Bar currentBar = series.getBar(i);
+            Decimal currentOpen = currentBar.getOpenPrice();
+            Decimal currentMax = currentBar.getMaxPrice();
+            Decimal currentMin = currentBar.getMinPrice();
+            Decimal currentVolume = currentBar.getVolume();
+
+            ZonedDateTime nextThirtyMinutes = currentBar.getEndTime().plusMinutes(4);
+
+            while(series.getEndIndex()>i && (series.getBar(i).getEndTime().isBefore(nextThirtyMinutes))){
                 i++;
                 currentBar = series.getBar(i); // nextBar
                 currentMax = currentMax.max(currentBar.getMaxPrice());
