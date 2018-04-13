@@ -2,24 +2,22 @@ package br.com.codefleck.tradebot.controllers;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.Year;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import javax.transaction.Transactional;
-import javax.xml.validation.Validator;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.ui.ModelMap;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.ta4j.core.*;
 import org.ta4j.core.analysis.criteria.NumberOfBarsCriterion;
@@ -29,6 +27,7 @@ import com.google.common.base.Stopwatch;
 import br.com.codefleck.tradebot.core.engine.TradingEngine;
 import br.com.codefleck.tradebot.core.util.CsvBarsLoader;
 import br.com.codefleck.tradebot.core.util.DownSamplingTimeSeries;
+import br.com.codefleck.tradebot.exchanges.trading.api.impl.CustomBaseBarForGraph;
 import br.com.codefleck.tradebot.strategies.MyStrategy;
 
 @Controller
@@ -62,9 +61,11 @@ public class PlaygroundController {
 
         TimeSeries series = CsvBarsLoader.loadCoinBaseSeries(begingDate, endingDate);
 
+
+
         DownSamplingTimeSeries downSamplingTimeSeries = new DownSamplingTimeSeries();
 
-        TimeSeries customTimeSeries = downSamplingTimeSeries.aggregateTimeSeriesToHour(series);
+        TimeSeries customTimeSeries = downSamplingTimeSeries.aggregateTimeSeriesToTwoHours(series);
 
         // Building the trading strategy
         MyStrategy myStrategy = new MyStrategy();
@@ -95,6 +96,15 @@ public class PlaygroundController {
             fee = grossProfit - netProfit;
             totalFees += fee;
         }
+
+        List<Bar> barListForGraph = new ArrayList<>();
+        for(int k=0; k <= customTimeSeries.getEndIndex(); k++){
+            barListForGraph.add(customTimeSeries.getBar(k));
+        }
+
+        List<CustomBaseBarForGraph> customBaseBarForGraphList = formatDateForFrontEnd(barListForGraph);
+
+        modelAndView.addObject("listaDeBarras", barListForGraph);
 
         modelAndView.addObject("series", customTimeSeries);
         modelAndView.addObject("tradeList", tradesList);
@@ -130,7 +140,26 @@ public class PlaygroundController {
 
     }
 
-        public Decimal calculateBuyAndHold(TimeSeries customTimeSeries){
+    private List<CustomBaseBarForGraph> formatDateForFrontEnd(List<Bar> barListForGraph) {
+
+        List<CustomBaseBarForGraph> tempCustomBaseBarForGraphList = new ArrayList<>();
+
+        for (Bar bar: barListForGraph) {
+            int endYear = bar.getEndTime().getYear();
+            int endMonth = bar.getEndTime().getMonthValue();
+            int endDay = bar.getEndTime().getDayOfMonth();
+
+            CustomBaseBarForGraph baseBarForGraph = new CustomBaseBarForGraph(bar.getTimePeriod(), bar.getEndTime());
+            baseBarForGraph.setEndYear(endYear);
+            baseBarForGraph.setEndMonth(endMonth);
+            baseBarForGraph.setEndday(endDay);
+
+            tempCustomBaseBarForGraphList.add(baseBarForGraph);
+        }
+        return tempCustomBaseBarForGraphList;
+    }
+
+    public Decimal calculateBuyAndHold(TimeSeries customTimeSeries){
             Decimal beginPrice = customTimeSeries.getFirstBar().getClosePrice();
             Decimal beginPriceMinusTax = beginPrice.multipliedBy(0.999);
             Decimal endPrice = customTimeSeries.getLastBar().getClosePrice();
