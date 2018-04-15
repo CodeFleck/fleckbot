@@ -2,8 +2,6 @@ package br.com.codefleck.tradebot.controllers;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Duration;
-import java.time.Year;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -56,6 +54,7 @@ public class PlaygroundController {
 
         SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
 
+
         Date begingDate = formato.parse(beginDate);
         Date endingDate = formato.parse(endDate);
 
@@ -65,7 +64,7 @@ public class PlaygroundController {
 
         DownSamplingTimeSeries downSamplingTimeSeries = new DownSamplingTimeSeries();
 
-        TimeSeries customTimeSeries = downSamplingTimeSeries.aggregateTimeSeriesToTwoHours(series);
+        TimeSeries customTimeSeries = downSamplingTimeSeries.aggregateTimeSeriesToTenMinutes(series);
 
         // Building the trading strategy
         MyStrategy myStrategy = new MyStrategy();
@@ -104,7 +103,7 @@ public class PlaygroundController {
 
         List<CustomBaseBarForGraph> customBaseBarForGraphList = formatDateForFrontEnd(barListForGraph);
 
-        modelAndView.addObject("listaDeBarras", barListForGraph);
+        modelAndView.addObject("listaDeBarras", customBaseBarForGraphList);
 
         modelAndView.addObject("series", customTimeSeries);
         modelAndView.addObject("tradeList", tradesList);
@@ -145,14 +144,13 @@ public class PlaygroundController {
         List<CustomBaseBarForGraph> tempCustomBaseBarForGraphList = new ArrayList<>();
 
         for (Bar bar: barListForGraph) {
-            int endYear = bar.getEndTime().getYear();
-            int endMonth = bar.getEndTime().getMonthValue();
-            int endDay = bar.getEndTime().getDayOfMonth();
 
-            CustomBaseBarForGraph baseBarForGraph = new CustomBaseBarForGraph(bar.getTimePeriod(), bar.getEndTime());
-            baseBarForGraph.setEndYear(endYear);
-            baseBarForGraph.setEndMonth(endMonth);
-            baseBarForGraph.setEndday(endDay);
+            Date d = Date.from(bar.getEndTime().toInstant());
+            Long timeAsMilisecondsForGraph = d.getTime();
+
+            CustomBaseBarForGraph baseBarForGraph = new CustomBaseBarForGraph(bar.getEndTime(), bar.getOpenPrice(),bar.getMaxPrice(),bar.getMinPrice(), bar.getClosePrice(), bar.getVolume());
+
+            baseBarForGraph.setCustomEndTimeForGraph(timeAsMilisecondsForGraph);
 
             tempCustomBaseBarForGraphList.add(baseBarForGraph);
         }

@@ -29,10 +29,8 @@ public class CustomBaseBarForGraph implements Bar {
     private Decimal volume = Decimal.ZERO;
     /** Trade count */
     private int trades = 0;
-
-    private int endYear = 0;
-    private int endMonth = 0;
-    private int endday = 0;
+    /** DateTime in miliseconds for Javascript Graph */
+    private Long customEndTimeForGraph;
 
     /**
      * Constructor.
@@ -247,27 +245,11 @@ public class CustomBaseBarForGraph implements Bar {
         }
     }
 
-    public int getEndYear() {
-        return endYear;
+    public Long getCustomEndTimeForGraph() {
+        return customEndTimeForGraph;
     }
 
-    public void setEndYear(int endYear) {
-        this.endYear = endYear;
-    }
-
-    public int getEndMonth() {
-        return endMonth;
-    }
-
-    public void setEndMonth(int endMonth) {
-        this.endMonth = endMonth;
-    }
-
-    public int getEndday() {
-        return endday;
-    }
-
-    public void setEndday(int endday) {
-        this.endday = endday;
+    public void setCustomEndTimeForGraph(Long customEndTimeForGraph) {
+        this.customEndTimeForGraph = customEndTimeForGraph;
     }
 }
