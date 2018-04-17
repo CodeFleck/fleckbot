@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -26,6 +27,7 @@ import br.com.codefleck.tradebot.core.engine.TradingEngine;
 import br.com.codefleck.tradebot.core.util.CsvBarsLoader;
 import br.com.codefleck.tradebot.core.util.DownSamplingTimeSeries;
 import br.com.codefleck.tradebot.exchanges.trading.api.impl.CustomBaseBarForGraph;
+import br.com.codefleck.tradebot.services.impl.EventServiceImpl;
 import br.com.codefleck.tradebot.strategies.MyStrategy;
 
 @Controller
@@ -37,6 +39,8 @@ public class PlaygroundController {
 
     @Autowired
     TradingEngine fleckBot;
+    @Autowired
+    private EventServiceImpl eventService;
 
     @GetMapping
     public ModelAndView playgroundLandingDataProvider(ModelAndView model) {
@@ -64,7 +68,7 @@ public class PlaygroundController {
 
         DownSamplingTimeSeries downSamplingTimeSeries = new DownSamplingTimeSeries();
 
-        TimeSeries customTimeSeries = downSamplingTimeSeries.aggregateTimeSeriesToTenMinutes(series);
+        TimeSeries customTimeSeries = downSamplingTimeSeries.aggregateTimeSeriesToTwoHours(series);
 
         // Building the trading strategy
         MyStrategy myStrategy = new MyStrategy();
@@ -76,9 +80,11 @@ public class PlaygroundController {
         Stopwatch timer = Stopwatch.createStarted();
 
 //     Strategy strategy, OrderType orderType, Decimal amount, int startIndex, int finishIndex
-        TradingRecord tradingRecord = seriesManager.run(strategy, Order.OrderType.BUY, Decimal.valueOf(1), customTimeSeries.getBeginIndex(), customTimeSeries.getEndIndex());
+        TradingRecord tradingRecord = seriesManager.run(strategy);
 
         List<Trade> tradesList = tradingRecord.getTrades();
+
+        List<String> tradesListForGraph = eventService.getStockEvents(tradesList);
 
         Double grossProfit=0d;
         Double netProfit=0d;
@@ -104,8 +110,8 @@ public class PlaygroundController {
         List<CustomBaseBarForGraph> customBaseBarForGraphList = formatDateForFrontEnd(barListForGraph);
 
         modelAndView.addObject("listaDeBarras", customBaseBarForGraphList);
-
         modelAndView.addObject("series", customTimeSeries);
+        modelAndView.addObject("tradeListForGraph", tradesListForGraph);
         modelAndView.addObject("tradeList", tradesList);
         modelAndView.addObject("totalGrossProfit",totalGrossProfit);
         modelAndView.addObject("totalNetProfit",totalNetProfit);

@@ -22,6 +22,34 @@
                   var chartData = [];
                   var tradeData = [];
 
+                  <c:forEach items='${tradeListForGraph}' var='tradeEvents'>
+
+                  var eventDate = new Date(${tradeEvents.substring(9,22)});
+                  eventDate.setDate( eventDate.getDate() );
+                  var hour = eventDate.getHours();
+                  var minute = eventDate.getMinutes();
+                  eventDate.setHours( hour, minute );
+
+                  var type = ${tradeEvents.substring(31,37)};
+                  var backgroundColor = ${tradeEvents.substring(56,65)};
+                  var text = ${tradeEvents.substring(110,113)};
+                  var description = ${tradeEvents.substring(128,172)};
+
+                  console.log("type: "+ type) ;
+                  console.log(" backgroundColor: " + backgroundColor);
+                  console.log(" text: " + text);
+                  console.log(" description: " + description);
+
+                          tradeData.push({
+                            "date": eventDate,
+                            "type": type,
+                            "backgroundColor": backgroundColor,
+                            "graph": "g1",
+                            "text": text,
+                            "description": description
+                          });
+                  </c:forEach>
+
                   <c:forEach items='${listaDeBarras}' var='bar'>
 
                   var newDate = new Date( ${bar.customEndTimeForGraph} );
@@ -53,6 +81,7 @@
                       "categoryField": "date",
                       // EVENTS
                       "stockEvents": tradeData,
+                    } ],
 
                     "panels": [ {
                       "title": "Value",
