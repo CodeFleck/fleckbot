@@ -160,9 +160,10 @@
                                     <td>BTC</td>
                                     <td> <input type="date" name="beginDate" min="2014-01-01" max="2018-01-08"></td>
                                     <td><input type="date" name="endDate" min="2014-01-01" max="2018-01-08"></td>
-                                    <td><select class="selectpicker" id="duration">
+                                    <td><select class="selectpicker" name="period">
                                         <option>1 minuto</option>
                                         <option>5 minutos</option>
+                                        <option>10 minutos</option>
                                         <option>15 minutos</option>
                                         <option>30 minutos</option>
                                         <option>1 hora</option>

@@ -10,7 +10,103 @@ import org.ta4j.core.*;
 
 public class DownSamplingTimeSeries {
 
-    public TimeSeries aggregateTimeSeriesToWeek(TimeSeries series) {
+    private String period;
+    private TimeSeries customTimeSeries;
+
+    public DownSamplingTimeSeries(String period){
+        this.period = period;
+    }
+
+    public BaseTimeSeries aggregate(TimeSeries series){
+
+        if (series != null){
+
+            if (this.period.equals("1 minuto")){
+
+                List<Bar> aggBars = new ArrayList<Bar>();
+
+                for(int i=series.getBeginIndex(); i<=series.getEndIndex(); i++) {
+                    Bar currentBar = series.getBar(i);
+                    Decimal currentOpen = currentBar.getOpenPrice();
+                    Decimal currentMax = currentBar.getMaxPrice();
+                    Decimal currentMin = currentBar.getMinPrice();
+                    Decimal currentVolume = currentBar.getVolume();
+                    ZonedDateTime currentEndTime = currentBar.getEndTime();
+                    Decimal currentClose = currentBar.getClosePrice();
+                    aggBars.add(new BaseBar(currentEndTime, currentOpen, currentMax, currentMin, currentClose, currentVolume));
+
+                    return new BaseTimeSeries("umMinuto", aggBars);
+                }
+            }
+            if (this.period.equals("5 minutos")) {
+                return aggregateTimeSeriesToFiveMinutes(series);
+            }
+            if (this.period.equals("10 minutos")){
+                return aggregateTimeSeriesToTenMinutes(series);
+            }
+            if (this.period.equals("15 minutos")){
+                return aggregateTimeSeriesToFifteenMinutes(series);
+            }
+            if (this.period.equals("15 minutos")){
+                return aggregateTimeSeriesToFifteenMinutes(series);
+            }
+            if (this.period.equals("30 minutos")){
+                return aggregateTimeSeriesToThirtyMinutes(series);
+            }
+            if (this.period.equals("1 hora")){
+                return aggregateTimeSeriesToHour(series);
+            }
+            if (this.period.equals("2 horas")){
+                return aggregateTimeSeriesToTwoHours(series);
+            }
+            if (this.period.equals("3 horas")){
+                return aggregateTimeSeriesToThreeHours(series);
+            }
+            if (this.period.equals("4 horas")){
+                return aggregateTimeSeriesToFourHours(series);
+            }
+            if (this.period.equals("1 dia")){
+                return aggregateTimeSeriesToDay(series);
+            }
+            if (this.period.equals("1 semana")){
+                return aggregateTimeSeriesToWeek(series);
+            }
+            if (this.period.equals("1 mês")){
+                return aggregateTimeSeriesToMonth(series);
+            }
+        }else {
+            System.out.println("Series cannot be null");
+        }
+        return null;
+    }
+
+
+    public BaseTimeSeries aggregateTimeSeriesToMonth(TimeSeries series) {
+        Objects.requireNonNull(series);
+        List<Bar> aggBars = new ArrayList<Bar>();
+        for(int i=series.getBeginIndex(); i<=series.getEndIndex(); i++){
+            Bar currentBar = series.getBar(i);
+            Decimal currentOpen = currentBar.getOpenPrice();
+            Decimal currentMax = currentBar.getMaxPrice();
+            Decimal currentMin = currentBar.getMinPrice();
+            Decimal currentVolume = currentBar.getVolume();
+
+            while(series.getEndIndex()>i && (getMonth(series.getBar(i+1)) == getMonth(currentBar))){ // while next Bar is in current week
+                i++;
+                currentBar = series.getBar(i); // nextBar
+                currentMax = currentMax.max(currentBar.getMaxPrice());
+                currentMin = currentMin.min(currentBar.getMinPrice());
+                currentVolume = currentVolume.plus(currentBar.getVolume());
+            }
+            ZonedDateTime currentEndTime = currentBar.getEndTime();
+            Decimal currentClose = currentBar.getClosePrice();
+            aggBars.add(new BaseBar(currentEndTime,currentOpen,currentMax,currentMin,
+                currentClose,currentVolume));
+        }
+        return new BaseTimeSeries(series.getName(), aggBars);
+    }
+
+    public BaseTimeSeries aggregateTimeSeriesToWeek(TimeSeries series) {
         Objects.requireNonNull(series);
         List<Bar> aggBars = new ArrayList<Bar>();
         for(int i=series.getBeginIndex(); i<=series.getEndIndex(); i++){
@@ -35,7 +131,7 @@ public class DownSamplingTimeSeries {
         return new BaseTimeSeries(series.getName(), aggBars);
     }
 
-    public TimeSeries aggregateTimeSeriesToDay(TimeSeries series) {
+    public BaseTimeSeries aggregateTimeSeriesToDay(TimeSeries series) {
         Objects.requireNonNull(series);
         List<Bar> aggBars = new ArrayList<Bar>();
         for(int i=series.getBeginIndex(); i<=series.getEndIndex(); i++){
@@ -60,7 +156,7 @@ public class DownSamplingTimeSeries {
         return new BaseTimeSeries(series.getName(), aggBars);
     }
 
-    public TimeSeries aggregateTimeSeriesToFourHours(TimeSeries series) {
+    public BaseTimeSeries aggregateTimeSeriesToFourHours(TimeSeries series) {
         Objects.requireNonNull(series);
         List<Bar> aggBars = new ArrayList<Bar>();
         for(int i=series.getBeginIndex(); i<=series.getEndIndex(); i++){
@@ -87,7 +183,7 @@ public class DownSamplingTimeSeries {
         return new BaseTimeSeries(series.getName(), aggBars);
     }
 
-    public TimeSeries aggregateTimeSeriesToThreeHours(TimeSeries series) {
+    public BaseTimeSeries aggregateTimeSeriesToThreeHours(TimeSeries series) {
         Objects.requireNonNull(series);
         List<Bar> aggBars = new ArrayList<Bar>();
         for(int i=series.getBeginIndex(); i<=series.getEndIndex(); i++){
@@ -114,7 +210,7 @@ public class DownSamplingTimeSeries {
         return new BaseTimeSeries(series.getName(), aggBars);
     }
 
-    public TimeSeries aggregateTimeSeriesToTwoHours(TimeSeries series) {
+    public BaseTimeSeries aggregateTimeSeriesToTwoHours(TimeSeries series) {
         Objects.requireNonNull(series);
         List<Bar> aggBars = new ArrayList<Bar>();
         for(int i=series.getBeginIndex(); i<=series.getEndIndex(); i++){
@@ -141,7 +237,7 @@ public class DownSamplingTimeSeries {
         return new BaseTimeSeries(series.getName(), aggBars);
     }
 
-    public TimeSeries aggregateTimeSeriesToHour(TimeSeries series) {
+    public BaseTimeSeries aggregateTimeSeriesToHour(TimeSeries series) {
         Objects.requireNonNull(series);
         List<Bar> aggBars = new ArrayList<Bar>();
         for(int i=series.getBeginIndex(); i<=series.getEndIndex(); i++){
@@ -168,7 +264,7 @@ public class DownSamplingTimeSeries {
         return new BaseTimeSeries(series.getName(), aggBars);
     }
 
-    public TimeSeries aggregateTimeSeriesToThirtyMinutes(TimeSeries series) {
+    public BaseTimeSeries aggregateTimeSeriesToThirtyMinutes(TimeSeries series) {
         Objects.requireNonNull(series);
         List<Bar> aggBars = new ArrayList<Bar>();
         for(int i=series.getBeginIndex(); i<=series.getEndIndex(); i++){
@@ -195,7 +291,7 @@ public class DownSamplingTimeSeries {
         return new BaseTimeSeries(series.getName(), aggBars);
     }
 
-    public TimeSeries aggregateTimeSeriesToFifteenMinutes(TimeSeries series) {
+    public BaseTimeSeries aggregateTimeSeriesToFifteenMinutes(TimeSeries series) {
         Objects.requireNonNull(series);
         List<Bar> aggBars = new ArrayList<Bar>();
         for(int i=series.getBeginIndex(); i<=series.getEndIndex(); i++){
@@ -222,7 +318,7 @@ public class DownSamplingTimeSeries {
         return new BaseTimeSeries(series.getName(), aggBars);
     }
 
-    public TimeSeries aggregateTimeSeriesToTenMinutes(TimeSeries series) {
+    public BaseTimeSeries aggregateTimeSeriesToTenMinutes(TimeSeries series) {
         Objects.requireNonNull(series);
         List<Bar> aggBars = new ArrayList<Bar>();
         for(int i=series.getBeginIndex(); i<=series.getEndIndex(); i++){
@@ -249,10 +345,10 @@ public class DownSamplingTimeSeries {
         return new BaseTimeSeries(series.getName(), aggBars);
     }
 
-    public TimeSeries aggregateTimeSeriesToFiveMinutes(TimeSeries series) {
+    public BaseTimeSeries aggregateTimeSeriesToFiveMinutes(TimeSeries series) {
         Objects.requireNonNull(series);
         List<Bar> aggBars = new ArrayList<Bar>();
-        for(int i=series.getBeginIndex(); i<=series.getEndIndex(); i++){
+        for (int i = series.getBeginIndex(); i <= series.getEndIndex(); i++) {
             Bar currentBar = series.getBar(i);
             Decimal currentOpen = currentBar.getOpenPrice();
             Decimal currentMax = currentBar.getMaxPrice();
@@ -261,7 +357,7 @@ public class DownSamplingTimeSeries {
 
             ZonedDateTime nextThirtyMinutes = currentBar.getEndTime().plusMinutes(4);
 
-            while(series.getEndIndex()>i && (series.getBar(i).getEndTime().isBefore(nextThirtyMinutes))){
+            while (series.getEndIndex() > i && (series.getBar(i).getEndTime().isBefore(nextThirtyMinutes))) {
                 i++;
                 currentBar = series.getBar(i); // nextBar
                 currentMax = currentMax.max(currentBar.getMaxPrice());
@@ -270,12 +366,10 @@ public class DownSamplingTimeSeries {
             }
             ZonedDateTime currentEndTime = currentBar.getEndTime();
             Decimal currentClose = currentBar.getClosePrice();
-            aggBars.add(new BaseBar(currentEndTime,currentOpen,currentMax,currentMin,
-                currentClose,currentVolume));
+            aggBars.add(new BaseBar(currentEndTime, currentOpen, currentMax, currentMin, currentClose, currentVolume));
         }
         return new BaseTimeSeries(series.getName(), aggBars);
     }
-
 
     private int getDay(Bar bar){
         return bar.getEndTime().get(IsoFields.DAY_OF_QUARTER);
@@ -283,5 +377,9 @@ public class DownSamplingTimeSeries {
 
     private int getWeek(Bar bar){
         return bar.getEndTime().get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
+    }
+
+    private int getMonth(Bar bar){
+        return bar.getEndTime().getMonthValue();
     }
 }

@@ -4,19 +4,13 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.transaction.Transactional;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.ta4j.core.*;
 import org.ta4j.core.analysis.criteria.NumberOfBarsCriterion;
@@ -35,8 +29,6 @@ import br.com.codefleck.tradebot.strategies.MyStrategy;
 @Transactional
 public class PlaygroundController {
 
-    private static final Logger LOG = LogManager.getLogger();
-
     @Autowired
     TradingEngine fleckBot;
     @Autowired
@@ -51,7 +43,8 @@ public class PlaygroundController {
     }
 
     @PostMapping("/load")
-    public ModelAndView loadData(@RequestParam("beginDate") String beginDate,
+    public ModelAndView loadData(@ModelAttribute("period") String period,
+                                 @RequestParam("beginDate") String beginDate,
                                  @RequestParam("endDate") String endDate) throws ParseException {
 
         ModelAndView modelAndView = new ModelAndView("playground");
@@ -64,11 +57,9 @@ public class PlaygroundController {
 
         TimeSeries series = CsvBarsLoader.loadCoinBaseSeries(begingDate, endingDate);
 
+        DownSamplingTimeSeries downSamplingTimeSeries = new DownSamplingTimeSeries(period);
 
-
-        DownSamplingTimeSeries downSamplingTimeSeries = new DownSamplingTimeSeries();
-
-        TimeSeries customTimeSeries = downSamplingTimeSeries.aggregateTimeSeriesToTwoHours(series);
+        TimeSeries customTimeSeries = downSamplingTimeSeries.aggregate(series);
 
         // Building the trading strategy
         MyStrategy myStrategy = new MyStrategy();
