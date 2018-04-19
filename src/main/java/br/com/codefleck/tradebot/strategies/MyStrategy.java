@@ -8,6 +8,8 @@ import org.ta4j.core.analysis.criteria.TotalProfitCriterion;
 import org.ta4j.core.analysis.criteria.VersusBuyAndHoldCriterion;
 import org.ta4j.core.indicators.EMAIndicator;
 import org.ta4j.core.indicators.helpers.ClosePriceIndicator;
+import org.ta4j.core.indicators.helpers.GainIndicator;
+import org.ta4j.core.indicators.helpers.MultiplierIndicator;
 import org.ta4j.core.trading.rules.CrossedDownIndicatorRule;
 import org.ta4j.core.trading.rules.CrossedUpIndicatorRule;
 import org.ta4j.core.trading.rules.OverIndicatorRule;
@@ -33,16 +35,16 @@ public class MyStrategy {
         EMAIndicator shortEma = new EMAIndicator(closePrice, 12);
         EMAIndicator longEma = new EMAIndicator(closePrice, 32);
 
-        Decimal calculatedPorcentageBuyEma = Decimal.valueOf(shortEma.getValue(0));
-        Decimal calculatedPorcentageSellEma = Decimal.valueOf(shortEma.getValue(0));
+        MultiplierIndicator shortMultiplierIndicator = new MultiplierIndicator(shortEma, Decimal.valueOf(0.98));
+        MultiplierIndicator longMultiplierIndicator = new MultiplierIndicator(shortEma, Decimal.valueOf(1.02));
 
         // Entry rule
         Rule entryRule = new UnderIndicatorRule(shortEma, longEma) // Trend
-            .and(new CrossedDownIndicatorRule(closePrice, Decimal.valueOf(calculatedPorcentageBuyEma.multipliedBy(0.99)))); // Signal 1
+            .and(new CrossedDownIndicatorRule(closePrice, shortMultiplierIndicator)); // Signal 1
 
         // Exit rule
         Rule exitRule = new OverIndicatorRule(shortEma, longEma) // Trend
-            .and(new CrossedUpIndicatorRule(closePrice,Decimal.valueOf(calculatedPorcentageSellEma.multipliedBy(1.01)))); // Signal 1
+            .and(new CrossedUpIndicatorRule(closePrice, longMultiplierIndicator)); // Signal 1
 
         return new BaseStrategy(entryRule, exitRule);
     }

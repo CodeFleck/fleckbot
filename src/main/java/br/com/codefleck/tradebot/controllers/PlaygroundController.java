@@ -1,5 +1,9 @@
 package br.com.codefleck.tradebot.controllers;
 
+import static jdk.nashorn.internal.objects.NativeMath.round;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -19,6 +23,7 @@ import com.google.common.base.Stopwatch;
 
 import br.com.codefleck.tradebot.core.engine.TradingEngine;
 import br.com.codefleck.tradebot.core.util.CsvBarsLoader;
+import br.com.codefleck.tradebot.core.util.CustomTimeSeriesManager;
 import br.com.codefleck.tradebot.core.util.DownSamplingTimeSeries;
 import br.com.codefleck.tradebot.exchanges.trading.api.impl.CustomBaseBarForGraph;
 import br.com.codefleck.tradebot.services.impl.EventServiceImpl;
@@ -59,14 +64,14 @@ public class PlaygroundController {
 
         DownSamplingTimeSeries downSamplingTimeSeries = new DownSamplingTimeSeries(period);
 
-        TimeSeries customTimeSeries = downSamplingTimeSeries.aggregate(series);
+        BaseTimeSeries customTimeSeries = downSamplingTimeSeries.aggregate(series);
 
         // Building the trading strategy
         MyStrategy myStrategy = new MyStrategy();
         Strategy strategy = myStrategy.buildStrategy(customTimeSeries);
 
         // Running the strategy
-        TimeSeriesManager seriesManager = new TimeSeriesManager(customTimeSeries);
+        CustomTimeSeriesManager seriesManager = new CustomTimeSeriesManager(customTimeSeries);
 
         Stopwatch timer = Stopwatch.createStarted();
 
@@ -75,7 +80,7 @@ public class PlaygroundController {
 
         List<Trade> tradesList = tradingRecord.getTrades();
 
-        List<String> tradesListForGraph = eventService.getStockEvents(tradesList);
+        List<String> tradesListForGraph = eventService.getStockEvents(tradesList, customTimeSeries);
 
         Double grossProfit=0d;
         Double netProfit=0d;
@@ -98,15 +103,20 @@ public class PlaygroundController {
             barListForGraph.add(customTimeSeries.getBar(k));
         }
 
+
+        BigDecimal totalGP = new BigDecimal(totalGrossProfit).setScale(2, RoundingMode.HALF_EVEN);
+        BigDecimal totalNP = new BigDecimal(totalNetProfit).setScale(2, RoundingMode.HALF_EVEN);
+        BigDecimal totalF = new BigDecimal(totalFees).setScale(2, RoundingMode.HALF_EVEN);
+
         List<CustomBaseBarForGraph> customBaseBarForGraphList = formatDateForFrontEnd(barListForGraph);
 
         modelAndView.addObject("listaDeBarras", customBaseBarForGraphList);
         modelAndView.addObject("series", customTimeSeries);
         modelAndView.addObject("tradeListForGraph", tradesListForGraph);
         modelAndView.addObject("tradeList", tradesList);
-        modelAndView.addObject("totalGrossProfit",totalGrossProfit);
-        modelAndView.addObject("totalNetProfit",totalNetProfit);
-        modelAndView.addObject("totalFees",totalFees);
+        modelAndView.addObject("totalGrossProfit",totalGP.doubleValue());
+        modelAndView.addObject("totalNetProfit",totalNP.doubleValue());
+        modelAndView.addObject("totalFees",totalF.doubleValue());
 
         System.out.println("Method took: " + timer.stop());
         modelAndView.addObject("stopTime", timer);

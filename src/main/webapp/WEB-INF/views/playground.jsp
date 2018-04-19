@@ -23,30 +23,20 @@
                   var tradeData = [];
 
                   <c:forEach items='${tradeListForGraph}' var='tradeEvents'>
-
-                  var eventDate = new Date(${tradeEvents.substring(9,22)});
+                  var obj = JSON.parse(' ${tradeEvents} ');
+                  var eventDate = new Date(obj.date);
                   eventDate.setDate( eventDate.getDate() );
                   var hour = eventDate.getHours();
                   var minute = eventDate.getMinutes();
                   eventDate.setHours( hour, minute );
 
-                  var type = ${tradeEvents.substring(31,37)};
-                  var backgroundColor = ${tradeEvents.substring(56,65)};
-                  var text = ${tradeEvents.substring(110,113)};
-                  var description = ${tradeEvents.substring(128,172)};
-
-                  console.log("type: "+ type) ;
-                  console.log(" backgroundColor: " + backgroundColor);
-                  console.log(" text: " + text);
-                  console.log(" description: " + description);
-
                           tradeData.push({
                             "date": eventDate,
-                            "type": type,
-                            "backgroundColor": backgroundColor,
+                            "type": obj.type,
+                            "backgroundColor": obj.backgroundColor,
                             "graph": "g1",
-                            "text": text,
-                            "description": description
+                            "text": obj.text,
+                            "description": obj.description
                           });
                   </c:forEach>
 

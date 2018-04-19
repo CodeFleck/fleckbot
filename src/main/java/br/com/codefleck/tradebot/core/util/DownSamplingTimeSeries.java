@@ -11,7 +11,6 @@ import org.ta4j.core.*;
 public class DownSamplingTimeSeries {
 
     private String period;
-    private TimeSeries customTimeSeries;
 
     public DownSamplingTimeSeries(String period){
         this.period = period;
@@ -35,8 +34,8 @@ public class DownSamplingTimeSeries {
                     Decimal currentClose = currentBar.getClosePrice();
                     aggBars.add(new BaseBar(currentEndTime, currentOpen, currentMax, currentMin, currentClose, currentVolume));
 
-                    return new BaseTimeSeries("umMinuto", aggBars);
                 }
+                    return new BaseTimeSeries("umMinuto", aggBars);
             }
             if (this.period.equals("5 minutos")) {
                 return aggregateTimeSeriesToFiveMinutes(series);
