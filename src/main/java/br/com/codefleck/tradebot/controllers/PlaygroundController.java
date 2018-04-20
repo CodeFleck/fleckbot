@@ -1,7 +1,5 @@
 package br.com.codefleck.tradebot.controllers;
 
-import static jdk.nashorn.internal.objects.NativeMath.round;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.ParseException;
@@ -49,6 +47,8 @@ public class PlaygroundController {
 
     @PostMapping("/load")
     public ModelAndView loadData(@ModelAttribute("period") String period,
+                                 @ModelAttribute("montante") Double montante,
+                                 @ModelAttribute("saldo") Double saldo,
                                  @RequestParam("beginDate") String beginDate,
                                  @RequestParam("endDate") String endDate) throws ParseException {
 
@@ -56,9 +56,11 @@ public class PlaygroundController {
 
         SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
 
-
         Date begingDate = formato.parse(beginDate);
         Date endingDate = formato.parse(endDate);
+        Double orderAmount = montante;
+        Double balance = saldo;
+        Decimal initialBalance = Decimal.valueOf(balance);
 
         TimeSeries series = CsvBarsLoader.loadCoinBaseSeries(begingDate, endingDate);
 
@@ -76,7 +78,7 @@ public class PlaygroundController {
         Stopwatch timer = Stopwatch.createStarted();
 
 //     Strategy strategy, OrderType orderType, Decimal amount, int startIndex, int finishIndex
-        TradingRecord tradingRecord = seriesManager.run(strategy);
+        TradingRecord tradingRecord = seriesManager.run(strategy, Order.OrderType.BUY, Decimal.valueOf(orderAmount));
 
         List<Trade> tradesList = tradingRecord.getTrades();
 
@@ -90,10 +92,14 @@ public class PlaygroundController {
         Double totalFees=0d;
 
         for (Trade trade : tradesList) {
+
+            
+
             grossProfit = trade.getExit().getPrice().doubleValue() - trade.getEntry().getPrice().doubleValue();
             totalGrossProfit += grossProfit;
             netProfit = grossProfit * 0.999;
             totalNetProfit += netProfit;
+            balance += netProfit;
             fee = grossProfit - netProfit;
             totalFees += fee;
         }
@@ -104,12 +110,18 @@ public class PlaygroundController {
         }
 
 
+
         BigDecimal totalGP = new BigDecimal(totalGrossProfit).setScale(2, RoundingMode.HALF_EVEN);
         BigDecimal totalNP = new BigDecimal(totalNetProfit).setScale(2, RoundingMode.HALF_EVEN);
         BigDecimal totalF = new BigDecimal(totalFees).setScale(2, RoundingMode.HALF_EVEN);
+        BigDecimal finalBalance = new BigDecimal(balance).setScale(2, RoundingMode.HALF_EVEN);
+
+        Decimal tradePercentage = calculateProfitPercentage(totalNP, initialBalance);
+        BigDecimal finalTradePercentage = new BigDecimal(String.valueOf(tradePercentage)).setScale(2, RoundingMode.HALF_EVEN);
 
         List<CustomBaseBarForGraph> customBaseBarForGraphList = formatDateForFrontEnd(barListForGraph);
 
+        modelAndView.addObject("finalBalance", finalBalance);
         modelAndView.addObject("listaDeBarras", customBaseBarForGraphList);
         modelAndView.addObject("series", customTimeSeries);
         modelAndView.addObject("tradeListForGraph", tradesListForGraph);
@@ -117,6 +129,7 @@ public class PlaygroundController {
         modelAndView.addObject("totalGrossProfit",totalGP.doubleValue());
         modelAndView.addObject("totalNetProfit",totalNP.doubleValue());
         modelAndView.addObject("totalFees",totalF.doubleValue());
+        modelAndView.addObject("tradePercentage",finalTradePercentage.doubleValue());
 
         System.out.println("Method took: " + timer.stop());
         modelAndView.addObject("stopTime", timer);
@@ -139,11 +152,19 @@ public class PlaygroundController {
 //        modelAndView.addObject("moneyList", moneyList);
 
         // Total profit of our strategy vs total profit of a buy-and-hold strategy
-        Decimal buyAndHoldResul = calculateBuyAndHold(customTimeSeries);
-        modelAndView.addObject("buyAndHoldResult", buyAndHoldResul);
+        Decimal buyAndHoldPercentage = calculateBuyAndHoldPercentage(customTimeSeries);
+        BigDecimal buyHoldPercentage = new BigDecimal(String.valueOf(buyAndHoldPercentage)).setScale(2, RoundingMode.HALF_EVEN);
+        modelAndView.addObject("buyAndHoldPercentage", buyHoldPercentage);
 
         return modelAndView;
 
+    }
+
+    private Decimal calculateProfitPercentage(BigDecimal totalNP, Decimal initialBalance) {
+
+        Decimal tradePercentage = Decimal.valueOf(totalNP).multipliedBy(100).dividedBy(initialBalance);
+
+        return tradePercentage;
     }
 
     private List<CustomBaseBarForGraph> formatDateForFrontEnd(List<Bar> barListForGraph) {
@@ -164,12 +185,12 @@ public class PlaygroundController {
         return tempCustomBaseBarForGraphList;
     }
 
-    public Decimal calculateBuyAndHold(TimeSeries customTimeSeries){
+    public Decimal calculateBuyAndHoldPercentage(TimeSeries customTimeSeries){
             Decimal beginPrice = customTimeSeries.getFirstBar().getClosePrice();
-            Decimal beginPriceMinusTax = beginPrice.multipliedBy(0.999);
             Decimal endPrice = customTimeSeries.getLastBar().getClosePrice();
-            endPrice = endPrice.minus(beginPriceMinusTax).multipliedBy(0.999);
 
-            return endPrice;
+            Decimal holdPercentage = Decimal.valueOf(beginPrice.minus(endPrice)).multipliedBy(-1).multipliedBy(100).dividedBy(beginPrice);
+
+            return holdPercentage;
         }
 }

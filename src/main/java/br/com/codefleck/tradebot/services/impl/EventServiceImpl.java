@@ -32,8 +32,7 @@ public class EventServiceImpl {
 
         Date d = Date.from(series.getBar(order.getIndex()).getEndTime().toInstant());
         String timeStamp = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(d.getTime());
-        //String amount = String.valueOf(order.getAmount());
-        String amount = String.valueOf(0.00);
+        String amount = String.valueOf(order.getAmount());
 
         if (order.isBuy()){
             event.setDate(timeStamp);
@@ -42,7 +41,7 @@ public class EventServiceImpl {
             event.setBackgroundAlpha("0.5");
             event.setGraph("g1");
             event.setText("C");
-            event.setDescription(timeStamp + " Compra: $" + " Preço: " + order.getPrice());
+            event.setDescription(timeStamp + " Compra: $" + " Preço: " + order.getPrice() + " Quantia: " + amount);
         } else if (order.isSell() && profitable){
             event.setDate(timeStamp);
             event.setType("flag");
@@ -50,7 +49,7 @@ public class EventServiceImpl {
             event.setBackgroundAlpha("0.5");
             event.setGraph("g1");
             event.setText("V");
-            event.setDescription(timeStamp + " Venda: $" + " Preço: " + order.getPrice());
+            event.setDescription(timeStamp + " Venda: $" + " Preço: " + order.getPrice() + " Quantia: " + amount);
         } else if (order.isSell() && !profitable){
             event.setDate(timeStamp);
             event.setType("flag");
@@ -58,11 +57,13 @@ public class EventServiceImpl {
             event.setBackgroundAlpha("0.5");
             event.setGraph("g1");
             event.setText("V");
-            event.setDescription(timeStamp + " Venda: $" + " Preço: " + order.getPrice());
+            event.setDescription(timeStamp + " Venda: $" + " Preço: " + order.getPrice() + " Quantia: " + amount);
         }
 
         Gson gson = new Gson();
         String eventJSONString = gson.toJson(event);
+
+        System.out.println(eventJSONString);
 
         stockEvents.add(eventJSONString);
 
