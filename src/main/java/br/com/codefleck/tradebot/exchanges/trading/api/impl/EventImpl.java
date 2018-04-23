@@ -14,6 +14,7 @@ public final class EventImpl implements Event {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String date;
+    private String dateInMilis;
     private String type;
     private String backgroundColor;
     private String backgroundAlpha;
@@ -107,9 +108,16 @@ public final class EventImpl implements Event {
         this.description = description;
     }
 
-    @Override
-    public String toString() {
-        return "EventForGraphImpl{" + "id=" + id + ", date=" + date + ", type='" + type + '\'' + ", backgroundColor='" + backgroundColor + '\'' + ", backgroundAlpha='" + backgroundAlpha + '\'' + ", graph='" + graph + '\'' + ", text='" + text + '\'' + ", description='" + description + '\'' + '}';
+    public String getDateInMilis() {
+        return dateInMilis;
     }
 
+    public void setDateInMilis(String dateInMilis) {
+        this.dateInMilis = dateInMilis;
+    }
+
+    @Override
+    public String toString() {
+        return "EventImpl{" + "id=" + id + ", date='" + date + '\'' + ", dateInMilis='" + dateInMilis + '\'' + ", type='" + type + '\'' + ", backgroundColor='" + backgroundColor + '\'' + ", backgroundAlpha='" + backgroundAlpha + '\'' + ", graph='" + graph + '\'' + ", text='" + text + '\'' + ", description='" + description + '\'' + '}';
+    }
 }

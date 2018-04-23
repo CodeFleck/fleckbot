@@ -17,117 +17,6 @@
                 <link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
                 <script src="https://www.amcharts.com/lib/3/themes/light.js"></script>
 
-                <!-- Chart code -->
-                <script>
-                  var chartData = [];
-                  var tradeData = [];
-
-                  <c:forEach items='${tradeListForGraph}' var='tradeEvents'>
-                  var obj = JSON.parse(' ${tradeEvents} ');
-                  var eventDate = new Date(obj.date);
-                  eventDate.setDate( eventDate.getDate() );
-                  var hour = eventDate.getHours();
-                  var minute = eventDate.getMinutes();
-                  eventDate.setHours( hour, minute );
-
-                          tradeData.push({
-                            "date": eventDate,
-                            "type": obj.type,
-                            "backgroundColor": obj.backgroundColor,
-                            "graph": "g1",
-                            "text": obj.text,
-                            "description": obj.description
-                          });
-                  </c:forEach>
-
-                  <c:forEach items='${listaDeBarras}' var='bar'>
-
-                  var newDate = new Date( ${bar.customEndTimeForGraph} );
-                  newDate.setDate( newDate.getDate() );
-                  var hour = newDate.getHours();
-                  var minute = newDate.getMinutes();
-                  newDate.setHours( hour, minute );
-
-                  chartData.push( {
-                    "date": newDate,
-                    "value": "${bar.closePrice.toString()}",
-                    "volume": "${bar.volume.toString()}"
-                  } );
-                  </c:forEach>
-
-                  var chart = AmCharts.makeChart( "chartdiv", {
-                    "type": "stock",
-                    "theme": "light",
-                    "dataSets": [ {
-                      "color": "#b0de09",
-                      "fieldMappings": [ {
-                        "fromField": "value",
-                        "toField": "value"
-                      }, {
-                        "fromField": "volume",
-                        "toField": "volume"
-                      } ],
-                      "dataProvider": chartData,
-                      "categoryField": "date",
-                      // EVENTS
-                      "stockEvents": tradeData,
-                    } ],
-
-                    "panels": [ {
-                      "title": "Value",
-                      "stockGraphs": [ {
-                        "id": "g1",
-                        "valueField": "value"
-                      } ],
-                      "stockLegend": {
-                        "valueTextRegular": " ",
-                        "markerType": "none"
-                      }
-                    } ],
-
-                    "chartScrollbarSettings": {
-                      "graph": "g1"
-                    },
-
-                    "chartCursorSettings": {
-                      "valueBalloonsEnabled": true,
-                      "graphBulletSize": 1,
-                      "valueLineBalloonEnabled": true,
-                      "valueLineEnabled": true,
-                      "valueLineAlpha": 0.5
-                    },
-
-                    "periodSelector": {
-                      "periods": [ {
-                        "period": "DD",
-                        "count": 10,
-                        "label": "10 days"
-                      }, {
-                        "period": "MM",
-                        "count": 1,
-                        "label": "1 month"
-                      }, {
-                        "period": "YYYY",
-                        "count": 1,
-                        "label": "1 year"
-                      }, {
-                        "period": "YTD",
-                        "label": "YTD"
-                      }, {
-                        "period": "MAX",
-                        "label": "MAX"
-                      } ]
-                    },
-
-                    "panelsSettings": {
-                      "usePrefixes": true
-                    },
-                    "export": {
-                      "enabled": true
-                    }
-                  } );
-                </script>
-
                 <!-- HTML -->
                 <div>
                     <div class="well">
@@ -148,9 +37,9 @@
                                     <td>Coinbase</td>
                                     <td>USD</td>
                                     <td>BTC</td>
-                                    <td> <input type="date" name="beginDate" min="2014-01-01" max="2018-01-08"></td>
-                                    <td><input type="date" name="endDate" min="2014-01-01" max="2018-01-08"></td>
-                                    <td><select class="selectpicker" name="period">
+                                    <td> <input type="date" class="form-control" name="beginDate" min="2014-01-01" max="2018-01-08"></td>
+                                    <td><input type="date" class="form-control" name="endDate" min="2014-01-01" max="2018-01-08"></td>
+                                    <td><select class="form-control selectpicker" name="period">
                                         <option>1 minuto</option>
                                         <option>5 minutos</option>
                                         <option>10 minutos</option>
@@ -173,11 +62,17 @@
                                 <thead>
                                 <tr>
                                     <td>Estratégia</td>
+                                    <td>Montante para compra/venda USD$</td>
+                                    <td>Saldo USD</td>
+                                    <td>Saldo BTC</td>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 <tr>
                                     <td>Minha estratégia</td>
+                                    <td><input type="number" class="form-control" name="montante" min="0" step="0.01" value="1000.00"></td>
+                                    <td><input type="number" class="form-control" name="saldo" min="0" step="0.01" value="50000.00"></td>
+                                    <td><input class="form-control" type="text" placeholder="0,00" readonly></td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -188,42 +83,157 @@
                     <h2 class="basic-title">Resultados</h2><br>
                     <div id="chartdiv"></div><br>
                     <div class="well">
-                        <p>Tempo de execução dos testes: ${stopTime}</p>
-                        <p>Quantidade de barras percorridas: ${numberOfBars}</p>
-                        <p>Número total de ordens efetuadas: ${numberOfTrades}</p>
+                        <h6>***   Resumo   ***</h6>
+                        <p>Número total de ordens executadas: ${numberOfTrades}<br>
+                            Lucro de HODL: $${buyAndHoldPercentage}% | Lucro de trade: $${tradePercentage}%<br>
+                            Lucro Total em USD: $${totalProfitUSD}   |   Lucro Total em BTC: ${bitcoinAmount}<br>
+                            Total pago em taxas: $${totalFees}<br>
+                            Saldo final: USD ${finalBalance}<br>
+                            Saldo final bitcoins: BTC ${bitcoinAmount}<br>
 
-                        <br><p>***   ORDENS   ***</p>
+                            <br><h6>***   Ordens   ***</h6>
+
                         <c:forEach items='${tradeList}' var='object'>
-                            <tr>
-                                <td><b>Compra</b></td><br>
-                                <td><b>Data compra:</b> ${series.getBar(object.entry.index).beginTime}</td><br>
-                                <td><b>Preço: </b>$${object.entry.price}</td><br>
-                                <td><b>Quantia:</b> USD$${object.entry.amount} (FAZER ESTE VALOR DINAMICO)</td><br>
-                            </tr>
-                            <tr>
-                                <td><b>Venda</b></td><br>
-                                <td><b>Data venda: </b>${series.getBar(object.exit.index).endTime}</td><br>
-                                <td><b>Preço:</b> $${object.exit.price}</td>
-                                <td><b>Quantia:</b> USD$${object.exit.amount}(FAZER ESTE VALOR DINAMICO)</td><br>
-                                <c:set var = "lucroBruto" scope = "session" value = "${object.exit.price - object.entry.price}"/>
-                                <td><b>Lucro Bruto:</b> $<c:out value = "${lucroBruto}"/></td>
-                                <c:set var = "taxa" scope = "session" value = "${lucroBruto - (lucroBruto*0.999)}"/>
-                                <td> | <b>Taxa (0,1%):</b> $ <c:out value = "${taxa}"/></td>
-                                <c:set var = "lucroLiquido" scope = "session" value = "${lucroBruto*0.999}"/>
-                                <td> | <b>Lucro Líquido:</b> $<c:out value = "${lucroLiquido}"/></td>
-                            </tr><br><br>
+                            <div class="container-fluid">
+                                <div class="row">
+                                    <div class="col-md-6 float-left">
+                                        <tr>
+                                            <td><b>Compra: </b> ${series.getBar(object.entry.index).endTime}</td><br>
+                                            <td><b>Quantia:</b> USD$${object.entry.amount}</td>
+                                            <td><b>Preço: </b>$${object.entry.price}</td><br>
+                                            <td><b>Lucro:</b> $${object.tradeProfit} (${object.tradeProfitPercentage}%)</td>
+                                        </tr>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <tr>
+                                            <td><b>Venda: </b>${series.getBar(object.exit.index).endTime}</td><br>
+                                            <td><b>Quantia:</b> $${object.exit.amount}</td>
+                                            <td><b>Preço:</b> $${object.exit.price}</td><br>
+                                        </tr>
+                                    </div>
+                                </div><hr>
+                            </div>
                         </c:forEach>
                         <br>
-                        <p><b>Lucro bruto Total:</b> $${totalGrossProfit}</p>
-                        <p><b>Total pago em taxas:</b> $${totalFees}</p>
-                        <p><b>Lucro líquido Total:</b> $${totalNetProfit}</p>
 
-                        <p><b>Diferença trade X HODL: </b>
-                            HODL: $${buyAndHoldResult} |
-                            Trade: $${buyAndHoldResult + totalNetProfit}</p>
+                        <p>Quantidade de barras percorridas: ${numberOfBars}</p>
                     </div>
                 </div>
             </div>
+
+
+            <!-- Chart code -->
+            <script>
+              var chartData = [];
+              var tradeData = [];
+
+              <c:forEach items='${tradeListForGraph}' var='tradeEvents'>
+              var obj = JSON.parse(' ${tradeEvents} ');
+              var eventDate = new Date(Number(obj.dateInMilis));
+              eventDate.setDate( eventDate.getDate() );
+              var hour = eventDate.getHours();
+              var minute = eventDate.getMinutes();
+              eventDate.setHours( hour, minute );
+
+              tradeData.push({
+                "date": eventDate,
+                "type": obj.type,
+                "backgroundColor": obj.backgroundColor,
+                "graph": "g1",
+                "text": obj.text,
+                "description": obj.description
+              });
+              </c:forEach>
+
+              <c:forEach items='${listaDeBarras}' var='bar'>
+
+              var newDate = new Date( ${bar.customEndTimeForGraph} );
+              newDate.setDate( newDate.getDate() );
+              var hour = newDate.getHours();
+              var minute = newDate.getMinutes();
+              newDate.setHours( hour, minute );
+
+              chartData.push( {
+                "date": newDate,
+                "value": "${bar.closePrice.toString()}",
+                "volume": "${bar.volume.toString()}"
+              } );
+              </c:forEach>
+
+              var chart = AmCharts.makeChart( "chartdiv", {
+                "type": "stock",
+                "theme": "light",
+                "dataSets": [ {
+                  "color": "#b0de09",
+                  "fieldMappings": [ {
+                    "fromField": "value",
+                    "toField": "value"
+                  }, {
+                    "fromField": "volume",
+                    "toField": "volume"
+                  } ],
+                  "dataProvider": chartData,
+                  "categoryField": "date",
+                  // EVENTS
+                  "stockEvents": tradeData,
+                } ],
+
+                "panels": [ {
+                  "title": "Value",
+                  "stockGraphs": [ {
+                    "id": "g1",
+                    "valueField": "value"
+                  } ],
+                  "stockLegend": {
+                    "valueTextRegular": " ",
+                    "markerType": "none"
+                  }
+                } ],
+
+                "chartScrollbarSettings": {
+                  "graph": "g1"
+                },
+
+                "chartCursorSettings": {
+                  "valueBalloonsEnabled": true,
+                  "graphBulletSize": 1,
+                  "valueLineBalloonEnabled": true,
+                  "valueLineEnabled": true,
+                  "valueLineAlpha": 0.5
+                },
+
+                "periodSelector": {
+                  "periods": [ {
+                    "period": "DD",
+                    "count": 10,
+                    "label": "10 days"
+                  }, {
+                    "period": "MM",
+                    "count": 1,
+                    "label": "1 month"
+                  }, {
+                    "period": "YYYY",
+                    "count": 1,
+                    "label": "1 year"
+                  }, {
+                    "period": "YTD",
+                    "label": "YTD"
+                  }, {
+                    "period": "MAX",
+                    "label": "MAX"
+                  } ]
+                },
+
+                "panelsSettings": {
+                  "usePrefixes": true
+                },
+                "export": {
+                  "enabled": true
+                }
+              } );
+            </script>
+
+
         </div>
     </jsp:body>
 </template:admin>

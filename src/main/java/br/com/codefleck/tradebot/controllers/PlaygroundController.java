@@ -17,14 +17,14 @@ import org.springframework.web.servlet.ModelAndView;
 import org.ta4j.core.*;
 import org.ta4j.core.analysis.criteria.NumberOfBarsCriterion;
 
-import com.google.common.base.Stopwatch;
-
 import br.com.codefleck.tradebot.core.engine.TradingEngine;
 import br.com.codefleck.tradebot.core.util.CsvBarsLoader;
 import br.com.codefleck.tradebot.core.util.CustomTimeSeriesManager;
+import br.com.codefleck.tradebot.core.util.CustomTrade;
 import br.com.codefleck.tradebot.core.util.DownSamplingTimeSeries;
 import br.com.codefleck.tradebot.exchanges.trading.api.impl.CustomBaseBarForGraph;
 import br.com.codefleck.tradebot.services.impl.EventServiceImpl;
+import br.com.codefleck.tradebot.services.impl.TradeServiceImpl;
 import br.com.codefleck.tradebot.strategies.MyStrategy;
 
 @Controller
@@ -36,6 +36,9 @@ public class PlaygroundController {
     TradingEngine fleckBot;
     @Autowired
     private EventServiceImpl eventService;
+    @Autowired
+    private TradeServiceImpl tradeService;
+
 
     @GetMapping
     public ModelAndView playgroundLandingDataProvider(ModelAndView model) {
@@ -59,8 +62,13 @@ public class PlaygroundController {
         Date begingDate = formato.parse(beginDate);
         Date endingDate = formato.parse(endDate);
         Double orderAmount = montante;
-        Double balance = saldo;
+        Decimal balance = Decimal.valueOf(saldo);
         Decimal initialBalance = Decimal.valueOf(balance);
+        Decimal profitUSD = Decimal.ZERO;
+        Decimal totalProfitUSD = Decimal.ZERO;
+        Decimal fee = Decimal.valueOf(0.999);
+        Decimal totalFees = Decimal.ZERO;
+        Decimal bitcoinBalance = Decimal.ZERO;
 
         TimeSeries series = CsvBarsLoader.loadCoinBaseSeries(begingDate, endingDate);
 
@@ -75,33 +83,32 @@ public class PlaygroundController {
         // Running the strategy
         CustomTimeSeriesManager seriesManager = new CustomTimeSeriesManager(customTimeSeries);
 
-        Stopwatch timer = Stopwatch.createStarted();
-
-//     Strategy strategy, OrderType orderType, Decimal amount, int startIndex, int finishIndex
+        // Strategy strategy, OrderType orderType, Decimal amount
         TradingRecord tradingRecord = seriesManager.run(strategy, Order.OrderType.BUY, Decimal.valueOf(orderAmount));
 
         List<Trade> tradesList = tradingRecord.getTrades();
 
+        // Create a tradeList for Graph
         List<String> tradesListForGraph = eventService.getStockEvents(tradesList, customTimeSeries);
 
-        Double grossProfit=0d;
-        Double netProfit=0d;
-        Double totalGrossProfit=0d;
-        Double totalNetProfit=0d;
-        Double fee=0d;
-        Double totalFees=0d;
+        // Create a CustomTrade List that helds the profit amount for the trades.
+        List<CustomTrade> customTradeList = new ArrayList<>();
 
         for (Trade trade : tradesList) {
 
-            
+            bitcoinBalance = tradeService.updateBitcoinBalance(trade, fee, bitcoinBalance);
+            balance = tradeService.updateBalanceUSD(balance, trade);
+            profitUSD = tradeService.calculateProfitUSD(trade, fee);
+            totalProfitUSD = totalProfitUSD.plus(profitUSD);
 
-            grossProfit = trade.getExit().getPrice().doubleValue() - trade.getEntry().getPrice().doubleValue();
-            totalGrossProfit += grossProfit;
-            netProfit = grossProfit * 0.999;
-            totalNetProfit += netProfit;
-            balance += netProfit;
-            fee = grossProfit - netProfit;
-            totalFees += fee;
+            CustomTrade customTrade = new CustomTrade();
+            customTrade.setEntry(trade.getEntry());
+            customTrade.setExit(trade.getExit());
+            customTrade.setTradeProfit(profitUSD);
+            customTrade.setTradeProfitPercentage(tradeService.calculateProfitPercentageForTrade(profitUSD, balance));
+            customTradeList.add(customTrade);
+
+            totalFees = Decimal.valueOf(totalFees.plus(tradeService.calculateTotalSpentOnFees(trade, fee)));
         }
 
         List<Bar> barListForGraph = new ArrayList<>();
@@ -109,30 +116,24 @@ public class PlaygroundController {
             barListForGraph.add(customTimeSeries.getBar(k));
         }
 
+        BigDecimal totalProfit = new BigDecimal(totalProfitUSD.doubleValue()).setScale(2, RoundingMode.HALF_EVEN);
+        BigDecimal totalF = new BigDecimal(totalFees.doubleValue()).setScale(2, RoundingMode.HALF_EVEN);
+        BigDecimal finalBalance = new BigDecimal(balance.doubleValue()).setScale(2, RoundingMode.HALF_EVEN);
 
-
-        BigDecimal totalGP = new BigDecimal(totalGrossProfit).setScale(2, RoundingMode.HALF_EVEN);
-        BigDecimal totalNP = new BigDecimal(totalNetProfit).setScale(2, RoundingMode.HALF_EVEN);
-        BigDecimal totalF = new BigDecimal(totalFees).setScale(2, RoundingMode.HALF_EVEN);
-        BigDecimal finalBalance = new BigDecimal(balance).setScale(2, RoundingMode.HALF_EVEN);
-
-        Decimal tradePercentage = calculateProfitPercentage(totalNP, initialBalance);
+        Decimal tradePercentage = tradeService.calculateProfitPercentage(totalProfit, initialBalance);
         BigDecimal finalTradePercentage = new BigDecimal(String.valueOf(tradePercentage)).setScale(2, RoundingMode.HALF_EVEN);
 
         List<CustomBaseBarForGraph> customBaseBarForGraphList = formatDateForFrontEnd(barListForGraph);
 
+        modelAndView.addObject("bitcoinAmount", bitcoinBalance);
         modelAndView.addObject("finalBalance", finalBalance);
         modelAndView.addObject("listaDeBarras", customBaseBarForGraphList);
         modelAndView.addObject("series", customTimeSeries);
         modelAndView.addObject("tradeListForGraph", tradesListForGraph);
-        modelAndView.addObject("tradeList", tradesList);
-        modelAndView.addObject("totalGrossProfit",totalGP.doubleValue());
-        modelAndView.addObject("totalNetProfit",totalNP.doubleValue());
+        modelAndView.addObject("tradeList", customTradeList);
+        modelAndView.addObject("totalProfitUSD",totalProfit.doubleValue());
         modelAndView.addObject("totalFees",totalF.doubleValue());
         modelAndView.addObject("tradePercentage",finalTradePercentage.doubleValue());
-
-        System.out.println("Method took: " + timer.stop());
-        modelAndView.addObject("stopTime", timer);
 
         int qtdOrdens = (int) tradingRecord.getTradeCount();
         modelAndView.addObject("numberOfTrades", qtdOrdens);
@@ -141,18 +142,8 @@ public class PlaygroundController {
         int numberOfBars = (int) new NumberOfBarsCriterion().calculate(customTimeSeries, tradingRecord);
         modelAndView.addObject("numberOfBars", numberOfBars);
 
-        // Getting the cash flow of the resulting trades
-//        CashFlow cashFlow = new CashFlow(series, tradingRecord);
-//        List<Decimal> moneyList = new ArrayList<>();
-//        System.out.println("/n***   CASH FLOW   ***");
-//        for (int i = 0; i <= cashFlow.getSize(); i++){
-//            moneyList.add(cashFlow.getValue(i));
-//            System.out.println("$$$: " + cashFlow.getValue(i));
-//        }
-//        modelAndView.addObject("moneyList", moneyList);
-
         // Total profit of our strategy vs total profit of a buy-and-hold strategy
-        Decimal buyAndHoldPercentage = calculateBuyAndHoldPercentage(customTimeSeries);
+        Decimal buyAndHoldPercentage = tradeService.calculateBuyAndHoldPercentage(customTimeSeries);
         BigDecimal buyHoldPercentage = new BigDecimal(String.valueOf(buyAndHoldPercentage)).setScale(2, RoundingMode.HALF_EVEN);
         modelAndView.addObject("buyAndHoldPercentage", buyHoldPercentage);
 
@@ -160,12 +151,6 @@ public class PlaygroundController {
 
     }
 
-    private Decimal calculateProfitPercentage(BigDecimal totalNP, Decimal initialBalance) {
-
-        Decimal tradePercentage = Decimal.valueOf(totalNP).multipliedBy(100).dividedBy(initialBalance);
-
-        return tradePercentage;
-    }
 
     private List<CustomBaseBarForGraph> formatDateForFrontEnd(List<Bar> barListForGraph) {
 
@@ -184,13 +169,4 @@ public class PlaygroundController {
         }
         return tempCustomBaseBarForGraphList;
     }
-
-    public Decimal calculateBuyAndHoldPercentage(TimeSeries customTimeSeries){
-            Decimal beginPrice = customTimeSeries.getFirstBar().getClosePrice();
-            Decimal endPrice = customTimeSeries.getLastBar().getClosePrice();
-
-            Decimal holdPercentage = Decimal.valueOf(beginPrice.minus(endPrice)).multipliedBy(-1).multipliedBy(100).dividedBy(beginPrice);
-
-            return holdPercentage;
-        }
 }

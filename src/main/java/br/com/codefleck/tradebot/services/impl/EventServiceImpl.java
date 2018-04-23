@@ -1,10 +1,8 @@
 package br.com.codefleck.tradebot.services.impl;
 
 import java.text.SimpleDateFormat;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.context.annotation.ComponentScan;
@@ -12,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.ta4j.core.BaseTimeSeries;
 import org.ta4j.core.Order;
-import org.ta4j.core.TimeSeries;
 import org.ta4j.core.Trade;
 
 import com.google.gson.Gson;
@@ -36,34 +33,35 @@ public class EventServiceImpl {
 
         if (order.isBuy()){
             event.setDate(timeStamp);
+            event.setDateInMilis(String.valueOf(d.getTime()));
             event.setType("sign");
             event.setBackgroundColor("#FFFFFF");
             event.setBackgroundAlpha("0.5");
             event.setGraph("g1");
             event.setText("C");
-            event.setDescription(timeStamp + " Compra: $" + " Preço: " + order.getPrice() + " Quantia: " + amount);
+            event.setDescription(timeStamp +" Preço: " + order.getPrice() + " Quantia: " + amount);
         } else if (order.isSell() && profitable){
             event.setDate(timeStamp);
+            event.setDateInMilis(String.valueOf(d.getTime()));
             event.setType("flag");
             event.setBackgroundColor("#00CC00");
             event.setBackgroundAlpha("0.5");
             event.setGraph("g1");
             event.setText("V");
-            event.setDescription(timeStamp + " Venda: $" + " Preço: " + order.getPrice() + " Quantia: " + amount);
+            event.setDescription(timeStamp + " Preço: " + order.getPrice() + " Quantia: " + amount);
         } else if (order.isSell() && !profitable){
             event.setDate(timeStamp);
+            event.setDateInMilis(String.valueOf(d.getTime()));
             event.setType("flag");
-            event.setBackgroundColor("#888888");
+            event.setBackgroundColor("#f24b4b");
             event.setBackgroundAlpha("0.5");
             event.setGraph("g1");
             event.setText("V");
-            event.setDescription(timeStamp + " Venda: $" + " Preço: " + order.getPrice() + " Quantia: " + amount);
+            event.setDescription(timeStamp + " Preço: " + order.getPrice() + " Quantia: " + amount);
         }
 
         Gson gson = new Gson();
         String eventJSONString = gson.toJson(event);
-
-        System.out.println(eventJSONString);
 
         stockEvents.add(eventJSONString);
 
@@ -94,21 +92,10 @@ public class EventServiceImpl {
         return stockEvents;
     }
 
-    public void setStockEvents(List<String> stockEvents) {
-        this.stockEvents = stockEvents;
-    }
 
-//            HashMap<String, String> eventForGraph = new HashMap<String, String>();
-//
-//            eventForGraph.put("date", orderDate);
-//            eventForGraph.put("type", type);
-//            eventForGraph.put("backgroundColor", name);
-//            eventForGraph.put("backgroundAlpha", name);
-//            eventForGraph.put("graph", name);
-//            eventForGraph.put("text", name);
-//            eventForGraph.put("description", name);
 
-    //TODO create save event DAO and methods to persist in database. Create Gson of events for graph
+
+    //TODO create save event DAO and methods to persist in database.
 
 
 }

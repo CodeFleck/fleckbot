@@ -4,9 +4,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="ISO-8859-1">
     <title>FleckBot</title>
-
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
     <!-- bootstrap -->
 
     <!-- Bootstrap CSS -->
@@ -32,10 +31,10 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item">
-                <a class="nav-link" href="<c:url value='/noticias'/>">Notícias</a>
+                <a class="nav-link" href="<c:url value='/noticias'/>">Not&iacute;cias</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="<c:url value='/analise'/>">Análise</a>
+                <a class="nav-link" href="<c:url value='/analise'/>">An&aacute;lise</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="<c:url value='/carteiras'/>">Carteiras</a>
