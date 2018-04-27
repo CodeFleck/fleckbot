@@ -124,7 +124,7 @@ public class PlaygroundController {
         BigDecimal finalTradePercentage = new BigDecimal(String.valueOf(tradePercentage)).setScale(2, RoundingMode.HALF_EVEN);
 
         List<CustomBaseBarForGraph> customBaseBarForGraphList = formatDateForFrontEnd(barListForGraph);
-
+        modelAndView.addObject("chosenPeriod", period);
         modelAndView.addObject("bitcoinAmount", bitcoinBalance);
         modelAndView.addObject("finalBalance", finalBalance);
         modelAndView.addObject("listaDeBarras", customBaseBarForGraphList);

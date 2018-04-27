@@ -10,10 +10,7 @@ import org.ta4j.core.indicators.EMAIndicator;
 import org.ta4j.core.indicators.helpers.ClosePriceIndicator;
 import org.ta4j.core.indicators.helpers.GainIndicator;
 import org.ta4j.core.indicators.helpers.MultiplierIndicator;
-import org.ta4j.core.trading.rules.CrossedDownIndicatorRule;
-import org.ta4j.core.trading.rules.CrossedUpIndicatorRule;
-import org.ta4j.core.trading.rules.OverIndicatorRule;
-import org.ta4j.core.trading.rules.UnderIndicatorRule;
+import org.ta4j.core.trading.rules.*;
 
 import br.com.codefleck.tradebot.core.util.CsvTradesLoader;
 
@@ -46,7 +43,7 @@ public class MyStrategy {
         Rule exitRule = new OverIndicatorRule(shortEma, longEma) // Trend
             .and(new CrossedUpIndicatorRule(closePrice, longMultiplierIndicator)); // Signal 1
 
-        return new BaseStrategy(entryRule, exitRule, 3);
+        return new BaseStrategy(entryRule, exitRule);
     }
 
 //    public static void main(String[] args) {

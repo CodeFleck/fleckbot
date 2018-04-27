@@ -76,12 +76,19 @@
                                 </tr>
                                 </tbody>
                             </table>
-                            <button type="submit" class="btn btn-primary">Carregar Dados</button>
+                            <button type="submit" class="btn btn-primary">Iniciar Teste</button>
                         </form:form>
                     </div>
                     <br>
-                    <h2 class="basic-title">Resultados</h2><br>
-                    <div id="chartdiv"></div><br>
+                    <h2 class="basic-title">Resultados</h2>
+                    <p>Período: ${chosenPeriod}</p>
+                    <br>
+
+                    <%--Chart de velas--%>
+                    <template:candleChart />
+                    <%--Chart de Eventos--%>
+                    <template:eventChart />
+
                     <div class="well">
                         <h6>***   Resumo   ***</h6>
                         <p>Número total de ordens executadas: ${numberOfTrades}<br>
@@ -120,120 +127,6 @@
                     </div>
                 </div>
             </div>
-
-
-            <!-- Chart code -->
-            <script>
-              var chartData = [];
-              var tradeData = [];
-
-              <c:forEach items='${tradeListForGraph}' var='tradeEvents'>
-              var obj = JSON.parse(' ${tradeEvents} ');
-              var eventDate = new Date(Number(obj.dateInMilis));
-              eventDate.setDate( eventDate.getDate() );
-              var hour = eventDate.getHours();
-              var minute = eventDate.getMinutes();
-              eventDate.setHours( hour, minute );
-
-              tradeData.push({
-                "date": eventDate,
-                "type": obj.type,
-                "backgroundColor": obj.backgroundColor,
-                "graph": "g1",
-                "text": obj.text,
-                "description": obj.description
-              });
-              </c:forEach>
-
-              <c:forEach items='${listaDeBarras}' var='bar'>
-
-              var newDate = new Date( ${bar.customEndTimeForGraph} );
-              newDate.setDate( newDate.getDate() );
-              var hour = newDate.getHours();
-              var minute = newDate.getMinutes();
-              newDate.setHours( hour, minute );
-
-              chartData.push( {
-                "date": newDate,
-                "value": "${bar.closePrice.toString()}",
-                "volume": "${bar.volume.toString()}"
-              } );
-              </c:forEach>
-
-              var chart = AmCharts.makeChart( "chartdiv", {
-                "type": "stock",
-                "theme": "light",
-                "dataSets": [ {
-                  "color": "#b0de09",
-                  "fieldMappings": [ {
-                    "fromField": "value",
-                    "toField": "value"
-                  }, {
-                    "fromField": "volume",
-                    "toField": "volume"
-                  } ],
-                  "dataProvider": chartData,
-                  "categoryField": "date",
-                  // EVENTS
-                  "stockEvents": tradeData,
-                } ],
-
-                "panels": [ {
-                  "title": "Value",
-                  "stockGraphs": [ {
-                    "id": "g1",
-                    "valueField": "value"
-                  } ],
-                  "stockLegend": {
-                    "valueTextRegular": " ",
-                    "markerType": "none"
-                  }
-                } ],
-
-                "chartScrollbarSettings": {
-                  "graph": "g1"
-                },
-
-                "chartCursorSettings": {
-                  "valueBalloonsEnabled": true,
-                  "graphBulletSize": 1,
-                  "valueLineBalloonEnabled": true,
-                  "valueLineEnabled": true,
-                  "valueLineAlpha": 0.5
-                },
-
-                "periodSelector": {
-                  "periods": [ {
-                    "period": "DD",
-                    "count": 10,
-                    "label": "10 days"
-                  }, {
-                    "period": "MM",
-                    "count": 1,
-                    "label": "1 month"
-                  }, {
-                    "period": "YYYY",
-                    "count": 1,
-                    "label": "1 year"
-                  }, {
-                    "period": "YTD",
-                    "label": "YTD"
-                  }, {
-                    "period": "MAX",
-                    "label": "MAX"
-                  } ]
-                },
-
-                "panelsSettings": {
-                  "usePrefixes": true
-                },
-                "export": {
-                  "enabled": true
-                }
-              } );
-            </script>
-
-
         </div>
     </jsp:body>
 </template:admin>

@@ -28,9 +28,6 @@
                       "allow_symbol_change": true,
                       "save_image": false,
                       "hideideas": true,
-                      "studies": [
-                        "DoubleEMA@tv-basicstudies"
-                      ],
                       "show_popup_button": true,
                       "popup_width": "1000",
                       "popup_height": "650",

@@ -58,6 +58,12 @@ div.widgetbar-page active{
     margin: 0 auto;
 }
 
+#chartdivCandle {
+    width		: 100%;
+    height		: 500px;
+    margin: 0 auto;
+}
+
 div.tradingview-widget-container{
     margin: 0 0 0 0;
 }
