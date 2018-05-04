@@ -12,6 +12,9 @@
 *.log
 *.log.gz
 
+.csv
+.zip
+
 # generated files
 bin/
 gen/
