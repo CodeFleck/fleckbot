@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -66,5 +67,44 @@ public class CsvBarsLoader {
         }
 
         return new BaseTimeSeries("coinbase_bars", bars);
+    }
+
+    public static void editCoinBaseSeriesForNeuralNets(Date beginDate, Date endDate) {
+
+        InputStream stream = CsvBarsLoader.class.getClassLoader().getResourceAsStream("coinBaseForNeuralNet.csv");
+
+        List<CustomBaseBar> customBaseBars = new ArrayList<>();
+
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+
+
+        CSVReader csvReader = new CSVReader(new InputStreamReader(stream, Charset.forName("UTF-8")), ',', '"', 1);
+        try {
+            String[] line;
+            while ((line = csvReader.readNext()) != null) {
+
+                    String date = line[0];
+                    String symbol = line[1];
+                    double open = Double.parseDouble(line[2]);
+                    double high = Double.parseDouble(line[3]);
+                    double low = Double.parseDouble(line[4]);
+                    double close = Double.parseDouble(line[5]);
+                    double volume = Double.parseDouble(line[6]);
+
+                    customBaseBars.add(new CustomBaseBar(date, symbol, open, high, low, close, volume));
+            }
+        } catch (IOException ioe) {
+            Logger.getLogger(CsvBarsLoader.class.getName()).log(Level.SEVERE, "Unable to load bars from CSV", ioe);
+        } catch (NumberFormatException nfe) {
+            Logger.getLogger(CsvBarsLoader.class.getName()).log(Level.SEVERE, "Error while parsing value", nfe);
+        }
+
+        DownSamplingTimeSeries downSamplingTimeSeries = new DownSamplingTimeSeries("day");
+
+        List<CustomBaseBar> AgregatedCustomBaseBars = downSamplingTimeSeries.customAggregate(customBaseBars);
+
+        CsvFileWriter csvFileWriter = new CsvFileWriter();
+        csvFileWriter.writeCsvFile(AgregatedCustomBaseBars);
+
     }
 }

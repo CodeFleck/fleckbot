@@ -81,16 +81,16 @@
                     </div>
                     <br>
                     <h2 class="basic-title">Resultados</h2>
-                    <p>Período: ${chosenPeriod}</p>
                     <br>
 
                     <%--Chart de velas--%>
-                    <template:candleChart />
+                    <template:candleChart /><br>
                     <%--Chart de Eventos--%>
                     <template:eventChart />
 
                     <div class="well">
                         <h6>***   Resumo   ***</h6>
+                        <p>Período: ${chosenPeriod}</p>
                         <p>Número total de ordens executadas: ${numberOfTrades}<br>
                             Lucro de HODL: $${buyAndHoldPercentage}% | Lucro de trade: $${tradePercentage}%<br>
                             Lucro Total em USD: $${totalProfitUSD}   |   Lucro Total em BTC: ${bitcoinAmount}<br>

@@ -10,6 +10,7 @@
 
 #log files
 *.log
+*.log.gz
 
 # generated files
 bin/
