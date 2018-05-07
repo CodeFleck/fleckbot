@@ -1,36 +1,34 @@
 package br.com.codefleck.tradebot.services.prediction;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-import java.util.NoSuchElementException;
-
-import org.apache.logging.log4j.LogManager;
+import javafx.util.Pair;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.deeplearning4j.util.ModelSerializer;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.io.ClassPathResource;
-import org.nd4j.linalg.io.Resource;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javafx.util.Pair;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 public class PricePrediction {
 
-    private static final Logger log = LogManager.getLogger(PricePrediction.class);
+    private static final Logger log = LoggerFactory.getLogger(PricePrediction.class);
 
-    private static int exampleLength = 30; // time series length, assume 22 working days per month
+    private static int exampleLength = 22; // time series length, assume 22 working days per month
 
     public static void main (String[] args) throws IOException {
         String file = new ClassPathResource("coinBaseForNeuralNet.csv").getFile().getAbsolutePath();
         String symbol = "BTC"; // stock name
-        int batchSize = 60; // mini-batch size
-        double splitRatio = 0.9; // 90% for training, 10% for testing
-        int epochs = 100; // training epochs
+        int batchSize = 64; // mini-batch size
+        double splitRatio = 0.8; // 80% for training, 20% for testing
+        int epochs = 300; // training epochs
 
         log.info("Create dataSet iterator...");
-        PriceCategory category = PriceCategory.CLOSE; // CLOSE: predict close price
+        PriceCategory category = PriceCategory.ALL; // CLOSE: predict close price
         StockDataSetIterator iterator = new StockDataSetIterator(file, symbol, batchSize, exampleLength, splitRatio, category);
         log.info("Load test dataset...");
         List<Pair<INDArray, INDArray>> test = iterator.getTestDataSet();
