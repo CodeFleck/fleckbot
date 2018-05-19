@@ -22,7 +22,7 @@ public class NoticiasController {
     public ModelAndView noticiasLandingDataProvider(ModelAndView model) {
 
         model.addObject("botStatus", fleckBot.isRunning());
-        model.setViewName("noticias/noticias");
+        model.setViewName("noticias");
 
         return model;
     }

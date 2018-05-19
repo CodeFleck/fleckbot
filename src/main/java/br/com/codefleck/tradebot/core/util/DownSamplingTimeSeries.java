@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import org.glassfish.jersey.internal.inject.Custom;
 import org.ta4j.core.*;
 
 public class DownSamplingTimeSeries {
@@ -34,7 +33,6 @@ public class DownSamplingTimeSeries {
                     ZonedDateTime currentEndTime = currentBar.getEndTime();
                     Decimal currentClose = currentBar.getClosePrice();
                     aggBars.add(new BaseBar(currentEndTime, currentOpen, currentMax, currentMin, currentClose, currentVolume));
-
                 }
                     return new BaseTimeSeries("umMinuto", aggBars);
             }
@@ -408,7 +406,6 @@ public class DownSamplingTimeSeries {
             aggregatedCustomBaseBars.add(new CustomBaseBar(currentEndTime, "BTC",currentOpen,currentMax,currentMin,
                 currentClose,currentVolume));
         }
-
 
         return aggregatedCustomBaseBars;
     }

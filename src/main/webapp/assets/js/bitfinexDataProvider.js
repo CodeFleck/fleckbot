@@ -55,9 +55,9 @@
     var LENGTH = data[4]; //number of price points
 
     if (AMOUNT <= 0) {
-      document.getElementById("orderBookAsk").innerHTML = "ID: " + ORD_ID + " | QTD: " + AMOUNT + " | PREÇO: " + ORD_PRICE;
+      document.getElementById("orderBookAsk").innerHTML = "ID: " + ORD_ID + " | QTD: " + AMOUNT + " | pre&ccedil;o: " + ORD_PRICE;
     } else{
-      document.getElementById("orderBookBid").innerHTML = "ID: " + ORD_ID + " | QTD: " + AMOUNT + " | PREÇO: " + ORD_PRICE;
+      document.getElementById("orderBookBid").innerHTML = "ID: " + ORD_ID + " | QTD: " + AMOUNT + " | pre&ccedil;o: " + ORD_PRICE;
     }
   }
 
@@ -70,8 +70,8 @@
     var HIGH = data[9];
     var LOW = data[10];
 
-    document.getElementById("btc").innerHTML = "PREÇO: " + LAST_PRICE + "<br> COMPRA: " + ASK + " | VENDA: " + BID
-      + "<br> VOLUME: " + VOLUME + "<br> ALTA: " + HIGH + "  |  BAIXA: " + LOW;
+    document.getElementById("btc").innerHTML = "preco: " + LAST_PRICE + "<br> compra: " + ASK + " | venda: " + BID
+      + "<br>volume: " + VOLUME + "<br> alta: " + HIGH + "  |  baixa: " + LOW;
   }
 
 })();
