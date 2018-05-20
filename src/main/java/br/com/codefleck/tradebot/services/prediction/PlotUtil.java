@@ -46,7 +46,7 @@ public class PlotUtil {
         final ChartPanel panel = new ChartPanel(chart);
         final JFrame f = new JFrame();
         f.add(panel);
-        f.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        f.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
         f.pack();
         f.setVisible(true);
     }

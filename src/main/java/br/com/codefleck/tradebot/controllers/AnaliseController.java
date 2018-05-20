@@ -22,7 +22,7 @@ public class AnaliseController {
     public ModelAndView noticiasLandingDataProvider(ModelAndView model) {
 
         model.addObject("botStatus", fleckBot.isRunning());
-        model.setViewName("analise/analise");
+        model.setViewName("analise");
 
         return model;
     }

@@ -18,14 +18,15 @@ public class PricePrediction {
 
     private static final Logger log = LoggerFactory.getLogger(PricePrediction.class);
 
-    private static int exampleLength = 22; // time series length, assume 22 working days per month
+    //private static int exampleLength = 218; // time series length for 1 prediction
+    private static int exampleLength = 127; // displaying prediction for 90 days
 
     public static void main (String[] args) throws IOException {
         String file = new ClassPathResource("coinBaseForNeuralNet.csv").getFile().getAbsolutePath();
         String symbol = "BTC"; // stock name
         int batchSize = 64; // mini-batch size
         double splitRatio = 0.8; // 80% for training, 20% for testing
-        int epochs = 300; // training epochs
+        int epochs = 20; // training epochs
 
         log.info("Create dataSet iterator...");
         PriceCategory category = PriceCategory.ALL; // CLOSE: predict close price
@@ -34,7 +35,7 @@ public class PricePrediction {
         List<Pair<INDArray, INDArray>> test = iterator.getTestDataSet();
 
         log.info("Build lstm networks...");
-        MultiLayerNetwork net = RecurrentNets.buildLstmNetworks(iterator.inputColumns(), iterator.totalOutcomes());
+          MultiLayerNetwork net = RecurrentNets.buildLstmNetworks(iterator.inputColumns(), iterator.totalOutcomes());
 
         log.info("Training...");
         for (int i = 0; i < epochs; i++) {
@@ -98,7 +99,13 @@ public class PricePrediction {
         log.info("Plot...");
         for (int n = 0; n < 5; n++) {
             double[] pred = new double[predicts.length];
+
+            System.out.println("predicts.lengh: " + pred.length);
+
             double[] actu = new double[actuals.length];
+
+            System.out.println("actuals.lengh: " + actu.length);
+
             for (int i = 0; i < predicts.length; i++) {
                 pred[i] = predicts[i].getDouble(n);
                 actu[i] = actuals[i].getDouble(n);

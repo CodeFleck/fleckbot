@@ -26,7 +26,7 @@
 
                 <%--reddit--%>
             <div class="col-md-8" style="margin-bottom: 3px;">
-                <script src="https://www.reddit.com/r/CryptoCurrency/hot/.embed?limit=7&t=week" type="text/javascript" style="width: 100%;" />
+                <script src="https://www.reddit.com/r/CryptoCurrency/hot/.embed?limit=5&t=week&expanded=1" type="text/javascript"></script>
             </div>
         </div>
 

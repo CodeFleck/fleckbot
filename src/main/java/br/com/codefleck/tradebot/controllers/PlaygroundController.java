@@ -18,10 +18,7 @@ import org.ta4j.core.*;
 import org.ta4j.core.analysis.criteria.NumberOfBarsCriterion;
 
 import br.com.codefleck.tradebot.core.engine.TradingEngine;
-import br.com.codefleck.tradebot.core.util.CsvBarsLoader;
-import br.com.codefleck.tradebot.core.util.CustomTimeSeriesManager;
-import br.com.codefleck.tradebot.core.util.CustomTrade;
-import br.com.codefleck.tradebot.core.util.DownSamplingTimeSeries;
+import br.com.codefleck.tradebot.core.util.*;
 import br.com.codefleck.tradebot.exchanges.trading.api.impl.CustomBaseBarForGraph;
 import br.com.codefleck.tradebot.services.impl.EventServiceImpl;
 import br.com.codefleck.tradebot.services.impl.TradeServiceImpl;
