@@ -1,6 +1,5 @@
 package br.com.codefleck.tradebot.strategies;
 
-import org.springframework.boot.SpringApplication;
 import org.ta4j.core.*;
 import org.ta4j.core.indicators.EMAIndicator;
 import org.ta4j.core.indicators.SMAIndicator;
@@ -10,8 +9,6 @@ import org.ta4j.core.trading.rules.CrossedDownIndicatorRule;
 import org.ta4j.core.trading.rules.CrossedUpIndicatorRule;
 import org.ta4j.core.trading.rules.OverIndicatorRule;
 import org.ta4j.core.trading.rules.UnderIndicatorRule;
-
-import br.com.codefleck.tradebot.Boot;
 
 public class MyStrategy {
 

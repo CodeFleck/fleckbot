@@ -21,21 +21,23 @@ public class PricePrediction {
     //private static int exampleLength = 218; // time series length for 1 prediction
     private static int exampleLength = 127; // displaying prediction for 90 days
 
-    public static void main (String[] args) throws IOException {
+    //    public static void main (String[] args) throws IOException {
+    public void initTraining(int tamanhoLote, int epocas, String simbolo, String categoria) throws IOException {
         String file = new ClassPathResource("coinBaseForNeuralNet.csv").getFile().getAbsolutePath();
-        String symbol = "BTC"; // stock name
-        int batchSize = 64; // mini-batch size
+        String symbol = simbolo; // stock name
+        int batchSize = tamanhoLote; // mini-batch size
         double splitRatio = 0.8; // 80% for training, 20% for testing
-        int epochs = 20; // training epochs
+        int epochs = epocas; // training epochs
+        String chosenCategory = categoria;
 
         log.info("Create dataSet iterator...");
-        PriceCategory category = PriceCategory.ALL; // CLOSE: predict close price
+        PriceCategory category = verifyCategory(chosenCategory); // CLOSE: predict close price
         StockDataSetIterator iterator = new StockDataSetIterator(file, symbol, batchSize, exampleLength, splitRatio, category);
         log.info("Load test dataset...");
         List<Pair<INDArray, INDArray>> test = iterator.getTestDataSet();
 
         log.info("Build lstm networks...");
-          MultiLayerNetwork net = RecurrentNets.buildLstmNetworks(iterator.inputColumns(), iterator.totalOutcomes());
+        MultiLayerNetwork net = RecurrentNets.buildLstmNetworks(iterator.inputColumns(), iterator.totalOutcomes());
 
         log.info("Training...");
         for (int i = 0; i < epochs; i++) {
@@ -46,7 +48,7 @@ public class PricePrediction {
         }
 
         log.info("Saving model...");
-        File locationToSave = new File("src/main/resources/StockPriceLSTM_".concat(String.valueOf(category)).concat(".zip"));
+        File locationToSave = new File("/Users/dfleck/Projects/fleckbot/src/main/resources/StockPriceLSTM_".concat(String.valueOf(category)).concat(".zip"));
         // saveUpdater: i.e., the state for Momentum, RMSProp, Adagrad etc. Save this to train your network more in the future
         ModelSerializer.writeModel(net, locationToSave, true);
 
@@ -64,6 +66,22 @@ public class PricePrediction {
             predictPriceOneAhead(net, test, max, min, category);
         }
         log.info("Done...");
+    }
+
+    private PriceCategory verifyCategory(String chosenCategory) {
+
+        if (chosenCategory.equalsIgnoreCase("CLOSE")){
+            return PriceCategory.CLOSE;
+        } else if (chosenCategory.equalsIgnoreCase("HIGH")){
+            return PriceCategory.HIGH;
+        } else if (chosenCategory.equalsIgnoreCase("LOW")){
+            return PriceCategory.LOW;
+        } else if (chosenCategory.equalsIgnoreCase("OPEN")){
+            return PriceCategory.OPEN;
+        } else if (chosenCategory.equalsIgnoreCase("VOLUME")){
+            return PriceCategory.VOLUME;
+        }
+        return PriceCategory.ALL;
     }
 
     /** Predict one feature of a stock one-day ahead */

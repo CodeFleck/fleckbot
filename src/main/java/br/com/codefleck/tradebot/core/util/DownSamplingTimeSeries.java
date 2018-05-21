@@ -7,6 +7,10 @@ import java.util.List;
 import java.util.Objects;
 
 import org.ta4j.core.*;
+import org.ta4j.core.indicators.EMAIndicator;
+import org.ta4j.core.indicators.helpers.ClosePriceIndicator;
+
+import br.com.codefleck.tradebot.strategies.MyStrategy;
 
 public class DownSamplingTimeSeries {
 
@@ -34,7 +38,7 @@ public class DownSamplingTimeSeries {
                     Decimal currentClose = currentBar.getClosePrice();
                     aggBars.add(new BaseBar(currentEndTime, currentOpen, currentMax, currentMin, currentClose, currentVolume));
                 }
-                    return new BaseTimeSeries("umMinuto", aggBars);
+                return new BaseTimeSeries("umMinuto", aggBars);
             }
             if (this.period.equals("5 minutos")) {
                 return aggregateTimeSeriesToFiveMinutes(series);
@@ -379,6 +383,36 @@ public class DownSamplingTimeSeries {
 
     private int getMonth(Bar bar){
         return bar.getEndTime().getMonthValue();
+    }
+
+    public List<CustomBaseBar> customAggregate(List<CustomBaseBar> customBaseBars) {
+
+        List<CustomBaseBar> aggregatedCustomBaseBars = new ArrayList<CustomBaseBar>();
+        int i = 0;
+        for( i = i; i < customBaseBars.size(); i++){
+
+            Double currentOpen = customBaseBars.get(i).getOpen();
+            Double currentMax =customBaseBars.get(i).getHigh();
+            Double currentMin = customBaseBars.get(i).getLow();
+            Double currentVolume = customBaseBars.get(i).getVolume();
+
+            while(i < customBaseBars.size()-1 && (customBaseBars.get(i+1).getDate()).equals(customBaseBars.get(i).getDate())){
+                i++;
+                if (currentMax <= customBaseBars.get(i).getHigh()){
+                    currentMax = customBaseBars.get(i).getHigh();
+                }
+                if (currentMin >= customBaseBars.get(i).getLow()){
+                    currentMin = customBaseBars.get(i).getLow();
+                }
+                currentVolume += customBaseBars.get(i).getVolume();
+            }
+            String currentEndTime = customBaseBars.get(i).getDate();
+            Double currentClose = customBaseBars.get(i).getClose();
+            aggregatedCustomBaseBars.add(new CustomBaseBar(currentEndTime, "BTC",currentOpen,currentMax,currentMin,
+                currentClose,currentVolume));
+        }
+
+        return aggregatedCustomBaseBars;
     }
 
 }

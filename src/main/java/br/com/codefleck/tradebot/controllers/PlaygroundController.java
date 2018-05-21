@@ -19,6 +19,7 @@ import org.ta4j.core.analysis.criteria.NumberOfBarsCriterion;
 
 import br.com.codefleck.tradebot.core.engine.TradingEngine;
 import br.com.codefleck.tradebot.core.util.*;
+import br.com.codefleck.tradebot.daos.SMADao;
 import br.com.codefleck.tradebot.exchanges.trading.api.impl.CustomBaseBarForGraph;
 import br.com.codefleck.tradebot.services.impl.EventServiceImpl;
 import br.com.codefleck.tradebot.services.impl.TradeServiceImpl;
@@ -35,6 +36,8 @@ public class PlaygroundController {
     private EventServiceImpl eventService;
     @Autowired
     private TradeServiceImpl tradeService;
+    @Autowired
+    private  SMADao smaDao;
 
 
     @GetMapping
@@ -72,6 +75,22 @@ public class PlaygroundController {
         DownSamplingTimeSeries downSamplingTimeSeries = new DownSamplingTimeSeries(period);
 
         BaseTimeSeries customTimeSeries = downSamplingTimeSeries.aggregate(series);
+
+
+
+        //doing my stuff
+//        SMAUtil smaUtil = new SMAUtil();
+//
+//        List<SMA> smaList = smaUtil.getSMAForMedianAveragePrice(customTimeSeries);
+//        for (SMA result : smaList) {
+//            //smaDao.save(result);
+//            System.out.println("SMA " + result.getValor() + " salvo com sucesso!");
+//        }
+//
+//        CsvBarsLoader.editCoinBaseSeriesForNeuralNets(begingDate, endingDate, smaList);
+        //End doing my stuff
+
+
 
         // Building the trading strategy
         MyStrategy myStrategy = new MyStrategy();
