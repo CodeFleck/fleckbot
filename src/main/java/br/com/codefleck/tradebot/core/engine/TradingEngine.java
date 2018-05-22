@@ -27,11 +27,11 @@ import br.com.codefleck.tradebot.domainobjects.exchange.OptionalConfig;
 import br.com.codefleck.tradebot.domainobjects.market.MarketConfig;
 import br.com.codefleck.tradebot.domainobjects.strategy.StrategyConfig;
 import br.com.codefleck.tradebot.exchangeapi.ExchangeAdapter;
+import br.com.codefleck.tradebot.exchanges.trading.api.impl.LogEntryImpl;
 import br.com.codefleck.tradebot.services.EngineConfigService;
 import br.com.codefleck.tradebot.services.ExchangeConfigService;
 import br.com.codefleck.tradebot.services.MarketConfigService;
 import br.com.codefleck.tradebot.services.StrategyConfigService;
-import br.com.codefleck.tradebot.strategyapi.StrategyException;
 import br.com.codefleck.tradebot.strategyapi.TradingStrategy;
 import br.com.codefleck.tradebot.tradingapi.BalanceInfo;
 import br.com.codefleck.tradebot.tradingapi.ExchangeNetworkException;
@@ -64,6 +64,11 @@ public class TradingEngine {
     private static final String CAUSE_ERROR_MSG_LABEL = " Cause: ";
     private static final String NEWLINE = System.getProperty("line.separator");
     private static final String HORIZONTAL_RULE = "--------------------------------------------------" + NEWLINE;
+
+    /*
+     * Keep list of log entries
+     */
+    public List<LogEntryImpl> logEntryList;
 
     /*
      * Trade execution interval in secs. The time we wait/sleep in between trade cycles.
@@ -128,14 +133,13 @@ public class TradingEngine {
     private final StrategyConfigService strategyConfigService;
     private final MarketConfigService marketConfigService;
 
-
     @Autowired
     public TradingEngine(ExchangeConfigService exchangeConfigService, EngineConfigService engineConfigService,
                          StrategyConfigService strategyConfigService, MarketConfigService marketConfigService,
                          EmailAlerter emailAlerter) {
 
         LOG.info(() -> "Creating instance of Trading Engine...");
-
+        this.logEntryList = new ArrayList<LogEntryImpl>();
         this.exchangeConfigService = exchangeConfigService;
         this.engineConfigService = engineConfigService;
         this.strategyConfigService = strategyConfigService;
@@ -149,6 +153,7 @@ public class TradingEngine {
             if (isRunning) {
                 final String errorMsg = "Cannot start Trading Engine because it is already running!";
                 LOG.error(errorMsg);
+                logEntryList.add(new LogEntryImpl(errorMsg));
                 throw new IllegalStateException(errorMsg);
             }
 
@@ -160,12 +165,12 @@ public class TradingEngine {
         engineThread = Thread.currentThread();
 
         new Thread(this::runMainControlLoop).start();
-
     }
 
     public void initConfig() {
 
         LOG.info(() -> "Initialising FleckBot config...");
+        logEntryList.add(new LogEntryImpl("Initialising FleckBot config..."));
 
         // the sequence order of these methods is significant - don't change it.
         loadExchangeAdapterConfig();
@@ -182,12 +187,14 @@ public class TradingEngine {
     private void runMainControlLoop() {
 
         LOG.info(() -> "Starting Trading Engine for " + botId + " ...");
+        logEntryList.add(new LogEntryImpl("Starting Trading Engine for " + botId));
 
         while (keepAlive) {
 
             try {
 
                 LOG.info(() -> "*** Starting next trade cycle... ***");
+                logEntryList.add(new LogEntryImpl("*** Starting next trade cycle... ***"));
 
                 // Emergency Stop Check MUST run at start of every trade cycle.
                 if (isEmergencyStopLimitBreached()) {
@@ -197,10 +204,12 @@ public class TradingEngine {
                 // Execute the Trading Strategies
                 for (final TradingStrategy tradingStrategy : tradingStrategiesToExecute) {
                     LOG.info(() -> "Executing Trading Strategy ---> " + tradingStrategy.getClass().getSimpleName());
-                    tradingStrategy.execute();
+                    logEntryList.add(new LogEntryImpl("Executing Trading Strategy ---> " + tradingStrategy.getClass().getSimpleName()));
+//                    tradingStrategy.execute();
                 }
 
                 LOG.info(() -> "*** Sleeping " + tradeExecutionInterval + "s til next trade cycle... ***");
+                logEntryList.add(new LogEntryImpl("*** Sleeping " + tradeExecutionInterval + "s til next trade cycle... ***"));
 
                 attemptToReconnectToExchange();
 
@@ -213,7 +222,7 @@ public class TradingEngine {
                 final String WARNING_MSG = "A network error has occurred in Exchange Adapter! " +
                     "FleckBot will attempt next trade in " + tradeExecutionInterval + "s...";
                 LOG.error(WARNING_MSG, e);
-
+                logEntryList.add(new LogEntryImpl(WARNING_MSG));
                 attemptToReconnectToExchange();
 
             } catch (TradingApiException e) {
@@ -224,24 +233,25 @@ public class TradingEngine {
                  */
                 final String FATAL_ERROR_MSG = "A FATAL error has occurred in Exchange Adapter!";
                 LOG.fatal(FATAL_ERROR_MSG, e);
+                logEntryList.add(new LogEntryImpl(FATAL_ERROR_MSG));
                 emailAlerter.sendMessage(CRITICAL_EMAIL_ALERT_SUBJECT,
                     buildCriticalEmailAlertMsgContent(FATAL_ERROR_MSG +
                         DETAILS_ERROR_MSG_LABEL + e.getMessage() +
                         CAUSE_ERROR_MSG_LABEL + e.getCause(), e));
                 keepAlive = false;
-                      } catch (StrategyException e) {
-
-                        /*
-                         * A serious issue has occurred in the Trading Strategy.
-                         * Current policy is to log it, send email alert if required, and shutdown bot.
-                         */
-                        final String FATAL_ERROR_MSG = "A FATAL error has occurred in Trading Strategy!";
-                        LOG.fatal(FATAL_ERROR_MSG, e);
-                        emailAlerter.sendMessage(CRITICAL_EMAIL_ALERT_SUBJECT,
-                            buildCriticalEmailAlertMsgContent(FATAL_ERROR_MSG +
-                                DETAILS_ERROR_MSG_LABEL + e.getMessage() +
-                                CAUSE_ERROR_MSG_LABEL + e.getCause(), e));
-                        keepAlive = false;
+//                      } catch (StrategyException e) {
+//
+//                        /*
+//                         * A serious issue has occurred in the Trading Strategy.
+//                         * Current policy is to log it, send email alert if required, and shutdown bot.
+//                         */
+//                        final String FATAL_ERROR_MSG = "A FATAL error has occurred in Trading Strategy!";
+//                        LOG.fatal(FATAL_ERROR_MSG, e);
+//                        emailAlerter.sendMessage(CRITICAL_EMAIL_ALERT_SUBJECT,
+//                            buildCriticalEmailAlertMsgContent(FATAL_ERROR_MSG +
+//                                DETAILS_ERROR_MSG_LABEL + e.getMessage() +
+//                                CAUSE_ERROR_MSG_LABEL + e.getCause(), e));
+//                        keepAlive = false;
             } catch (Exception e) {
 
                 /*
@@ -250,6 +260,7 @@ public class TradingEngine {
                  */
                 final String FATAL_ERROR_MSG = "An unexpected FATAL error has occurred in Exchange Adapter or Trading Strategy!";
                 LOG.fatal(FATAL_ERROR_MSG, e);
+                logEntryList.add(new LogEntryImpl(FATAL_ERROR_MSG));
                 emailAlerter.sendMessage(CRITICAL_EMAIL_ALERT_SUBJECT,
                     buildCriticalEmailAlertMsgContent(FATAL_ERROR_MSG +
                         DETAILS_ERROR_MSG_LABEL + e.getMessage() +
@@ -259,6 +270,7 @@ public class TradingEngine {
         }
 
         LOG.fatal( botId + " is saying good bye!");
+        logEntryList.add(new LogEntryImpl(botId + " is saying good bye!"));
         synchronized (IS_RUNNING_MONITOR) {
             isRunning = false;
         }
@@ -269,6 +281,7 @@ public class TradingEngine {
             Thread.sleep(tradeExecutionInterval * 1000);
         } catch (InterruptedException e1) {
             LOG.warn("Control Loop thread interrupted when sleeping before next trade cycle");
+            logEntryList.add(new LogEntryImpl("Control Loop thread interrupted when sleeping before next trade cycle"));
             Thread.currentThread().interrupt();
         }
     }
@@ -280,7 +293,9 @@ public class TradingEngine {
     public void shutdown() {
 
         LOG.info(() -> "Shutting down...");
+        logEntryList.add(new LogEntryImpl("Shutting down..."));
         LOG.info(() -> "Engine originally started in thread: " + engineThread);
+        logEntryList.add(new LogEntryImpl("Engine originally started in thread: " + engineThread));
 
         keepAlive = false;
         isRunning = false;
@@ -312,6 +327,7 @@ public class TradingEngine {
         }
 
         LOG.info(() -> "Performing Emergency Stop check...");
+        logEntryList.add(new LogEntryImpl("Performing Emergency Stop check..."));
 
         BalanceInfo balanceInfo;
         try {
@@ -320,6 +336,7 @@ public class TradingEngine {
             final String errorMsg = "Failed to get Balance info from exchange to perform Emergency Stop check - letting"
                 + " Trade Engine error policy decide what to do next...";
             LOG.error(errorMsg, e);
+            logEntryList.add(new LogEntryImpl(errorMsg));
             // re-throw to main loop - might only be connection issue and it will retry...
             throw e;
         }
@@ -332,15 +349,22 @@ public class TradingEngine {
                     + emergencyStopCurrency + "' key into Balances map "
                     + "returned null. Balances returned: " + balancesAvailable;
             LOG.error(errorMsg);
+            logEntryList.add(new LogEntryImpl(errorMsg));
             throw new IllegalStateException(errorMsg);
         } else {
 
             LOG.info(() -> "Emergency Stop Currency balance available on exchange is ["
                 + new DecimalFormat("#.########").format(currentBalance) + "] "
                 + emergencyStopCurrency);
+            logEntryList.add(new LogEntryImpl("Emergency Stop Currency balance available on exchange is ["
+                + new DecimalFormat("#.########").format(currentBalance) + "] "
+                + emergencyStopCurrency));
 
             LOG.info(() -> "Balance that will stop ALL trading across ALL markets is ["
                 + new DecimalFormat("#.########").format(emergencyStopBalance) + "] " + emergencyStopCurrency);
+            logEntryList.add(new LogEntryImpl("Balance that will stop ALL trading across ALL markets is ["
+                + new DecimalFormat("#.########").format(emergencyStopBalance) + "] " + emergencyStopCurrency));
+
 
             if (currentBalance.compareTo(emergencyStopBalance) < 0) {
                 final String balanceBlownErrorMsg =
@@ -350,12 +374,14 @@ public class TradingEngine {
                         + new DecimalFormat("#.########").format(emergencyStopBalance) + "] " + emergencyStopCurrency;
 
                 LOG.fatal(balanceBlownErrorMsg);
+                logEntryList.add(new LogEntryImpl(balanceBlownErrorMsg));
                 emailAlerter.sendMessage(CRITICAL_EMAIL_ALERT_SUBJECT,
                     buildCriticalEmailAlertMsgContent(balanceBlownErrorMsg, null));
             } else {
 
                 isEmergencyStopLimitBreached = false;
                 LOG.info(() -> "Emergency Stop check PASSED!");
+                logEntryList.add(new LogEntryImpl("Emergency Stop check PASSED!"));
             }
         }
         return isEmergencyStopLimitBreached;

@@ -38,7 +38,7 @@ public class CarteirasController {
         model.addObject("carteiras", balanceInfo);
         model.addObject("botStatus", fleckBot.isRunning());
 
-        model.setViewName("carteiras/carteiras");
+        model.setViewName("carteiras");
         return model;
     }
 }

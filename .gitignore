@@ -8,6 +8,13 @@
 # Java class files
 *.class
 
+#log files
+*.log
+*.log.gz
+
+*.csv
+*.zip
+
 # generated files
 bin/
 gen/

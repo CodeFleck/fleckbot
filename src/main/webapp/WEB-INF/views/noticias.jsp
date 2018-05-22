@@ -1,4 +1,4 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html" pageEncoding="ISO-8859-1" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib tagdir="/WEB-INF/tags/template" prefix="template" %>
 <template:admin>
@@ -26,7 +26,7 @@
 
                 <%--reddit--%>
             <div class="col-md-8" style="margin-bottom: 3px;">
-                <script src="https://www.reddit.com/r/CryptoCurrency/hot/.embed?limit=7&t=week" type="text/javascript" style="width: 100%;" />
+                <script src="https://www.reddit.com/r/CryptoCurrency/hot/.embed?limit=5&t=week&expanded=1" type="text/javascript"></script>
             </div>
         </div>
 

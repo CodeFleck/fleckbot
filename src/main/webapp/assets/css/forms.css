@@ -1,6 +1,7 @@
 .min-container {
-  max-width: 600px;
-  margin: 0 auto;
+  max-width: 1250px;
+  margin: 0 5px 0 5px;
+  text-align: left;
 }
 .basic-title {
   text-align: center;
@@ -12,4 +13,8 @@
 
 .actions > span {
   margin-left: 5px;
+}
+
+.form-control {
+    width: auto;
 }
