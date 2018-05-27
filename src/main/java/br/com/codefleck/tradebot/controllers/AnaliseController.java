@@ -32,21 +32,5 @@ public class AnaliseController {
         return model;
     }
 
-    @PostMapping("/treinar-redes")
-    public ModelAndView treinarRedes(@ModelAttribute("tamanhoLote")int tamanhoLote,
-                                     @ModelAttribute("epocas") int epocas,
-                                     @ModelAttribute("simbolo") String simbolo,
-                                     @ModelAttribute("categoria") String categoria){
 
-        PricePrediction pricePrediction = new PricePrediction();
-        try {
-            pricePrediction.initTraining(tamanhoLote, epocas, simbolo, categoria);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        ModelAndView model = new ModelAndView();
-        model.setViewName("/analise");
-
-        return model;
-    }
 }

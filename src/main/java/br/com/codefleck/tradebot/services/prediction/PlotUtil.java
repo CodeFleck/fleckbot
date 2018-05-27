@@ -1,5 +1,10 @@
 package br.com.codefleck.tradebot.services.prediction;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -12,17 +17,24 @@ import org.jfree.data.xy.XYSeriesCollection;
 
 import javax.swing.*;
 
+import com.google.gson.Gson;
+
 public class PlotUtil {
 
-    public static void plot(double[] predicts, double[] actuals, String name) {
+    public static List<String> plot(double[] predicts, double[] actuals, String name) {
         double[] index = new double[predicts.length];
         for (int i = 0; i < predicts.length; i++)
             index[i] = i;
         int min = minValue(predicts, actuals);
         int max = maxValue(predicts, actuals);
         final XYSeriesCollection dataSet = new XYSeriesCollection();
-        addSeries(dataSet, index, predicts, "Predicts");
-        addSeries(dataSet, index, actuals, "Actuals");
+        String predictsDataPoints = addSeries(dataSet, index, predicts, "Predicts");
+        String actualsDataPoints = addSeries(dataSet, index, actuals, "Actuals");
+
+        List<String> dataPointList = new ArrayList<>();
+        dataPointList.add(predictsDataPoints);
+        dataPointList.add(actualsDataPoints);
+
         final JFreeChart chart = ChartFactory.createXYLineChart(
             "Prediction Result", // chart title
             "Index", // x axis label
@@ -49,12 +61,26 @@ public class PlotUtil {
         f.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
         f.pack();
         f.setVisible(true);
+
+        return dataPointList;
     }
 
-    private static void addSeries (final XYSeriesCollection dataSet, double[] x, double[] y, final String label){
+    private static String addSeries (final XYSeriesCollection dataSet, double[] x, double[] y, final String label){
         final XYSeries s = new XYSeries(label);
-        for( int j = 0; j < x.length; j++ ) s.add(x[j], y[j]);
+
+        Gson gsonObj = new Gson();
+        Map<Object,Object> map = null;
+        List<Map<Object,Object>> list = new ArrayList<Map<Object,Object>>();
+
+        for( int j = 0; j < x.length; j++ ){
+            s.add(x[j], y[j]);
+            map = new HashMap<Object,Object>(); map.put("x", x[j]);  map.put("y", y[j]);
+            list.add(map);
+        }
+
         dataSet.addSeries(s);
+        String dataPoints = gsonObj.toJson(list);
+        return dataPoints;
     }
 
     private static int minValue (double[] predicts, double[] actuals) {

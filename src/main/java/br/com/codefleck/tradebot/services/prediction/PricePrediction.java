@@ -1,6 +1,11 @@
 package br.com.codefleck.tradebot.services.prediction;
 
-import javafx.util.Pair;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
+
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.deeplearning4j.util.ModelSerializer;
 import org.nd4j.linalg.api.ndarray.INDArray;
@@ -9,10 +14,7 @@ import org.nd4j.linalg.io.ClassPathResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-import java.util.NoSuchElementException;
+import javafx.util.Pair;
 
 public class PricePrediction {
 
@@ -21,8 +23,7 @@ public class PricePrediction {
     //private static int exampleLength = 218; // time series length for 1 prediction
     private static int exampleLength = 127; // displaying prediction for 90 days
 
-    //    public static void main (String[] args) throws IOException {
-    public void initTraining(int tamanhoLote, int epocas, String simbolo, String categoria) throws IOException {
+    public List<String> initTraining(int tamanhoLote, int epocas, String simbolo, String categoria) throws IOException {
         String file = new ClassPathResource("coinBaseForNeuralNet.csv").getFile().getAbsolutePath();
         String symbol = simbolo; // stock name
         int batchSize = tamanhoLote; // mini-batch size
@@ -59,13 +60,16 @@ public class PricePrediction {
         if (category.equals(PriceCategory.ALL)) {
             INDArray max = Nd4j.create(iterator.getMaxArray());
             INDArray min = Nd4j.create(iterator.getMinArray());
-            predictAllCategories(net, test, max, min);
+            List<String> dataPointList = predictAllCategories(net, test, max, min);
+            log.info("Done...");
+            return dataPointList;
         } else {
             double max = iterator.getMaxNum(category);
             double min = iterator.getMinNum(category);
-            predictPriceOneAhead(net, test, max, min, category);
+            List<String> dataPointList = predictPriceOneAhead(net, test, max, min, category);
+            log.info("Done...");
+            return dataPointList;
         }
-        log.info("Done...");
     }
 
     private PriceCategory verifyCategory(String chosenCategory) {
@@ -85,7 +89,7 @@ public class PricePrediction {
     }
 
     /** Predict one feature of a stock one-day ahead */
-    private static void predictPriceOneAhead (MultiLayerNetwork net, List<Pair<INDArray, INDArray>> testData, double max, double min, PriceCategory category) {
+    private static List<String> predictPriceOneAhead (MultiLayerNetwork net, List<Pair<INDArray, INDArray>> testData, double max, double min, PriceCategory category) {
         double[] predicts = new double[testData.size()];
         double[] actuals = new double[testData.size()];
         for (int i = 0; i < testData.size(); i++) {
@@ -96,7 +100,9 @@ public class PricePrediction {
         log.info("Predict,Actual");
         for (int i = 0; i < predicts.length; i++) log.info(predicts[i] + "," + actuals[i]);
         log.info("Plot...");
-        PlotUtil.plot(predicts, actuals, String.valueOf(category));
+        List<String> dataPointList = PlotUtil.plot(predicts, actuals, String.valueOf(category));
+
+        return dataPointList;
     }
 
     private static void predictPriceMultiple (MultiLayerNetwork net, List<Pair<INDArray, INDArray>> testData, double max, double min) {
@@ -104,7 +110,7 @@ public class PricePrediction {
     }
 
     /** Predict all the features (open, close, low, high prices and volume) of a stock one-day ahead */
-    private static void predictAllCategories (MultiLayerNetwork net, List<Pair<INDArray, INDArray>> testData, INDArray max, INDArray min) {
+    private static List<String> predictAllCategories (MultiLayerNetwork net, List<Pair<INDArray, INDArray>> testData, INDArray max, INDArray min) {
         INDArray[] predicts = new INDArray[testData.size()];
         INDArray[] actuals = new INDArray[testData.size()];
         for (int i = 0; i < testData.size(); i++) {
@@ -115,6 +121,7 @@ public class PricePrediction {
         log.info("Predict\tActual");
         for (int i = 0; i < predicts.length; i++) log.info(predicts[i] + "\t" + actuals[i]);
         log.info("Plot...");
+        List<String> dataPointList = new ArrayList<>();
         for (int n = 0; n < 5; n++) {
             double[] pred = new double[predicts.length];
 
@@ -137,8 +144,9 @@ public class PricePrediction {
                 case 4: name = "Stock VOLUME Amount"; break;
                 default: throw new NoSuchElementException();
             }
-            PlotUtil.plot(pred, actu, name);
+            dataPointList = PlotUtil.plot(pred, actu, name);
         }
+        return dataPointList;
     }
 
 }

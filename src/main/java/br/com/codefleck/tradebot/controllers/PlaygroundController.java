@@ -23,6 +23,7 @@ import br.com.codefleck.tradebot.daos.SMADao;
 import br.com.codefleck.tradebot.exchanges.trading.api.impl.CustomBaseBarForGraph;
 import br.com.codefleck.tradebot.services.impl.EventServiceImpl;
 import br.com.codefleck.tradebot.services.impl.TradeServiceImpl;
+import br.com.codefleck.tradebot.strategies.DailyPredictionTradeStrategy;
 import br.com.codefleck.tradebot.strategies.MyStrategy;
 
 @Controller
@@ -38,7 +39,6 @@ public class PlaygroundController {
     private TradeServiceImpl tradeService;
     @Autowired
     private  SMADao smaDao;
-
 
     @GetMapping
     public ModelAndView playgroundLandingDataProvider(ModelAndView model) {
@@ -70,13 +70,12 @@ public class PlaygroundController {
         Decimal totalFees = Decimal.ZERO;
         Decimal bitcoinBalance = Decimal.ZERO;
 
+
         TimeSeries series = CsvBarsLoader.loadCoinBaseSeries(begingDate, endingDate);
 
         DownSamplingTimeSeries downSamplingTimeSeries = new DownSamplingTimeSeries(period);
 
         BaseTimeSeries customTimeSeries = downSamplingTimeSeries.aggregate(series);
-
-
 
         //doing my stuff
 //        SMAUtil smaUtil = new SMAUtil();
@@ -90,11 +89,11 @@ public class PlaygroundController {
 //        CsvBarsLoader.editCoinBaseSeriesForNeuralNets(begingDate, endingDate, smaList);
         //End doing my stuff
 
-
+        List<SMA> smaList = smaDao.all();
 
         // Building the trading strategy
-        MyStrategy myStrategy = new MyStrategy();
-        Strategy strategy = myStrategy.buildStrategy(customTimeSeries);
+        DailyPredictionTradeStrategy myStrategy = new DailyPredictionTradeStrategy();
+        Strategy strategy = DailyPredictionTradeStrategy.buildStrategy(customTimeSeries, smaList);
 
         // Running the strategy
         CustomTimeSeriesManager seriesManager = new CustomTimeSeriesManager(customTimeSeries);

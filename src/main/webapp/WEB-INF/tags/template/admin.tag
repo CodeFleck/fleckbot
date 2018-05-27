@@ -48,6 +48,9 @@
             <li class="nav-item">
                 <a class="nav-link" href="<c:url value='/trading'/>">Logs</a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" href="<c:url value='/redes-neurais'/>">Redes Neurais</a>
+            </li>
         </ul>
         <form class="form-inline my-4 my-lg-0">
             <div id="botStatus">

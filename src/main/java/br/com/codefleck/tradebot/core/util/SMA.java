@@ -15,6 +15,10 @@ public class SMA {
     Integer timeFrame;
     String data;
 
+    public SMA(){
+
+    }
+
     public SMA(Double valor, String period, Integer timeFrame, String data) {
         this.valor = valor;
         this.period = period;
