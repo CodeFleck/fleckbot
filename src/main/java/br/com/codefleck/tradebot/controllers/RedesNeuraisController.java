@@ -14,7 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import br.com.codefleck.tradebot.core.engine.TradingEngine;
-import br.com.codefleck.tradebot.services.prediction.PricePrediction;
+import br.com.codefleck.tradebot.redesneurais.DataPointsListModel;
+import br.com.codefleck.tradebot.redesneurais.PricePrediction;
 
 @Controller
 @RequestMapping("/redes-neurais")
@@ -29,6 +30,15 @@ public class RedesNeuraisController {
 
         model.addObject("botStatus", fleckBot.isRunning());
         model.setViewName("redes-neurais");
+
+//        List<DataPointsListModel> todosDataPoints = dataPointListDao.all();
+
+//        if (todosDataPoints != null && todosDataPoints.size() > 0){
+//            DataPointsListModel ultimoDataPointModel = dataPointListDao.findById(todosDataPoints.size());
+//            model.addObject("predictsDataPoints", ultimoDataPointModel.getPredictsDataPoints());
+//            model.addObject("actualsDataPoints", ultimoDataPointModel.getActualsDataPoints());
+//            model.addObject("categoria", ultimoDataPointModel.getName());
+//        }
 
         return model;
     }
@@ -47,6 +57,7 @@ public class RedesNeuraisController {
         List<String> dataPointList = pricePrediction.initTraining(tamanhoLote, epocas, simbolo, categoria);
         model.addObject("predictsDataPoints", dataPointList.get(0));
         model.addObject("actualsDataPoints", dataPointList.get(1));
+        model.addObject("categoria", categoria);
 
         return model;
     }

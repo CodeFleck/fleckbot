@@ -30,7 +30,6 @@
                             </td>
                             <td>
                                 <select class="form-control selectpicker" name="categoria">
-                                    <option>Todos</option>
                                     <option>Fechamento</option>
                                     <option>Abertura</option>
                                     <option>Maior</option>
@@ -45,8 +44,16 @@
                     </table>
                     <button type="submit" class="btn btn-primary">Treinar Redes Neurais</button>
                 </form:form>
-            </div>
-            <button type="submit" class="btn btn-success" onclick="callPredictionChart()">Carregar Últimos Resultados</button><br>
+            </div><br><br>
+            <%--<button type="submit" class="btn btn-success" onclick="callPredictionChart()" style="margin: 15px;">Carregar Últimos Resultados</button>--%>
+            <%--<form>--%>
+                <%--<div class="form-check">--%>
+                    <%--<input type="checkbox" class="form-check-input" id="isTheBest">--%>
+                    <%--<label class="form-check-label" for="isTheBest">Salvar como o melhor</label>--%>
+                <%--</div>--%>
+                <%--<button type="submit" class="btn btn-info">Salvar</button>--%>
+            <%--</form>--%>
+            <%--<br>--%>
             <div id='chartContainer'></div>
         </div>
 
@@ -59,7 +66,7 @@
               },
               subtitles: [
                 {
-                  text: "Visualização da margem de erro"
+                  text: "Margem de erro "
                 }
               ],
               animationEnabled: true,

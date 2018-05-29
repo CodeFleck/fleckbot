@@ -1,8 +1,7 @@
-package br.com.codefleck.tradebot.services.prediction;
+package br.com.codefleck.tradebot.redesneurais;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -60,29 +59,29 @@ public class PricePrediction {
         if (category.equals(PriceCategory.ALL)) {
             INDArray max = Nd4j.create(iterator.getMaxArray());
             INDArray min = Nd4j.create(iterator.getMinArray());
-            List<String> dataPointList = predictAllCategories(net, test, max, min);
+            predictAllCategories(net, test, max, min);
             log.info("Done...");
-            return dataPointList;
+            return null;
         } else {
             double max = iterator.getMaxNum(category);
             double min = iterator.getMinNum(category);
-            List<String> dataPointList = predictPriceOneAhead(net, test, max, min, category);
+            List<String> dataPointsList = predictPriceOneAhead(net, test, max, min, category);
             log.info("Done...");
-            return dataPointList;
+            return dataPointsList;
         }
     }
 
     private PriceCategory verifyCategory(String chosenCategory) {
 
-        if (chosenCategory.equalsIgnoreCase("CLOSE")){
+        if (chosenCategory.equalsIgnoreCase("Fechamento")){
             return PriceCategory.CLOSE;
-        } else if (chosenCategory.equalsIgnoreCase("HIGH")){
+        } else if (chosenCategory.equalsIgnoreCase("Maior")){
             return PriceCategory.HIGH;
-        } else if (chosenCategory.equalsIgnoreCase("LOW")){
+        } else if (chosenCategory.equalsIgnoreCase("Menor")){
             return PriceCategory.LOW;
-        } else if (chosenCategory.equalsIgnoreCase("OPEN")){
+        } else if (chosenCategory.equalsIgnoreCase("Abertura")){
             return PriceCategory.OPEN;
-        } else if (chosenCategory.equalsIgnoreCase("VOLUME")){
+        } else if (chosenCategory.equalsIgnoreCase("Volume")){
             return PriceCategory.VOLUME;
         }
         return PriceCategory.ALL;
@@ -105,12 +104,12 @@ public class PricePrediction {
         return dataPointList;
     }
 
-    private static void predictPriceMultiple (MultiLayerNetwork net, List<Pair<INDArray, INDArray>> testData, double max, double min) {
-        // TODO
-    }
+//    private static void predictPriceMultiple (MultiLayerNetwork net, List<Pair<INDArray, INDArray>> testData, double max, double min) {
+//        // TODO
+//    }
 
     /** Predict all the features (open, close, low, high prices and volume) of a stock one-day ahead */
-    private static List<String> predictAllCategories (MultiLayerNetwork net, List<Pair<INDArray, INDArray>> testData, INDArray max, INDArray min) {
+    private static void predictAllCategories (MultiLayerNetwork net, List<Pair<INDArray, INDArray>> testData, INDArray max, INDArray min) {
         INDArray[] predicts = new INDArray[testData.size()];
         INDArray[] actuals = new INDArray[testData.size()];
         for (int i = 0; i < testData.size(); i++) {
@@ -121,15 +120,10 @@ public class PricePrediction {
         log.info("Predict\tActual");
         for (int i = 0; i < predicts.length; i++) log.info(predicts[i] + "\t" + actuals[i]);
         log.info("Plot...");
-        List<String> dataPointList = new ArrayList<>();
+
         for (int n = 0; n < 5; n++) {
             double[] pred = new double[predicts.length];
-
-            System.out.println("predicts.lengh: " + pred.length);
-
             double[] actu = new double[actuals.length];
-
-            System.out.println("actuals.lengh: " + actu.length);
 
             for (int i = 0; i < predicts.length; i++) {
                 pred[i] = predicts[i].getDouble(n);
@@ -144,9 +138,6 @@ public class PricePrediction {
                 case 4: name = "Stock VOLUME Amount"; break;
                 default: throw new NoSuchElementException();
             }
-            dataPointList = PlotUtil.plot(pred, actu, name);
         }
-        return dataPointList;
     }
-
 }

@@ -93,7 +93,7 @@ public class PlaygroundController {
 
         // Building the trading strategy
         DailyPredictionTradeStrategy myStrategy = new DailyPredictionTradeStrategy();
-        Strategy strategy = DailyPredictionTradeStrategy.buildStrategy(customTimeSeries, smaList);
+        Strategy strategy = myStrategy.buildStrategy(customTimeSeries, smaList);
 
         // Running the strategy
         CustomTimeSeriesManager seriesManager = new CustomTimeSeriesManager(customTimeSeries);

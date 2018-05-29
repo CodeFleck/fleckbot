@@ -39,7 +39,7 @@ public class MyStrategy {
         Rule exitRule = new OverIndicatorRule(shortSma, longSma) // Trend
             .and(new CrossedUpIndicatorRule(closePrice, longMultiplierIndicator)); // Signal 1
 
-        return new BaseStrategy(entryRule, exitRule, 5);
+        return new BaseStrategy(entryRule, exitRule);
     }
 }
 

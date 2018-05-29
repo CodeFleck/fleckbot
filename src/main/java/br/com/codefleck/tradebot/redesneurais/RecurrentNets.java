@@ -1,4 +1,4 @@
-package br.com.codefleck.tradebot.services.prediction;
+package br.com.codefleck.tradebot.redesneurais;
 
 import org.deeplearning4j.nn.api.OptimizationAlgorithm;
 import org.deeplearning4j.nn.conf.BackpropType;

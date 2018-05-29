@@ -1,4 +1,4 @@
-package br.com.codefleck.tradebot.services.prediction;
+package br.com.codefleck.tradebot.redesneurais;
 
 public class StockData {
     private String date; // date

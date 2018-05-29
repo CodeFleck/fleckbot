@@ -1,9 +1,12 @@
-package br.com.codefleck.tradebot.services.prediction;
+package br.com.codefleck.tradebot.redesneurais;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.swing.JFrame;
+import javax.swing.WindowConstants;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -14,8 +17,6 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
-
-import javax.swing.*;
 
 import com.google.gson.Gson;
 
@@ -28,12 +29,13 @@ public class PlotUtil {
         int min = minValue(predicts, actuals);
         int max = maxValue(predicts, actuals);
         final XYSeriesCollection dataSet = new XYSeriesCollection();
+
         String predictsDataPoints = addSeries(dataSet, index, predicts, "Predicts");
         String actualsDataPoints = addSeries(dataSet, index, actuals, "Actuals");
 
-        List<String> dataPointList = new ArrayList<>();
-        dataPointList.add(predictsDataPoints);
-        dataPointList.add(actualsDataPoints);
+        List<String> dataPointsList = new ArrayList<>();
+        dataPointsList.add(predictsDataPoints);
+        dataPointsList.add(actualsDataPoints);
 
         final JFreeChart chart = ChartFactory.createXYLineChart(
             "Prediction Result", // chart title
@@ -62,13 +64,14 @@ public class PlotUtil {
         f.pack();
         f.setVisible(true);
 
-        return dataPointList;
+        return dataPointsList;
     }
 
-    private static String addSeries (final XYSeriesCollection dataSet, double[] x, double[] y, final String label){
-        final XYSeries s = new XYSeries(label);
+    private static String addSeries (final XYSeriesCollection dataSet, double[] x, double[] y, String label){
 
+        final XYSeries s = new XYSeries(label);
         Gson gsonObj = new Gson();
+
         Map<Object,Object> map = null;
         List<Map<Object,Object>> list = new ArrayList<Map<Object,Object>>();
 

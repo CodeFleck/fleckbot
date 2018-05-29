@@ -29,20 +29,7 @@ public class DailyPredictionTradeStrategy {
 
         Rule exitRule = new OverIndicatorRule(medianPriceIndicator, futurePricetIndicator);
 
-
-//        SMAIndicator shortSma = new SMAIndicator(medianPriceIndicator, 10);
-//        SMAIndicator longSma = new SMAIndicator(medianPriceIndicator, 32);
-
-        // Entry rule
-//        Rule entryRule = new UnderIndicatorRule(shortSma, longSma) // Trend
-//            .and(new CrossedDownIndicatorRule(medianPriceIndicator, futurePricetIndicator)); // Signal 1
-
-        // Exit rule
-//        Rule exitRule = new OverIndicatorRule(shortSma, longSma) // Trend
-//            .and(new CrossedUpIndicatorRule(medianPriceIndicator, futurePricetIndicator)); // Signal 1
-
-
-        return new BaseStrategy(entryRule, exitRule, 5);
+        return new BaseStrategy(entryRule, exitRule);
     }
 }
 

@@ -1,4 +1,4 @@
-package br.com.codefleck.tradebot.services.prediction;
+package br.com.codefleck.tradebot.redesneurais;
 
 import org.apache.spark.ml.feature.MinMaxScaler;
 import org.apache.spark.ml.feature.VectorAssembler;

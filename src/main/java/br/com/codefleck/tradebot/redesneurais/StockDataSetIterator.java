@@ -1,4 +1,4 @@
-package br.com.codefleck.tradebot.services.prediction;
+package br.com.codefleck.tradebot.redesneurais;
 
 import com.google.common.collect.ImmutableMap;
 import com.opencsv.CSVReader;

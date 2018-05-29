@@ -91,11 +91,4 @@ public class EventServiceImpl {
 
         return stockEvents;
     }
-
-
-
-
-    //TODO create save event DAO and methods to persist in database.
-
-
 }
