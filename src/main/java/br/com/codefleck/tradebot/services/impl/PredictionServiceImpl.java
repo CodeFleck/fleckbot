@@ -1,7 +1,8 @@
-package br.com.codefleck.tradebot.redesneurais;
+package br.com.codefleck.tradebot.services.impl;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -12,20 +13,31 @@ import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.io.ClassPathResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import br.com.codefleck.tradebot.core.util.CsvBarsLoader;
+import br.com.codefleck.tradebot.redesneurais.PlotUtil;
+import br.com.codefleck.tradebot.redesneurais.PriceCategory;
+import br.com.codefleck.tradebot.redesneurais.RecurrentNets;
+import br.com.codefleck.tradebot.redesneurais.StockDataSetIterator;
 import javafx.util.Pair;
 
-public class PricePrediction {
+@Service("predictionService")
+@Transactional
+@ComponentScan(basePackages = {"br.com.codefleck.tradebot.repository"})
+public class PredictionServiceImpl {
 
-    private static final Logger log = LoggerFactory.getLogger(PricePrediction.class);
+    private static final Logger log = LoggerFactory.getLogger(PredictionServiceImpl.class);
 
     //private static int exampleLength = 218; // time series length for 1 prediction
     private static int exampleLength = 127; // displaying prediction for 90 days
 
-    public List<String> initTraining(int tamanhoLote, int epocas, String simbolo, String categoria) throws IOException {
-        String file = new ClassPathResource("coinBaseForNeuralNet.csv").getFile().getAbsolutePath();
+    public List<String> initTraining(int epocas, String simbolo, String categoria, String filePath) throws IOException {
+        String file = new ClassPathResource("coinBaseDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
         String symbol = simbolo; // stock name
-        int batchSize = tamanhoLote; // mini-batch size
+        int batchSize = 64; // mini-batch size
         double splitRatio = 0.8; // 80% for training, 20% for testing
         int epochs = epocas; // training epochs
         String chosenCategory = categoria;
@@ -88,7 +100,7 @@ public class PricePrediction {
     }
 
     /** Predict one feature of a stock one-day ahead */
-    private static List<String> predictPriceOneAhead (MultiLayerNetwork net, List<Pair<INDArray, INDArray>> testData, double max, double min, PriceCategory category) {
+    private List<String> predictPriceOneAhead (MultiLayerNetwork net, List<Pair<INDArray, INDArray>> testData, double max, double min, PriceCategory category) {
         double[] predicts = new double[testData.size()];
         double[] actuals = new double[testData.size()];
         for (int i = 0; i < testData.size(); i++) {
@@ -104,12 +116,8 @@ public class PricePrediction {
         return dataPointList;
     }
 
-//    private static void predictPriceMultiple (MultiLayerNetwork net, List<Pair<INDArray, INDArray>> testData, double max, double min) {
-//        // TODO
-//    }
-
     /** Predict all the features (open, close, low, high prices and volume) of a stock one-day ahead */
-    private static void predictAllCategories (MultiLayerNetwork net, List<Pair<INDArray, INDArray>> testData, INDArray max, INDArray min) {
+    private void predictAllCategories (MultiLayerNetwork net, List<Pair<INDArray, INDArray>> testData, INDArray max, INDArray min) {
         INDArray[] predicts = new INDArray[testData.size()];
         INDArray[] actuals = new INDArray[testData.size()];
         for (int i = 0; i < testData.size(); i++) {
@@ -140,4 +148,14 @@ public class PricePrediction {
             }
         }
     }
+
+    public String createCSVFileForNeuralNets(Date beginDate, Date endDate, String period) {
+
+        CsvBarsLoader csvBarsLoader = new CsvBarsLoader();
+
+        String filePath = csvBarsLoader.createCSVFileForNeuralNets(beginDate, endDate, period);
+
+        return filePath;
+    }
 }
+

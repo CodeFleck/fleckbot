@@ -6,7 +6,7 @@
 <template:admin>
     <jsp:attribute name="extraScripts" />
     <jsp:body>
-    <script src="https://canvasjs.com/assets/script/canvasjs.min.js" type="text/javascript"></script>
+        <script src="https://canvasjs.com/assets/script/canvasjs.min.js" type="text/javascript"></script>
 
         <div class="container-fluid"><br>
             <h2 class="basic-title">Treinar Redes Neurais</h2><br>
@@ -15,10 +15,12 @@
                     <table class="table table-condensed table-bordered table-striped table-hover">
                         <thead>
                         <tr>
-                            <td>Símbolo</td>
-                            <td>Categoria</td>
+                            <td>Ativo</td>
+                            <td>Categoria a Prever</td>
                             <td>Épocas</td>
-                            <td>Tamanho Lote</td>
+                            <td>De</td>
+                            <td>Até</td>
+                            <td>Período</td>
                         </tr>
                         </thead>
                         <tbody>
@@ -36,24 +38,40 @@
                                     <option>Menor</option>
                                     <option>Volume</option>
                                 </select>
-                            </td>
                             <td><input type="number" class="form-control" name="epocas" min="0" step="1" value="100"></td>
-                            <td><input type="number" class="form-control" name="tamanhoLote" min="0" step="1" value="64"></td>
+                            <td> <input type="date" class="form-control" name="beginDate" min="2014-01-01" max="2018-01-08"></td>
+                            <td><input type="date" class="form-control" name="endDate" min="2014-01-01" max="2018-01-08"></td>
+                            <td><select class="form-control selectpicker" name="period">
+                                <option>1 minuto</option>
+                                <option>5 minutos</option>
+                                <option>10 minutos</option>
+                                <option>15 minutos</option>
+                                <option>30 minutos</option>
+                                <option>1 hora</option>
+                                <option>2 horas</option>
+                                <option>3 horas</option>
+                                <option>4 horas</option>
+                                <option>1 dia</option>
+                                <option>1 semana</option>
+                                <option>1 mês</option>
+                            </select>
+                            </td>
+                            </td>
                         </tr>
                         </tbody>
                     </table>
                     <button type="submit" class="btn btn-primary">Treinar Redes Neurais</button>
                 </form:form>
             </div><br><br>
-            <%--<button type="submit" class="btn btn-success" onclick="callPredictionChart()" style="margin: 15px;">Carregar Últimos Resultados</button>--%>
-            <%--<form>--%>
+                <%--<button type="submit" class="btn btn-success" onclick="callPredictionChart()" style="margin: 15px;">Carregar Últimos Resultados</button>--%>
+                <%--<form>--%>
                 <%--<div class="form-check">--%>
-                    <%--<input type="checkbox" class="form-check-input" id="isTheBest">--%>
-                    <%--<label class="form-check-label" for="isTheBest">Salvar como o melhor</label>--%>
+                <%--<input type="checkbox" class="form-check-input" id="isTheBest">--%>
+                <%--<label class="form-check-label" for="isTheBest">Salvar como o melhor</label>--%>
                 <%--</div>--%>
                 <%--<button type="submit" class="btn btn-info">Salvar</button>--%>
-            <%--</form>--%>
-            <%--<br>--%>
+                <%--</form>--%>
+                <%--<br>--%>
             <div id='chartContainer'></div>
         </div>
 

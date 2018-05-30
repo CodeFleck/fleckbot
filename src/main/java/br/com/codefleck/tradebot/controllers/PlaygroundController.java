@@ -24,7 +24,6 @@ import br.com.codefleck.tradebot.exchanges.trading.api.impl.CustomBaseBarForGrap
 import br.com.codefleck.tradebot.services.impl.EventServiceImpl;
 import br.com.codefleck.tradebot.services.impl.TradeServiceImpl;
 import br.com.codefleck.tradebot.strategies.DailyPredictionTradeStrategy;
-import br.com.codefleck.tradebot.strategies.MyStrategy;
 
 @Controller
 @RequestMapping("/playground")

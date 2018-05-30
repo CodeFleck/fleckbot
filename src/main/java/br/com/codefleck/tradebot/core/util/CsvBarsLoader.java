@@ -66,7 +66,7 @@ public class CsvBarsLoader {
         return new BaseTimeSeries("coinbase_bars", bars);
     }
 
-    public static void editCoinBaseSeriesForNeuralNets(Date beginDate, Date endDate, List<SMA> smaList) {
+    public static void editCoinBaseSeriesForNeuralNets(List<SMA> smaList) {
 
         InputStream stream = CsvBarsLoader.class.getClassLoader().getResourceAsStream("coinBaseForNeuralNet.csv");
 
@@ -77,15 +77,15 @@ public class CsvBarsLoader {
             String[] line;
             while ((line = csvReader.readNext()) != null) {
 
-                    String date = line[0];
-                    String symbol = line[1];
-                    double open = Double.parseDouble(line[2]);
-                    double high = Double.parseDouble(line[3]);
-                    double low = Double.parseDouble(line[4]);
-                    double close = Double.parseDouble(line[5]);
-                    double volume = Double.parseDouble(line[6]);
+                String date = line[0];
+                String symbol = line[1];
+                double open = Double.parseDouble(line[2]);
+                double high = Double.parseDouble(line[3]);
+                double low = Double.parseDouble(line[4]);
+                double close = Double.parseDouble(line[5]);
+                double volume = Double.parseDouble(line[6]);
 
-                    customBaseBars.add(new CustomBaseBar(date, symbol, open, high, low, close, volume));
+                customBaseBars.add(new CustomBaseBar(date, symbol, open, high, low, close, volume));
             }
         } catch (IOException ioe) {
             Logger.getLogger(CsvBarsLoader.class.getName()).log(Level.SEVERE, "Unable to load bars from CSV", ioe);
@@ -101,4 +101,51 @@ public class CsvBarsLoader {
         csvFileWriter.writeCsvFile(AgregatedCustomBaseBars, smaList);
 
     }
+
+    public String createCSVFileForNeuralNets(Date beginDate, Date endDate, String period) {
+
+        InputStream stream = CsvBarsLoader.class.getClassLoader().getResourceAsStream("coinbaseUSD_1-min_data_2014-12-01_to_2018-01-08.csv");
+
+        List<Bar> bars = new ArrayList<>();
+
+        CSVReader csvReader = new CSVReader(new InputStreamReader(stream, Charset.forName("UTF-8")), ',', '"', 1);
+        try {
+            String[] line;
+            while ((line = csvReader.readNext()) != null) {
+
+                Date tempDate = new Date(Long.valueOf(line[0]) * 1000L);
+
+                if (tempDate.after(beginDate) && tempDate.before(endDate)){
+
+                    String dateAsText = new SimpleDateFormat("yyyy,MM,dd HH:mm:ss")
+                        .format(tempDate);
+
+                    ZonedDateTime date = ZonedDateTime.of(LocalDate.parse(dateAsText, DATE_FORMAT), LocalTime.parse(dateAsText, DATE_FORMAT), ZoneId.systemDefault());
+
+                    double open = Double.parseDouble(line[1]);
+                    double high = Double.parseDouble(line[2]);
+                    double low = Double.parseDouble(line[3]);
+                    double close = Double.parseDouble(line[4]);
+                    double volume = Double.parseDouble(line[5]);
+
+                    bars.add(new BaseBar(date, open, high, low, close, volume));
+                }
+            }
+        } catch (IOException ioe) {
+            java.util.logging.Logger.getLogger(CsvBarsLoader.class.getName()).log(Level.SEVERE, "Unable to load bars from CSV", ioe);
+        } catch (NumberFormatException nfe) {
+            java.util.logging.Logger.getLogger(CsvBarsLoader.class.getName()).log(Level.SEVERE, "Error while parsing value", nfe);
+        }
+        BaseTimeSeries baseTimeSeries = new BaseTimeSeries("coinbase_bars", bars);
+
+        DownSamplingTimeSeries downSamplingTimeSeries = new DownSamplingTimeSeries(period);
+
+        BaseTimeSeries customTimeSeries = downSamplingTimeSeries.aggregate(baseTimeSeries);
+
+        CsvFileWriter csvFileWriter = new CsvFileWriter();
+        String filePath = csvFileWriter.writeCsvFileForNeuralNets(customTimeSeries);
+
+        return filePath;
+    }
+
 }
