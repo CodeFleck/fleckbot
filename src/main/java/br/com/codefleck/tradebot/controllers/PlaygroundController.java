@@ -24,6 +24,7 @@ import br.com.codefleck.tradebot.exchanges.trading.api.impl.CustomBaseBarForGrap
 import br.com.codefleck.tradebot.services.impl.EventServiceImpl;
 import br.com.codefleck.tradebot.services.impl.TradeServiceImpl;
 import br.com.codefleck.tradebot.strategies.DailyPredictionTradeStrategy;
+import br.com.codefleck.tradebot.strategies.MyStrategy;
 
 @Controller
 @RequestMapping("/playground")
@@ -48,7 +49,8 @@ public class PlaygroundController {
     }
 
     @PostMapping("/load")
-    public ModelAndView loadData(@ModelAttribute("period") String period,
+    public ModelAndView loadData(@ModelAttribute("strategy") String strategy,
+                                 @ModelAttribute("period") String period,
                                  @ModelAttribute("montante") Double montante,
                                  @ModelAttribute("saldo") Double saldo,
                                  @RequestParam("beginDate") String beginDate,
@@ -91,14 +93,13 @@ public class PlaygroundController {
         List<SMA> smaList = smaDao.all();
 
         // Building the trading strategy
-        DailyPredictionTradeStrategy myStrategy = new DailyPredictionTradeStrategy();
-        Strategy strategy = myStrategy.buildStrategy(customTimeSeries, smaList);
+        Strategy chosenStrategy = resolveStrategy(strategy, customTimeSeries, smaList);
 
         // Running the strategy
         CustomTimeSeriesManager seriesManager = new CustomTimeSeriesManager(customTimeSeries);
 
         // Strategy strategy, OrderType orderType, Decimal amount
-        TradingRecord tradingRecord = seriesManager.run(strategy, Order.OrderType.BUY, Decimal.valueOf(orderAmount));
+        TradingRecord tradingRecord = seriesManager.run(chosenStrategy, Order.OrderType.BUY, Decimal.valueOf(orderAmount));
 
         List<Trade> tradesList = tradingRecord.getTrades();
 
@@ -165,6 +166,20 @@ public class PlaygroundController {
 
     }
 
+    private Strategy resolveStrategy(String strategy, BaseTimeSeries customTimeSeries, List<SMA> smaList) {
+
+        if (strategy.equals("SMA Duplo")){
+            MyStrategy myStrategy = new MyStrategy();
+            return myStrategy.buildStrategy(customTimeSeries, smaList);
+        }
+        if (strategy.equals("LSTM Prediction")){
+            DailyPredictionTradeStrategy dayDailyPredictionTradeStrategy = new DailyPredictionTradeStrategy();
+        return dayDailyPredictionTradeStrategy.buildStrategy(customTimeSeries, smaList);
+        }
+
+        return null;
+
+    }
 
     private List<CustomBaseBarForGraph> formatDateForFrontEnd(List<Bar> barListForGraph) {
 

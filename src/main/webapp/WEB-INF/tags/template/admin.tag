@@ -46,10 +46,10 @@
                 <a class="nav-link" href="<c:url value='/playground'/>">Playground</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="<c:url value='/trading'/>">Logs</a>
+                <a class="nav-link" href="<c:url value='/redes-neurais'/>">Redes Neurais</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="<c:url value='/redes-neurais'/>">Redes Neurais</a>
+                <a class="nav-link" href="<c:url value='/trading'/>">Logs</a>
             </li>
         </ul>
         <form class="form-inline my-4 my-lg-0">

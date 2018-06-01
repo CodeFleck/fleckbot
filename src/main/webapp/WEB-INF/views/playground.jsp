@@ -69,7 +69,12 @@
                             </thead>
                             <tbody>
                             <tr>
-                                <td>Minha estratégia</td>
+                                <td>
+                                    <select class="form-control selectpicker" name="strategy">
+                                        <option>SMA Duplo</option>
+                                        <option>LSTM Prediction</option>
+                                    </select>
+                                </td>
                                 <td><input type="number" class="form-control" name="montante" min="0" step="0.01" value="1000.00"></td>
                                 <td><input type="number" class="form-control" name="saldo" min="0" step="0.01" value="50000.00"></td>
                                 <td><input class="form-control" type="text" placeholder="0,00" readonly></td>

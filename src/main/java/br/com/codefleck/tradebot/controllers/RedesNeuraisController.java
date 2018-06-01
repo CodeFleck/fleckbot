@@ -8,6 +8,7 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
+import org.junit.experimental.theories.DataPoints;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -35,16 +36,6 @@ public class RedesNeuraisController {
     public ModelAndView redesNeuraisLandingDataProvider(ModelAndView model) {
 
         model.addObject("botStatus", fleckBot.isRunning());
-        model.setViewName("redes-neurais");
-
-//        List<DataPointsListModel> todosDataPoints = dataPointListDao.all();
-
-//        if (todosDataPoints != null && todosDataPoints.size() > 0){
-//            DataPointsListModel ultimoDataPointModel = dataPointListDao.findById(todosDataPoints.size());
-//            model.addObject("predictsDataPoints", ultimoDataPointModel.getPredictsDataPoints());
-//            model.addObject("actualsDataPoints", ultimoDataPointModel.getActualsDataPoints());
-//            model.addObject("categoria", ultimoDataPointModel.getName());
-//        }
 
         return model;
     }
