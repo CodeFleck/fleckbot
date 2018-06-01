@@ -87,9 +87,6 @@ public class CsvFileWriter {
             int i = 0;
             for (Bar bar : linesList) {
 
-                System.out.println("Iteração " + i);
-                System.out.println("base bar being printed: " + bar.toString());
-
                 if (bar == null) {
                     break;
                 }

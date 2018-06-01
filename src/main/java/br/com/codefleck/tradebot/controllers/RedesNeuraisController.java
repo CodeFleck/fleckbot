@@ -1,7 +1,6 @@
 package br.com.codefleck.tradebot.controllers;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -9,16 +8,16 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
-import org.nd4j.linalg.io.ClassPathResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import br.com.codefleck.tradebot.core.engine.TradingEngine;
+import br.com.codefleck.tradebot.daos.DataPointsModelDao;
+import br.com.codefleck.tradebot.redesneurais.DataPointsListModel;
+import br.com.codefleck.tradebot.redesneurais.DataPointsModel;
 import br.com.codefleck.tradebot.services.impl.PredictionServiceImpl;
-import br.com.codefleck.tradebot.tradingapi.ExchangeNetworkException;
-import br.com.codefleck.tradebot.tradingapi.TradingApiException;
 
 @Controller
 @RequestMapping("/redes-neurais")
@@ -29,6 +28,8 @@ public class RedesNeuraisController {
     TradingEngine fleckBot;
     @Autowired
     PredictionServiceImpl predictionService;
+    @Autowired
+    DataPointsModelDao dataPointsModelDao;
 
     @GetMapping
     public ModelAndView redesNeuraisLandingDataProvider(ModelAndView model) {
@@ -54,7 +55,8 @@ public class RedesNeuraisController {
                                      @ModelAttribute("epocas") int epocas,
                                      @RequestParam("beginDate") String beginDate,
                                      @RequestParam("endDate") String endDate,
-                                     @ModelAttribute("period") String period) throws IOException, ParseException {
+                                     @ModelAttribute("period") String period,
+                                     @ModelAttribute("nomeDoConjunto") String nomeDoConjunto) throws IOException, ParseException {
 
         SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -71,7 +73,14 @@ public class RedesNeuraisController {
         model.addObject("actualsDataPoints", dataPointList.get(1));
         model.addObject("categoria", categoria);
 
-        //predictionService.saveredictionDataPointsToCSV(dataPointList);
+        DataPointsListModel dataPointsListModel = predictionService.prepareDataPointToBeSaved(dataPointList, nomeDoConjunto, categoria);
+
+        for (DataPointsModel dataPoint : dataPointsListModel.getPredictDataPointsModelList()) {
+            dataPointsModelDao.save(dataPoint);
+        }
+        for (DataPointsModel dataPoint : dataPointsListModel.getActualDataPointsModelList()) {
+            dataPointsModelDao.save(dataPoint);
+        }
 
         return model;
     }

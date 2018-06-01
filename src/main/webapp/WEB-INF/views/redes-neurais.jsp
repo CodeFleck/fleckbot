@@ -21,6 +21,7 @@
                             <td>De</td>
                             <td>Até</td>
                             <td>Período</td>
+                            <td>Nome do Conjunto</td>
                         </tr>
                         </thead>
                         <tbody>
@@ -38,6 +39,7 @@
                                     <option>Menor</option>
                                     <option>Volume</option>
                                 </select>
+                            </td>
                             <td><input type="number" class="form-control" name="epocas" min="0" step="1" value="100"></td>
                             <td> <input type="date" class="form-control" name="beginDate" min="2014-01-01" max="2018-01-08"></td>
                             <td><input type="date" class="form-control" name="endDate" min="2014-01-01" max="2018-01-08"></td>
@@ -56,23 +58,15 @@
                                 <option>1 mês</option>
                             </select>
                             </td>
-                            </td>
+                            <td><input type="text" class="form-control" name="nomeDoConjunto"></td>
                         </tr>
                         </tbody>
                     </table>
                     <button type="submit" class="btn btn-primary">Treinar Redes Neurais</button>
                 </form:form>
             </div><br><br>
-                <%--<button type="submit" class="btn btn-success" onclick="callPredictionChart()" style="margin: 15px;">Carregar Últimos Resultados</button>--%>
-                <%--<form>--%>
-                <%--<div class="form-check">--%>
-                <%--<input type="checkbox" class="form-check-input" id="isTheBest">--%>
-                <%--<label class="form-check-label" for="isTheBest">Salvar como o melhor</label>--%>
-                <%--</div>--%>
-                <%--<button type="submit" class="btn btn-info">Salvar</button>--%>
-                <%--</form>--%>
-                <%--<br>--%>
-            <div id='chartContainer'></div>
+            <div id='chartContainer'></div><br>
+            <p>Categoria: ${categoria}</p>
         </div>
 
         <script type="text/javascript">

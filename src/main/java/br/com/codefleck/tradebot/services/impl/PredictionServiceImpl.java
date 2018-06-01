@@ -2,6 +2,7 @@ package br.com.codefleck.tradebot.services.impl;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -18,10 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.codefleck.tradebot.core.util.CsvBarsLoader;
-import br.com.codefleck.tradebot.redesneurais.PlotUtil;
-import br.com.codefleck.tradebot.redesneurais.PriceCategory;
-import br.com.codefleck.tradebot.redesneurais.RecurrentNets;
-import br.com.codefleck.tradebot.redesneurais.StockDataSetIterator;
+import br.com.codefleck.tradebot.redesneurais.*;
 import javafx.util.Pair;
 
 @Service("predictionService")
@@ -100,7 +98,7 @@ public class PredictionServiceImpl {
     }
 
     /** Predict one feature of a stock one-day ahead */
-    private List<String> predictPriceOneAhead (MultiLayerNetwork net, List<Pair<INDArray, INDArray>> testData, double max, double min, PriceCategory category) {
+    public List<String> predictPriceOneAhead (MultiLayerNetwork net, List<Pair<INDArray, INDArray>> testData, double max, double min, PriceCategory category) {
         double[] predicts = new double[testData.size()];
         double[] actuals = new double[testData.size()];
         for (int i = 0; i < testData.size(); i++) {
@@ -156,6 +154,74 @@ public class PredictionServiceImpl {
         String filePath = csvBarsLoader.createCSVFileForNeuralNets(beginDate, endDate, period);
 
         return filePath;
+    }
+
+    public DataPointsListModel prepareDataPointToBeSaved(List<String> dataPointList, String nomeDoConjunto, String categoria) {
+
+        //predicts
+        String predictsDataPointsArray[] = dataPointList.get(0).replace("[", "").replace("{", "").replace("}", "").replaceAll("\"\"", "").split(",");
+
+        List<String> xPredictToken = new ArrayList<>();
+        List<String> yPredictToken = new ArrayList<>();
+
+        for (String token : predictsDataPointsArray) {
+
+            if (token.substring(1, 2).equals("x")){
+                xPredictToken.add(token.replaceAll("\"", "").replace("x:", "").replace("]", ""));
+            } else if (token.substring(1, 2).equals("y")){
+                yPredictToken.add(token.replaceAll("\"", "").replace("y:", "").replace("]", ""));
+            }
+        }
+
+        List<DataPointsModel> predictsDataPointsModelListXY = new ArrayList<>();
+
+        for (int i=0; i<xPredictToken.size();i++){
+            DataPointsModel dataPointsModel = new DataPointsModel();
+            dataPointsModel.setNomeConjunto(nomeDoConjunto.concat("Prediction-").concat(categoria));
+
+            dataPointsModel.setX(Double.valueOf(xPredictToken.get(i)));
+            if (yPredictToken.get(i) != null ) {
+                dataPointsModel.setY(Double.valueOf(yPredictToken.get(i)));
+            }
+            predictsDataPointsModelListXY.add(dataPointsModel);
+        }
+
+        //actuals
+        String actualsDataPointsArray[] = dataPointList.get(1).replace("[", "").replace("{", "").replace("}", "").replaceAll("\"\"", "").split(",");
+
+        List<String> xActualToken = new ArrayList<>();
+        List<String> yActualToken = new ArrayList<>();
+
+        for (String token : actualsDataPointsArray) {
+
+            if (token.substring(1, 2).equals("x")){
+                xActualToken.add(token.replaceAll("\"", "").replace("x:", "").replace("]", ""));
+            } else if (token.substring(1, 2).equals("y")){
+                yActualToken.add(token.replaceAll("\"", "").replace("y:", "").replace("]", ""));
+            }
+        }
+
+        List<DataPointsModel> actualDataPointsModelListXY = new ArrayList<>();
+
+        for (int i=0; i<xActualToken.size();i++){
+            DataPointsModel dataPointsModel = new DataPointsModel();
+            dataPointsModel.setNomeConjunto(nomeDoConjunto.concat("Actual-".concat(categoria)));
+            dataPointsModel.setX(Double.valueOf(xActualToken.get(i)));
+
+            if (yActualToken.get(i) != null) {
+                dataPointsModel.setY(Double.valueOf(yActualToken.get(i)));
+            }
+            actualDataPointsModelListXY.add(dataPointsModel);
+
+        }
+
+        DataPointsListModel dataPointsListModel = new DataPointsListModel();
+        dataPointsListModel.setName("PredictionEActuals1");
+        dataPointsListModel.setActualDataPointsModelList(actualDataPointsModelListXY);
+        dataPointsListModel.setPredictDataPointsModelList(predictsDataPointsModelListXY);
+
+        return dataPointsListModel;
+
     }
 }
 

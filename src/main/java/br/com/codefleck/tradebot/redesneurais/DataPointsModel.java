@@ -1,18 +1,34 @@
 package br.com.codefleck.tradebot.redesneurais;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
+@Entity
 public class DataPointsModel {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
     double x;
     double y;
-
-    DataPointsListModel dataPointsListModel;
+    String nomeConjunto;
 
     public DataPointsModel(){}
 
-    public DataPointsModel(double x, double y, DataPointsListModel dataPointsListModel) {
+    public DataPointsModel(double x, double y, String nomeConjunto) {
         this.x = x;
         this.y = y;
-        this.dataPointsListModel = dataPointsListModel;
+        this.nomeConjunto = nomeConjunto;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public double getX() {
@@ -31,16 +47,17 @@ public class DataPointsModel {
         this.y = y;
     }
 
-    public DataPointsListModel getDataPointsListModel() {
-        return dataPointsListModel;
+    public String getNomeConjunto() {
+        return nomeConjunto;
     }
 
-    public void setDataPointsListModel(DataPointsListModel dataPointsListModel) {
-        this.dataPointsListModel = dataPointsListModel;
+    public void setNomeConjunto(String nomeConjunto) {
+        this.nomeConjunto = nomeConjunto;
     }
 
     @Override
     public String toString() {
-        return "DataPointsModel{" + ", x=" + x + ", y=" + y + ", dataPointsListModel=" + dataPointsListModel + '}';
+        return "DataPointsModel{" + "id=" + id + ", x=" + x + ", y=" + y + ", nomeConjunto='" + nomeConjunto + '\'' + '}';
     }
 }
+

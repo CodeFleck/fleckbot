@@ -1,29 +1,27 @@
 package br.com.codefleck.tradebot.redesneurais;
 
 import java.util.List;
-import java.util.Map;
 
 public class DataPointsListModel {
 
-    public int id;
+    private Integer id;
     String name;
-    List<Map<Object, Object>> predictsDataPoints;
-    List<Map<Object, Object>> actualsDataPoints;
+    List<DataPointsModel> predictDataPointsModelList;
+    List<DataPointsModel> actualDataPointsModelList;
 
     public DataPointsListModel(){}
 
-    public DataPointsListModel(int id, String name, List<Map<Object, Object>> predictsDataPoints, List<Map<Object, Object>> actualsDataPoints ) {
-        this.id = id;
+    public DataPointsListModel(String name, List<DataPointsModel> predictDataPointsModelList, List<DataPointsModel> actualDataPointsModelList) {
         this.name = name;
-        this.predictsDataPoints = predictsDataPoints;
-        this.actualsDataPoints = actualsDataPoints;
+        this.predictDataPointsModelList = predictDataPointsModelList;
+        this.actualDataPointsModelList = actualDataPointsModelList;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -35,24 +33,24 @@ public class DataPointsListModel {
         this.name = name;
     }
 
-    public List<Map<Object, Object>> getPredictsDataPoints() {
-        return predictsDataPoints;
+    public List<DataPointsModel> getPredictDataPointsModelList() {
+        return predictDataPointsModelList;
     }
 
-    public void setPredictsDataPoints(List<Map<Object, Object>> predictsDataPoints) {
-        this.predictsDataPoints = predictsDataPoints;
+    public void setPredictDataPointsModelList(List<DataPointsModel> predictDataPointsModelList) {
+        this.predictDataPointsModelList = predictDataPointsModelList;
     }
 
-    public List<Map<Object, Object>> getActualsDataPoints() {
-        return actualsDataPoints;
+    public List<DataPointsModel> getActualDataPointsModelList() {
+        return actualDataPointsModelList;
     }
 
-    public void setActualsDataPoints(List<Map<Object, Object>> actualsDataPoints) {
-        this.actualsDataPoints = actualsDataPoints;
+    public void setActualDataPointsModelList(List<DataPointsModel> actualDataPointsModelList) {
+        this.actualDataPointsModelList = actualDataPointsModelList;
     }
 
     @Override
     public String toString() {
-        return "DataPointsListModel{" + "id=" + id + ", name='" + name + '\'' + ", predictsDataPoints=" + predictsDataPoints + ", actualsDataPoints=" + actualsDataPoints + '}';
+        return "DataPointsListModel{" + "id=" + id + ", name='" + name + '\'' + ", predictDataPointsModelList=" + predictDataPointsModelList + ", actualDataPointsModelList=" + actualDataPointsModelList + '}';
     }
 }
