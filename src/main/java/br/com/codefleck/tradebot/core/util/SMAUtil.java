@@ -14,7 +14,6 @@ import org.ta4j.core.indicators.helpers.MedianPriceIndicator;
 
 public class SMAUtil {
 
-
     public SMAUtil() {
     }
 

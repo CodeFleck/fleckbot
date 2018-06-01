@@ -54,9 +54,9 @@ public class RedesNeuraisController {
         Date begingDate = formato.parse(beginDate);
         Date endingDate = formato.parse(endDate);
 
-        String file = predictionService.createCSVFileForNeuralNets(begingDate, endingDate, period);
+        predictionService.createCSVFileForNeuralNets(begingDate, endingDate, period);
 
-        List<String> dataPointList = predictionService.initTraining(epocas, simbolo, categoria, file);
+        List<String> dataPointList = predictionService.initTraining(epocas, simbolo, categoria);
 
         ModelAndView model = new ModelAndView();
         model.setViewName("/redes-neurais");

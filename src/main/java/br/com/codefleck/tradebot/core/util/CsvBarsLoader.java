@@ -102,7 +102,7 @@ public class CsvBarsLoader {
 
     }
 
-    public String createCSVFileForNeuralNets(Date beginDate, Date endDate, String period) {
+    public void createCSVFileForNeuralNets(Date beginDate, Date endDate, String period) {
 
         InputStream stream = CsvBarsLoader.class.getClassLoader().getResourceAsStream("coinbaseUSD_1-min_data_2014-12-01_to_2018-01-08.csv");
 
@@ -143,9 +143,8 @@ public class CsvBarsLoader {
         BaseTimeSeries customTimeSeries = downSamplingTimeSeries.aggregate(baseTimeSeries);
 
         CsvFileWriter csvFileWriter = new CsvFileWriter();
-        String filePath = csvFileWriter.writeCsvFileForNeuralNets(customTimeSeries);
+        csvFileWriter.writeCsvFileForNeuralNets(customTimeSeries);
 
-        return filePath;
     }
 
 }

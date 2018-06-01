@@ -65,7 +65,7 @@ public class CsvFileWriter {
         }
     }
 
-    public String writeCsvFileForNeuralNets(BaseTimeSeries customTimeSeries) {
+    public void writeCsvFileForNeuralNets(BaseTimeSeries customTimeSeries) {
 
         final String FILE_HEADER_FOR_NEURAL_NETS = "date,symbol,open,close,low, high, volume";
 
@@ -117,6 +117,5 @@ public class CsvFileWriter {
             }
 
         }
-        return filePathName;
     }
 }

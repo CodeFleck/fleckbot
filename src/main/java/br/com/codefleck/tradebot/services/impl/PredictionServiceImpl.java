@@ -32,7 +32,7 @@ public class PredictionServiceImpl {
     //private static int exampleLength = 218; // time series length for 1 prediction
     private static int exampleLength = 127; // displaying prediction for 90 days
 
-    public List<String> initTraining(int epocas, String simbolo, String categoria, String filePath) throws IOException {
+    public List<String> initTraining(int epocas, String simbolo, String categoria) throws IOException {
         String file = new ClassPathResource("coinBaseDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
         String symbol = simbolo; // stock name
         int batchSize = 64; // mini-batch size
@@ -147,16 +147,15 @@ public class PredictionServiceImpl {
         }
     }
 
-    public String createCSVFileForNeuralNets(Date beginDate, Date endDate, String period) {
+    public void createCSVFileForNeuralNets(Date beginDate, Date endDate, String period) {
 
         CsvBarsLoader csvBarsLoader = new CsvBarsLoader();
 
-        String filePath = csvBarsLoader.createCSVFileForNeuralNets(beginDate, endDate, period);
+        csvBarsLoader.createCSVFileForNeuralNets(beginDate, endDate, period);
 
-        return filePath;
     }
 
-    public DataPointsListModel prepareDataPointToBeSaved(List<String> dataPointList, String nomeDoConjunto, String categoria) {
+    public DataPointsListModel prepareDataPointToBeSaved(List<String> dataPointList, String nomeDoConjunto, String categoria) throws IOException {
 
         //predicts
         String predictsDataPointsArray[] = dataPointList.get(0).replace("[", "").replace("{", "").replace("}", "").replaceAll("\"\"", "").split(",");
