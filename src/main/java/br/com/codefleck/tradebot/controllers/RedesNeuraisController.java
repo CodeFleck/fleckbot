@@ -3,6 +3,7 @@ package br.com.codefleck.tradebot.controllers;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -13,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+
+import com.google.gson.Gson;
 
 import br.com.codefleck.tradebot.core.engine.TradingEngine;
 import br.com.codefleck.tradebot.daos.DataPointsModelDao;
@@ -36,6 +39,27 @@ public class RedesNeuraisController {
     public ModelAndView redesNeuraisLandingDataProvider(ModelAndView model) {
 
         model.addObject("botStatus", fleckBot.isRunning());
+
+        List<DataPointsModel> todosDataPoints = dataPointsModelDao.all();
+
+        List<DataPointsModel> predictsList = new ArrayList<>();
+        List<DataPointsModel> actualsList = new ArrayList<>();
+
+        for (DataPointsModel dataPoint : todosDataPoints) {
+
+            if (dataPoint.getNomeConjunto().equals("2-epocas-1m-abril2017Prediction-Fechamento")){
+                predictsList.add(dataPoint);
+            }
+            if (dataPoint.getNomeConjunto().equals("2-epocas-1m-abril2017Actual-Fechamento")){
+                actualsList.add(dataPoint);
+            }
+        }
+
+        Gson gsonPredict = new Gson();
+        Gson gsonActual = new Gson();
+
+        model.addObject("predictsDataPoints", gsonPredict.toJson(predictsList));
+        model.addObject("actualsDataPoints", gsonActual.toJson(actualsList));
 
         return model;
     }
