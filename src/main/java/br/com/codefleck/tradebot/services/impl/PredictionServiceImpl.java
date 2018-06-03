@@ -215,12 +215,49 @@ public class PredictionServiceImpl {
         }
 
         DataPointsListModel dataPointsListModel = new DataPointsListModel();
-        dataPointsListModel.setName("PredictionEActuals1");
+        dataPointsListModel.setName("Prediction&Actuals");
         dataPointsListModel.setActualDataPointsModelList(actualDataPointsModelListXY);
         dataPointsListModel.setPredictDataPointsModelList(predictsDataPointsModelListXY);
 
         return dataPointsListModel;
 
+    }
+
+    public Double calculateErrorPercentageAverage(DataPointsListModel dataPointsList) {
+
+        List<Double> errorPercentage = new ArrayList<>();
+        Double result;
+
+        for (int i=0;i<dataPointsList.getActualDataPointsModelList().size();i++){
+
+            result = (dataPointsList.getPredictDataPointsModelList().get(i).getY()*100)/dataPointsList.getActualDataPointsModelList().get(i).getY();
+
+            errorPercentage.add(result);
+
+        }
+
+        Double errorPercentageAverage = 0.00;
+        for (int i=0; i<errorPercentage.size();i++){
+            errorPercentageAverage += errorPercentage.get(i).doubleValue();
+        }
+
+        errorPercentageAverage = errorPercentageAverage/errorPercentage.size();
+
+        return errorPercentageAverage;
+    }
+
+    public Double calculateErrorPercentageLastDay(DataPointsListModel dataPointsList) {
+
+        List<Double> errorPercentage = new ArrayList<>();
+        Double result;
+
+        int lastResult = dataPointsList.getPredictDataPointsModelList().size();
+
+            result = (dataPointsList.getPredictDataPointsModelList().get(lastResult).getY()*100)/dataPointsList.getActualDataPointsModelList().get(lastResult).getY();
+
+            errorPercentage.add(result);
+
+        return result;
     }
 }
 

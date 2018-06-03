@@ -65,8 +65,10 @@
                     <button type="submit" class="btn btn-primary">Treinar Redes Neurais</button>
                 </form:form>
             </div><br><br>
-            <div id='chartContainer'></div><br>
             <p>Categoria: ${categoria}</p>
+            <p>Porcentagem média de erro: ${errorPercentageAvg}%</p>
+            <p>Porcentagem de erro no último dia: ${errorPercentageLastDay}%</p>
+            <div id='chartContainer'></div><br>
         </div>
 
         <script type="text/javascript">

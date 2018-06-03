@@ -1,6 +1,8 @@
 package br.com.codefleck.tradebot.controllers;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -9,7 +11,6 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
-import org.junit.experimental.theories.DataPoints;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -82,19 +83,28 @@ public class RedesNeuraisController {
 
         List<String> dataPointList = predictionService.initTraining(epocas, simbolo, categoria);
 
+
         ModelAndView model = new ModelAndView();
         model.setViewName("/redes-neurais");
         model.addObject("predictsDataPoints", dataPointList.get(0));
         model.addObject("actualsDataPoints", dataPointList.get(1));
-        model.addObject("categoria", categoria);
+        String cat = categoria;
+        model.addObject("categoria", cat);
 
-        DataPointsListModel dataPointsListModel = predictionService.prepareDataPointToBeSaved(dataPointList, nomeDoConjunto, categoria);
+        DataPointsListModel dataPointsList = predictionService.prepareDataPointToBeSaved(dataPointList, nomeDoConjunto, categoria);
+        Double errorPercentageAvg = predictionService.calculateErrorPercentageAverage(dataPointsList);
+        Double errorPercentageLastDay = predictionService.calculateErrorPercentageLastDay(dataPointsList);
 
-        for (DataPointsModel dataPoint : dataPointsListModel.getPredictDataPointsModelList()) {
-            dataPointsModelDao.save(dataPoint);
+        NumberFormat formatter = new DecimalFormat("#0.00");
+
+        model.addObject("errorPercentageAvg", formatter.format(errorPercentageAvg));
+        model.addObject("errorPercentageLastDay", formatter.format(errorPercentageLastDay));
+
+        for (DataPointsModel dataPoint : dataPointsList.getPredictDataPointsModelList()) {
+            //dataPointsModelDao.save(dataPoint);
         }
-        for (DataPointsModel dataPoint : dataPointsListModel.getActualDataPointsModelList()) {
-            dataPointsModelDao.save(dataPoint);
+        for (DataPointsModel dataPoint : dataPointsList.getActualDataPointsModelList()) {
+            //dataPointsModelDao.save(dataPoint);
         }
 
         return model;
