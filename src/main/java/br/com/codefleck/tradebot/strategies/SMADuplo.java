@@ -13,7 +13,7 @@ import org.ta4j.core.trading.rules.UnderIndicatorRule;
 
 import br.com.codefleck.tradebot.core.util.SMA;
 
-public class MyStrategy {
+public class SMADuplo {
 
     public static Strategy buildStrategy(BaseTimeSeries series, List<SMA> smaList) {
         if (series == null) {
@@ -27,8 +27,8 @@ public class MyStrategy {
         SMAIndicator shortSma = new SMAIndicator(closePrice, 10);
         SMAIndicator longSma = new SMAIndicator(closePrice, 32);
 
-        MultiplierIndicator shortMultiplierIndicator = new MultiplierIndicator(shortSma, Decimal.valueOf(0.99));
-        MultiplierIndicator longMultiplierIndicator = new MultiplierIndicator(shortSma, Decimal.valueOf(1.01));
+        MultiplierIndicator shortMultiplierIndicator = new MultiplierIndicator(shortSma, Decimal.valueOf(0.98));
+        MultiplierIndicator longMultiplierIndicator = new MultiplierIndicator(shortSma, Decimal.valueOf(1.02));
 
 
         // Entry rule

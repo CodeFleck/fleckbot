@@ -24,7 +24,7 @@ import br.com.codefleck.tradebot.exchanges.trading.api.impl.CustomBaseBarForGrap
 import br.com.codefleck.tradebot.services.impl.EventServiceImpl;
 import br.com.codefleck.tradebot.services.impl.TradeServiceImpl;
 import br.com.codefleck.tradebot.strategies.DailyPredictionTradeStrategy;
-import br.com.codefleck.tradebot.strategies.MyStrategy;
+import br.com.codefleck.tradebot.strategies.SMADuplo;
 
 @Controller
 @RequestMapping("/playground")
@@ -77,18 +77,6 @@ public class PlaygroundController {
         DownSamplingTimeSeries downSamplingTimeSeries = new DownSamplingTimeSeries(period);
 
         BaseTimeSeries customTimeSeries = downSamplingTimeSeries.aggregate(series);
-
-        //doing my stuff
-//        SMAUtil smaUtil = new SMAUtil();
-//
-//        List<SMA> smaList = smaUtil.getSMAForMedianAveragePrice(customTimeSeries);
-//        for (SMA result : smaList) {
-//            //smaDao.save(result);
-//            System.out.println("SMA " + result.getValor() + " salvo com sucesso!");
-//        }
-//
-//        CsvBarsLoader.editCoinBaseSeriesForNeuralNets(begingDate, endingDate, smaList);
-        //End doing my stuff
 
         List<SMA> smaList = smaDao.all();
 
@@ -169,7 +157,7 @@ public class PlaygroundController {
     private Strategy resolveStrategy(String strategy, BaseTimeSeries customTimeSeries, List<SMA> smaList) {
 
         if (strategy.equals("SMA Duplo")){
-            MyStrategy myStrategy = new MyStrategy();
+            SMADuplo myStrategy = new SMADuplo();
             return myStrategy.buildStrategy(customTimeSeries, smaList);
         }
         if (strategy.equals("LSTM Prediction")){

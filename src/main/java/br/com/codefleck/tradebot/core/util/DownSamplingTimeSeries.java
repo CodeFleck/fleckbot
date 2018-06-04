@@ -7,10 +7,6 @@ import java.util.List;
 import java.util.Objects;
 
 import org.ta4j.core.*;
-import org.ta4j.core.indicators.EMAIndicator;
-import org.ta4j.core.indicators.helpers.ClosePriceIndicator;
-
-import br.com.codefleck.tradebot.strategies.MyStrategy;
 
 public class DownSamplingTimeSeries {
 
