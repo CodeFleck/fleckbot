@@ -7,7 +7,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.com.codefleck.tradebot.domainobjects.engine.EngineConfig;
+import br.com.codefleck.tradebot.models.engine.EngineConfig;
 import br.com.codefleck.tradebot.repository.EngineConfigRepository;
 import br.com.codefleck.tradebot.services.EngineConfigService;
 

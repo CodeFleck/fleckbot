@@ -3,7 +3,7 @@ package br.com.codefleck.tradebot.core.config.market;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
-import br.com.codefleck.tradebot.tradingapi.Market;
+import br.com.codefleck.tradebot.tradingInterfaces.Market;
 
 /**
  * Holds information for an Exchange market.

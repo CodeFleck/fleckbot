@@ -8,10 +8,10 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.com.codefleck.tradebot.domainobjects.exchange.AuthenticationConfig;
-import br.com.codefleck.tradebot.domainobjects.exchange.ExchangeConfig;
-import br.com.codefleck.tradebot.domainobjects.exchange.NetworkConfig;
-import br.com.codefleck.tradebot.domainobjects.exchange.OptionalConfig;
+import br.com.codefleck.tradebot.models.exchange.AuthenticationConfig;
+import br.com.codefleck.tradebot.models.exchange.ExchangeConfig;
+import br.com.codefleck.tradebot.models.exchange.NetworkConfig;
+import br.com.codefleck.tradebot.models.exchange.OptionalConfig;
 import br.com.codefleck.tradebot.repository.ExchangeConfigRepository;
 import br.com.codefleck.tradebot.xmldatastore.ConfigurationManager;
 import br.com.codefleck.tradebot.xmldatastore.exchange.generated.*;

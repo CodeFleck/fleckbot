@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import br.com.codefleck.tradebot.core.engine.TradingEngine;
-import br.com.codefleck.tradebot.tradingapi.BalanceInfo;
-import br.com.codefleck.tradebot.tradingapi.ExchangeNetworkException;
-import br.com.codefleck.tradebot.tradingapi.TradingApiException;
+import br.com.codefleck.tradebot.tradingInterfaces.BalanceInfo;
+import br.com.codefleck.tradebot.tradingInterfaces.ExchangeNetworkException;
+import br.com.codefleck.tradebot.tradingInterfaces.TradingApiException;
 
 @Controller
 @RequestMapping("/carteiras")

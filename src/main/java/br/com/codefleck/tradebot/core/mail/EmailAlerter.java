@@ -11,8 +11,8 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import br.com.codefleck.tradebot.domainobjects.emailalerts.EmailAlertsConfig;
-import br.com.codefleck.tradebot.domainobjects.emailalerts.SmtpConfig;
+import br.com.codefleck.tradebot.models.emailalerts.EmailAlertsConfig;
+import br.com.codefleck.tradebot.models.emailalerts.SmtpConfig;
 import br.com.codefleck.tradebot.services.EmailAlertsConfigService;
 
 /**

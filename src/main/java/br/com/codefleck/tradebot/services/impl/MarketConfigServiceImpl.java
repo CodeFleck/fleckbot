@@ -9,7 +9,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.com.codefleck.tradebot.domainobjects.market.MarketConfig;
+import br.com.codefleck.tradebot.models.market.MarketConfig;
 import br.com.codefleck.tradebot.repository.MarketConfigRepository;
 import br.com.codefleck.tradebot.services.MarketConfigService;
 

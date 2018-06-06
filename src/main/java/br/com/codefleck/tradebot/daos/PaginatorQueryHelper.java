@@ -6,7 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
-import br.com.codefleck.tradebot.models.PaginatedList;
+import br.com.codefleck.tradebot.core.util.PaginatedList;
 
 /**
  * It deals with the pagination details

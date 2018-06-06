@@ -5,12 +5,10 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import br.com.codefleck.tradebot.core.util.SMA;
-import br.com.codefleck.tradebot.core.util.SMAUtil;
-import br.com.codefleck.tradebot.models.PaginatedList;
+import br.com.codefleck.tradebot.core.util.PaginatedList;
 
 @Repository
 public class SMADao {

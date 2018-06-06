@@ -13,7 +13,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import br.com.codefleck.tradebot.core.engine.TradingEngine;
 import br.com.codefleck.tradebot.daos.LogEntryImplDao;
-import br.com.codefleck.tradebot.exchanges.trading.api.impl.LogEntryImpl;
+import br.com.codefleck.tradebot.exchanges.trading.LogEntryImpl;
 
 @Controller
 @RequestMapping("/trading")

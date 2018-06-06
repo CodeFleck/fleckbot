@@ -9,7 +9,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.com.codefleck.tradebot.domainobjects.strategy.StrategyConfig;
+import br.com.codefleck.tradebot.models.strategy.StrategyConfig;
 import br.com.codefleck.tradebot.repository.StrategyConfigRepository;
 import br.com.codefleck.tradebot.services.StrategyConfigService;
 

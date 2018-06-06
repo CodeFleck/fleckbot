@@ -5,7 +5,7 @@ import java.util.Map;
 
 import com.google.common.base.MoreObjects;
 
-import br.com.codefleck.tradebot.exchangeapi.AuthenticationConfig;
+import br.com.codefleck.tradebot.exchanges.exchangeInterfaces.AuthenticationConfig;
 
 /**
  * Exchange API Authentication config.

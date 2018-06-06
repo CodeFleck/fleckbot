@@ -165,21 +165,21 @@ public class PredictionServiceImpl {
 
         for (String token : predictsDataPointsArray) {
 
-            if (token.substring(1, 2).equals("x")){
+            if (token.substring(1, 2).equals("x")) {
                 xPredictToken.add(token.replaceAll("\"", "").replace("x:", "").replace("]", ""));
-            } else if (token.substring(1, 2).equals("y")){
+            } else if (token.substring(1, 2).equals("y")) {
                 yPredictToken.add(token.replaceAll("\"", "").replace("y:", "").replace("]", ""));
             }
         }
 
         List<DataPointsModel> predictsDataPointsModelListXY = new ArrayList<>();
 
-        for (int i=0; i<xPredictToken.size();i++){
+        for (int i = 0; i < xPredictToken.size(); i++) {
             DataPointsModel dataPointsModel = new DataPointsModel();
             dataPointsModel.setNomeConjunto(nomeDoConjunto.concat("Prediction-").concat(categoria));
 
             dataPointsModel.setX(Double.valueOf(xPredictToken.get(i)));
-            if (yPredictToken.get(i) != null ) {
+            if (yPredictToken.get(i) != null) {
                 dataPointsModel.setY(Double.valueOf(yPredictToken.get(i)));
             }
             predictsDataPointsModelListXY.add(dataPointsModel);
@@ -193,16 +193,16 @@ public class PredictionServiceImpl {
 
         for (String token : actualsDataPointsArray) {
 
-            if (token.substring(1, 2).equals("x")){
+            if (token.substring(1, 2).equals("x")) {
                 xActualToken.add(token.replaceAll("\"", "").replace("x:", "").replace("]", ""));
-            } else if (token.substring(1, 2).equals("y")){
+            } else if (token.substring(1, 2).equals("y")) {
                 yActualToken.add(token.replaceAll("\"", "").replace("y:", "").replace("]", ""));
             }
         }
 
         List<DataPointsModel> actualDataPointsModelListXY = new ArrayList<>();
 
-        for (int i=0; i<xActualToken.size();i++){
+        for (int i = 0; i < xActualToken.size(); i++) {
             DataPointsModel dataPointsModel = new DataPointsModel();
             dataPointsModel.setNomeConjunto(nomeDoConjunto.concat("Actual-".concat(categoria)));
             dataPointsModel.setX(Double.valueOf(xActualToken.get(i)));
@@ -220,7 +220,6 @@ public class PredictionServiceImpl {
         dataPointsListModel.setPredictDataPointsModelList(predictsDataPointsModelListXY);
 
         return dataPointsListModel;
-
     }
 
     public Double calculateErrorPercentageAverage(DataPointsListModel dataPointsList) {
@@ -230,7 +229,7 @@ public class PredictionServiceImpl {
 
         for (int i=0;i<dataPointsList.getActualDataPointsModelList().size();i++){
 
-            result = (dataPointsList.getPredictDataPointsModelList().get(i).getY()*100)/dataPointsList.getActualDataPointsModelList().get(i).getY();
+            result = ((dataPointsList.getActualDataPointsModelList().get(i).getY()-dataPointsList.getPredictDataPointsModelList().get(i).getY())*100)/dataPointsList.getActualDataPointsModelList().get(i).getY();
 
             errorPercentage.add(result);
 
@@ -251,11 +250,12 @@ public class PredictionServiceImpl {
         List<Double> errorPercentage = new ArrayList<>();
         Double result;
 
-        int lastResult = dataPointsList.getPredictDataPointsModelList().size();
+        int lastResult = dataPointsList.getActualDataPointsModelList().size();
+        lastResult--;
 
-            result = (dataPointsList.getPredictDataPointsModelList().get(lastResult).getY()*100)/dataPointsList.getActualDataPointsModelList().get(lastResult).getY();
+        result = ((dataPointsList.getActualDataPointsModelList().get(lastResult).getY()-dataPointsList.getPredictDataPointsModelList().get(lastResult).getY())*100)/dataPointsList.getActualDataPointsModelList().get(lastResult).getY();
 
-            errorPercentage.add(result);
+        errorPercentage.add(result);
 
         return result;
     }

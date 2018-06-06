@@ -1,6 +1,6 @@
 package br.com.codefleck.tradebot.repository;
 
-import br.com.codefleck.tradebot.domainobjects.exchange.ExchangeConfig;
+import br.com.codefleck.tradebot.models.exchange.ExchangeConfig;
 
 /**
  * The Exchange configuration repository.

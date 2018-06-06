@@ -22,11 +22,11 @@ import com.google.common.base.MoreObjects;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import br.com.codefleck.tradebot.exchangeapi.AuthenticationConfig;
-import br.com.codefleck.tradebot.exchangeapi.ExchangeAdapter;
-import br.com.codefleck.tradebot.exchangeapi.ExchangeConfig;
-import br.com.codefleck.tradebot.exchanges.trading.api.impl.*;
-import br.com.codefleck.tradebot.tradingapi.*;
+import br.com.codefleck.tradebot.exchanges.exchangeInterfaces.AuthenticationConfig;
+import br.com.codefleck.tradebot.exchanges.exchangeInterfaces.ExchangeAdapter;
+import br.com.codefleck.tradebot.exchanges.exchangeInterfaces.ExchangeConfig;
+import br.com.codefleck.tradebot.exchanges.trading.*;
+import br.com.codefleck.tradebot.tradingInterfaces.*;
 
 /**
  * <p>

@@ -13,7 +13,7 @@ import com.google.common.base.MoreObjects;
 import br.com.codefleck.tradebot.strategyapi.StrategyConfig;
 import br.com.codefleck.tradebot.strategyapi.StrategyException;
 import br.com.codefleck.tradebot.strategyapi.TradingStrategy;
-import br.com.codefleck.tradebot.tradingapi.*;
+import br.com.codefleck.tradebot.tradingInterfaces.*;
 
 /**
  * <p>
@@ -67,8 +67,8 @@ import br.com.codefleck.tradebot.tradingapi.*;
  * </p>
  * <p>This demo algorithm relies on the {project-root}/config/strategies.xml 'minimum-percentage-gain' config-item value
  * being high enough to make a profit and cover the exchange fees. You could tweak the algo to call the
- * {@link br.com.codefleck.tradebot.tradingapi.TradingApi#getPercentageOfBuyOrderTakenForExchangeFee(String)} and
- * {@link br.com.codefleck.tradebot.tradingapi.TradingApi#getPercentageOfSellOrderTakenForExchangeFee(String)} when calculating
+ * {@link br.com.codefleck.tradebot.tradingInterfaces.TradingApi#getPercentageOfBuyOrderTakenForExchangeFee(String)} and
+ * {@link br.com.codefleck.tradebot.tradingInterfaces.TradingApi#getPercentageOfSellOrderTakenForExchangeFee(String)} when calculating
  * the order to send to the exchange... See the sample {project-root}/config/samples/{exchange}/exchange.xml files for
  * info on the different exchange fees.
  * </p>

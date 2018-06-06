@@ -1,6 +1,6 @@
 package br.com.codefleck.tradebot.services;
 
-import br.com.codefleck.tradebot.domainobjects.emailalerts.EmailAlertsConfig;
+import br.com.codefleck.tradebot.models.emailalerts.EmailAlertsConfig;
 
 /**
  * The Email Alerts configuration service.

@@ -10,12 +10,12 @@ import org.apache.logging.log4j.Logger;
 
 import com.google.common.base.MoreObjects;
 
-import br.com.codefleck.tradebot.exchangeapi.AuthenticationConfig;
-import br.com.codefleck.tradebot.exchangeapi.ExchangeConfig;
-import br.com.codefleck.tradebot.exchangeapi.NetworkConfig;
-import br.com.codefleck.tradebot.exchangeapi.OptionalConfig;
-import br.com.codefleck.tradebot.tradingapi.ExchangeNetworkException;
-import br.com.codefleck.tradebot.tradingapi.TradingApiException;
+import br.com.codefleck.tradebot.exchanges.exchangeInterfaces.AuthenticationConfig;
+import br.com.codefleck.tradebot.exchanges.exchangeInterfaces.ExchangeConfig;
+import br.com.codefleck.tradebot.exchanges.exchangeInterfaces.NetworkConfig;
+import br.com.codefleck.tradebot.exchanges.exchangeInterfaces.OptionalConfig;
+import br.com.codefleck.tradebot.tradingInterfaces.ExchangeNetworkException;
+import br.com.codefleck.tradebot.tradingInterfaces.TradingApiException;
 
 /**
  * Base class for shared Exchange Adapter functionality.

@@ -1,6 +1,6 @@
 package br.com.codefleck.tradebot.repository;
 
-import br.com.codefleck.tradebot.domainobjects.engine.EngineConfig;
+import br.com.codefleck.tradebot.models.engine.EngineConfig;
 
 /**
  * The Engine configuration repository.

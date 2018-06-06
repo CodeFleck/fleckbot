@@ -196,12 +196,6 @@
             <artifactId>logback-classic</artifactId>
             <version>1.2.3</version>
         </dependency>
-        <!--&lt;!&ndash; https://mvnrepository.com/artifact/org.deeplearning4j/deeplearning4j-core &ndash;&gt;-->
-        <!--<dependency>-->
-            <!--<groupId>org.deeplearning4j</groupId>-->
-            <!--<artifactId>deeplearning4j-core</artifactId>-->
-            <!--<version>0.9.1</version>-->
-        <!--</dependency>-->
         <!-- DL4J and ND4J Related Dependencies -->
         <dependency>
             <groupId>org.nd4j</groupId>
@@ -263,10 +257,10 @@
             </exclusions>
         </dependency>
         <!--<dependency>-->
-            <!--<groupId>org.nd4j</groupId>-->
-            <!--<artifactId>nd4j-native-platform</artifactId>-->
-            <!--<version>${nd4j.version}</version>-->
-            <!--<classifier>macosx-x86_64-avx2</classifier>-->
+        <!--<groupId>org.nd4j</groupId>-->
+        <!--<artifactId>nd4j-native-platform</artifactId>-->
+        <!--<version>${nd4j.version}</version>-->
+        <!--<classifier>macosx-x86_64-avx2</classifier>-->
         <!--</dependency>-->
         <!-- SLF4J Dependency -->
         <dependency>
@@ -278,6 +272,12 @@
             <groupId>org.ta4j</groupId>
             <artifactId>ta4j-examples</artifactId>
             <version>0.11</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.zenjava/javafx-maven-plugin -->
+        <dependency>
+            <groupId>org.wildfly.swarm</groupId>
+            <artifactId>javafx</artifactId>
+            <version>2016.10.0</version>
         </dependency>
     </dependencies>
     <build>

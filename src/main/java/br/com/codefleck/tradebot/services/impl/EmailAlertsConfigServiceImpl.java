@@ -7,7 +7,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.com.codefleck.tradebot.domainobjects.emailalerts.EmailAlertsConfig;
+import br.com.codefleck.tradebot.models.emailalerts.EmailAlertsConfig;
 import br.com.codefleck.tradebot.repository.EmailAlertsConfigRepository;
 import br.com.codefleck.tradebot.services.EmailAlertsConfigService;
 

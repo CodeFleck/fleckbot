@@ -2,10 +2,10 @@ package br.com.codefleck.tradebot.core.config.exchange;
 
 import com.google.common.base.MoreObjects;
 
-import br.com.codefleck.tradebot.exchangeapi.AuthenticationConfig;
-import br.com.codefleck.tradebot.exchangeapi.ExchangeConfig;
-import br.com.codefleck.tradebot.exchangeapi.NetworkConfig;
-import br.com.codefleck.tradebot.exchangeapi.OptionalConfig;
+import br.com.codefleck.tradebot.exchanges.exchangeInterfaces.AuthenticationConfig;
+import br.com.codefleck.tradebot.exchanges.exchangeInterfaces.ExchangeConfig;
+import br.com.codefleck.tradebot.exchanges.exchangeInterfaces.NetworkConfig;
+import br.com.codefleck.tradebot.exchanges.exchangeInterfaces.OptionalConfig;
 
 /**
  * Exchange API Exchange config.

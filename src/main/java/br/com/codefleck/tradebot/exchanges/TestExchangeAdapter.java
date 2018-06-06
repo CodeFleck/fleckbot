@@ -14,13 +14,13 @@ import org.apache.logging.log4j.Logger;
 import com.google.common.base.MoreObjects;
 import com.google.gson.*;
 
-import br.com.codefleck.tradebot.exchangeapi.ExchangeAdapter;
-import br.com.codefleck.tradebot.exchangeapi.ExchangeConfig;
-import br.com.codefleck.tradebot.exchanges.trading.api.impl.BalanceInfoImpl;
-import br.com.codefleck.tradebot.exchanges.trading.api.impl.MarketOrderBookImpl;
-import br.com.codefleck.tradebot.exchanges.trading.api.impl.MarketOrderImpl;
-import br.com.codefleck.tradebot.exchanges.trading.api.impl.TickerImpl;
-import br.com.codefleck.tradebot.tradingapi.*;
+import br.com.codefleck.tradebot.exchanges.exchangeInterfaces.ExchangeAdapter;
+import br.com.codefleck.tradebot.exchanges.exchangeInterfaces.ExchangeConfig;
+import br.com.codefleck.tradebot.exchanges.trading.BalanceInfoImpl;
+import br.com.codefleck.tradebot.exchanges.trading.MarketOrderBookImpl;
+import br.com.codefleck.tradebot.exchanges.trading.MarketOrderImpl;
+import br.com.codefleck.tradebot.exchanges.trading.TickerImpl;
+import br.com.codefleck.tradebot.tradingInterfaces.*;
 
 /**
  * Dummy Exchange adapter used to keep the bot up and running for engine and strategy testing.

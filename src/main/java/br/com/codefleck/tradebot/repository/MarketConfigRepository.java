@@ -2,7 +2,7 @@ package br.com.codefleck.tradebot.repository;
 
 import java.util.List;
 
-import br.com.codefleck.tradebot.domainobjects.market.MarketConfig;
+import br.com.codefleck.tradebot.models.market.MarketConfig;
 
 /**
  * The Market configuration repository.

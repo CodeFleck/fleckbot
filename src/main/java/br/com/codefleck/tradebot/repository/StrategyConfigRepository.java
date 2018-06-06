@@ -2,7 +2,7 @@ package br.com.codefleck.tradebot.repository;
 
 import java.util.List;
 
-import br.com.codefleck.tradebot.domainobjects.strategy.StrategyConfig;
+import br.com.codefleck.tradebot.models.strategy.StrategyConfig;
 
 /**
  * The Strategy configuration repository.

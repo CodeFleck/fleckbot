@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.google.common.base.MoreObjects;
 
-import br.com.codefleck.tradebot.exchangeapi.NetworkConfig;
+import br.com.codefleck.tradebot.exchanges.exchangeInterfaces.NetworkConfig;
 
 /**
  * Exchange API Network config.

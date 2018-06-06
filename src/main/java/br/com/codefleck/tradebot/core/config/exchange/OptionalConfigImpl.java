@@ -5,7 +5,7 @@ import java.util.Map;
 
 import com.google.common.base.MoreObjects;
 
-import br.com.codefleck.tradebot.exchangeapi.OptionalConfig;
+import br.com.codefleck.tradebot.exchanges.exchangeInterfaces.OptionalConfig;
 
 /**
  * Exchange API optional config.

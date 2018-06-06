@@ -14,7 +14,7 @@ import org.ta4j.core.Trade;
 
 import com.google.gson.Gson;
 
-import br.com.codefleck.tradebot.exchanges.trading.api.impl.EventImpl;
+import br.com.codefleck.tradebot.exchanges.trading.EventImpl;
 
 @Service("eventService")
 @Transactional

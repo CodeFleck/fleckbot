@@ -8,7 +8,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.com.codefleck.tradebot.domainobjects.engine.EngineConfig;
+import br.com.codefleck.tradebot.models.engine.EngineConfig;
 import br.com.codefleck.tradebot.repository.EngineConfigRepository;
 import br.com.codefleck.tradebot.xmldatastore.ConfigurationManager;
 import br.com.codefleck.tradebot.xmldatastore.engine.generated.EngineType;

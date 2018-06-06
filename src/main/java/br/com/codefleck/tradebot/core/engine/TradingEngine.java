@@ -19,24 +19,24 @@ import br.com.codefleck.tradebot.core.config.market.MarketImpl;
 import br.com.codefleck.tradebot.core.config.strategy.StrategyConfigItems;
 import br.com.codefleck.tradebot.core.mail.EmailAlerter;
 import br.com.codefleck.tradebot.core.util.ConfigurableComponentFactory;
-import br.com.codefleck.tradebot.domainobjects.engine.EngineConfig;
-import br.com.codefleck.tradebot.domainobjects.exchange.AuthenticationConfig;
-import br.com.codefleck.tradebot.domainobjects.exchange.ExchangeConfig;
-import br.com.codefleck.tradebot.domainobjects.exchange.NetworkConfig;
-import br.com.codefleck.tradebot.domainobjects.exchange.OptionalConfig;
-import br.com.codefleck.tradebot.domainobjects.market.MarketConfig;
-import br.com.codefleck.tradebot.domainobjects.strategy.StrategyConfig;
-import br.com.codefleck.tradebot.exchangeapi.ExchangeAdapter;
-import br.com.codefleck.tradebot.exchanges.trading.api.impl.LogEntryImpl;
+import br.com.codefleck.tradebot.models.engine.EngineConfig;
+import br.com.codefleck.tradebot.models.exchange.AuthenticationConfig;
+import br.com.codefleck.tradebot.models.exchange.ExchangeConfig;
+import br.com.codefleck.tradebot.models.exchange.NetworkConfig;
+import br.com.codefleck.tradebot.models.exchange.OptionalConfig;
+import br.com.codefleck.tradebot.models.market.MarketConfig;
+import br.com.codefleck.tradebot.models.strategy.StrategyConfig;
+import br.com.codefleck.tradebot.exchanges.exchangeInterfaces.ExchangeAdapter;
+import br.com.codefleck.tradebot.exchanges.trading.LogEntryImpl;
 import br.com.codefleck.tradebot.services.EngineConfigService;
 import br.com.codefleck.tradebot.services.ExchangeConfigService;
 import br.com.codefleck.tradebot.services.MarketConfigService;
 import br.com.codefleck.tradebot.services.StrategyConfigService;
 import br.com.codefleck.tradebot.strategyapi.TradingStrategy;
-import br.com.codefleck.tradebot.tradingapi.BalanceInfo;
-import br.com.codefleck.tradebot.tradingapi.ExchangeNetworkException;
-import br.com.codefleck.tradebot.tradingapi.Market;
-import br.com.codefleck.tradebot.tradingapi.TradingApiException;
+import br.com.codefleck.tradebot.tradingInterfaces.BalanceInfo;
+import br.com.codefleck.tradebot.tradingInterfaces.ExchangeNetworkException;
+import br.com.codefleck.tradebot.tradingInterfaces.Market;
+import br.com.codefleck.tradebot.tradingInterfaces.TradingApiException;
 
 /**
  * The main Trading Engine.

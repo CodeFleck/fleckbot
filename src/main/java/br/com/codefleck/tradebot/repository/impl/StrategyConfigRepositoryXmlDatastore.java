@@ -14,7 +14,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.com.codefleck.tradebot.domainobjects.strategy.StrategyConfig;
+import br.com.codefleck.tradebot.models.strategy.StrategyConfig;
 import br.com.codefleck.tradebot.repository.StrategyConfigRepository;
 import br.com.codefleck.tradebot.xmldatastore.ConfigurationManager;
 import br.com.codefleck.tradebot.xmldatastore.strategy.generated.ConfigItemType;

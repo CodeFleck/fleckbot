@@ -1,7 +1,7 @@
 package br.com.codefleck.tradebot.strategyapi;
 
-import br.com.codefleck.tradebot.tradingapi.Market;
-import br.com.codefleck.tradebot.tradingapi.TradingApi;
+import br.com.codefleck.tradebot.tradingInterfaces.Market;
+import br.com.codefleck.tradebot.tradingInterfaces.TradingApi;
 
 /**
  * <p>

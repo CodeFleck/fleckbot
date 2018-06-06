@@ -83,7 +83,6 @@ public class RedesNeuraisController {
 
         List<String> dataPointList = predictionService.initTraining(epocas, simbolo, categoria);
 
-
         ModelAndView model = new ModelAndView();
         model.setViewName("/redes-neurais");
         model.addObject("predictsDataPoints", dataPointList.get(0));

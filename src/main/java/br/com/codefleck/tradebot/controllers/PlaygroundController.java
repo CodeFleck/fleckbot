@@ -20,7 +20,7 @@ import org.ta4j.core.analysis.criteria.NumberOfBarsCriterion;
 import br.com.codefleck.tradebot.core.engine.TradingEngine;
 import br.com.codefleck.tradebot.core.util.*;
 import br.com.codefleck.tradebot.daos.SMADao;
-import br.com.codefleck.tradebot.exchanges.trading.api.impl.CustomBaseBarForGraph;
+import br.com.codefleck.tradebot.exchanges.trading.CustomBaseBarForGraph;
 import br.com.codefleck.tradebot.services.impl.EventServiceImpl;
 import br.com.codefleck.tradebot.services.impl.TradeServiceImpl;
 import br.com.codefleck.tradebot.strategies.DailyPredictionTradeStrategy;
