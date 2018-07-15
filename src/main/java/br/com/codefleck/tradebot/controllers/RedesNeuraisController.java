@@ -25,7 +25,7 @@ import br.com.codefleck.tradebot.redesneurais.DataPointsModel;
 import br.com.codefleck.tradebot.services.impl.PredictionServiceImpl;
 
 @Controller
-@RequestMapping("/redes-neurais")
+@RequestMapping("/admin/redes-neurais")
 @Transactional
 public class RedesNeuraisController {
 
@@ -84,7 +84,7 @@ public class RedesNeuraisController {
         List<String> dataPointList = predictionService.initTraining(epocas, simbolo, categoria);
 
         ModelAndView model = new ModelAndView();
-        model.setViewName("/redes-neurais");
+        model.setViewName("admin/redes-neurais");
         model.addObject("predictsDataPoints", dataPointList.get(0));
         model.addObject("actualsDataPoints", dataPointList.get(1));
         String cat = categoria;

@@ -45,28 +45,35 @@
             <li class="nav-item">
                 <a class="nav-link" href="<c:url value='/playground'/>">Playground</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="<c:url value='/redes-neurais'/>">Redes Neurais</a>
+            <li class= "nav-item">
+            <c:if test="${pageContext.request.isUserInRole('ADMIN')}">
+                <a class='nav-link' href="<c:url value='/admin/redes-neurais'/>"><c:out value="Redes Neurais" /></a>
+            </c:if>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="<c:url value='/trading'/>">Logs</a>
             </li>
         </ul>
-        <form class="form-inline my-4 my-lg-0">
+        <form class="form-inline my-5 my-lg-0">
             <div id="botStatus">
                 <c:choose>
                     <c:when test="${botStatus}">
-                        <h6 class="">Status: Ligado
+                        <p class="">Status: Ligado
                             <a href="/trading/desligar" class="btn btn-danger btn-sm" id="desligar">Desligar</a>
-                        </h6>
+                        </p>
                     </c:when>
                     <c:otherwise>
-                        <h6 class="">Status: Desligado
+                        <p class="">Status: Desligado
                             <a href="/trading/ligar" class="btn btn-success btn-sm" id="ligar">Ligar</a>
-                        </h6>
+                        </p>
                     </c:otherwise>
                 </c:choose>
             </div>
+        </form>
+        <c:url var="logoutUrl" value="/logout"/>
+        <form class="form-inline" action="${logoutUrl}" method="post">
+            <input type="submit" class="btn btn-light btn-sm" id="btnlogout" value="Log out" />
+            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
         </form>
     </div>
 </nav>

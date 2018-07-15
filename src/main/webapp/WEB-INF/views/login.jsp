@@ -7,7 +7,7 @@
     <meta name="author" content="">
     <link rel="icon" href="../../../../favicon.ico">
 
-    <title>Signin Template for Bootstrap</title>
+    <title>Signin</title>
 
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
@@ -16,21 +16,41 @@
     <!-- Custom styles for this template -->
     <link rel="stylesheet" href="<c:url value='/assets/css/signin.css'/>">
 </head>
-<body class="text-center">
-<form class="form-signin">
-    <div class="imglogo"><img class="mb-4" src="<c:url value='/assets/imagens/logo.png'/>" alt="logoFleckBot" width="172" height="172"></div>
-    <h1 class="h3 mb-3 font-weight-normal">Bem-vindo</h1>
-    <label for="inputEmail" class="sr-only">Email</label>
-    <input type="email" id="inputEmail" class="form-control" placeholder="Email" required autofocus>
-    <label for="inputPassword" class="sr-only">Senha</label>
-    <input type="password" id="inputPassword" class="form-control" placeholder="Senha" required>
-    <div class="checkbox mb-3">
-        <label>
-            <input type="checkbox" value="lembrar"> Lembrar de mim
-        </label>
+<body>
+<div class="container">
+    <div class="text-center">
+        <c:url value="/login" var="loginUrl"/>
+        <form class="form-signin" action="${loginUrl}" method="post">
+            <div class="welcome">
+                <div class="imglogo"><img class="mb-4" src="<c:url value='/assets/imagens/logo.png'/>" alt="logoFleckBot" width="172" height="172"></div>
+                <h1 class="h3 mb-3 font-weight-normal">Bem-vindo ao Fleckbot</h1>
+            </div>
+            <c:if test="${param.error != null}">
+                <p style='color:red'>
+                    Usuário e/ou senha inválidos.
+                </p>
+            </c:if>
+            <c:if test="${param.logout != null}">
+                <p style='color:blue'>
+                    Você se deslogou.
+                </p>
+            </c:if>
+            <div class="form-group row">
+                <label for="username" class="col-sm-2 col-form-label">Email</label>
+                <div class="col-sm-10">
+                    <input type="text" id="username" name="username" class="form-control" placeholder="Digite seu email" required autofocus/>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="password" class="col-sm-2 col-form-label">Senha</label>
+                <div class="col-sm-10">
+                    <input type="password" id="password" name="password" class="form-control" placeholder="Senha" required/>
+                </div>
+            </div>
+            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+            <button type="submit" class="btn btn-lg btn-primary btn-block">Log in</button>
+        </form>
     </div>
-    <button class="btn btn-lg btn-primary btn-block" type="submit">Entrar</button>
-    <p class="mt-5 mb-3 text-muted">&copy; 2017-2018</p>
-</form>
+</div>
 </body>
 </html>
