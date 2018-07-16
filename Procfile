@@ -1,1 +1,1 @@
-web: java -jar target/tradebot-1.0.jar
+web: java -jar target/tradebot-1.0.0-SNAPSHOT.jar
