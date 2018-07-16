@@ -36,9 +36,9 @@
                 </p>
             </c:if>
             <div class="form-group row">
-                <label for="username" class="col-sm-2 col-form-label">Email</label>
+                <label for="username" class="col-sm-2 col-form-label">Usuário</label>
                 <div class="col-sm-10">
-                    <input type="text" id="username" name="username" class="form-control" placeholder="Digite seu email" required autofocus/>
+                    <input type="text" id="username" name="username" class="form-control" placeholder="Digite seu usuário" required autofocus/>
                 </div>
             </div>
             <div class="form-group row">
