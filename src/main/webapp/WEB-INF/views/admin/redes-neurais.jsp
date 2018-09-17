@@ -11,7 +11,7 @@
         <div class="container-fluid"><br>
             <h2 class="basic-title">Treinar Redes Neurais</h2><br>
             <div class="col-md-6 text-left">
-                <form:form method="POST" action="/redes-neurais/treinar-redes">
+                <form:form method="POST" action="redes-neurais/treinar-redes">
                     <table class="table table-condensed table-bordered table-striped table-hover">
                         <thead>
                         <tr>

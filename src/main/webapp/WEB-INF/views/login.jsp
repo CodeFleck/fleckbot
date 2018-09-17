@@ -22,7 +22,7 @@
         <form class="form-signin" action="${loginUrl}" method="post">
             <div class="welcome">
                 <div class="imglogo"><img class="mb-4" src="<c:url value='/assets/imagens/logo.png'/>" alt="logoFleckBot" width="172" height="172"></div>
-                <h1 class="h3 mb-3 font-weight-normal">Bem-vindo ao Fleckbot</h1>
+                <h1 class="h3 mb-3 font-weight-normal">Fleckbot</h1>
             </div>
             <c:if test="${param.error != null}">
                 <p style='color:red'>

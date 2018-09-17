@@ -1,1 +1,0 @@
-web: java -jar target/tradebot-1.0.jar
