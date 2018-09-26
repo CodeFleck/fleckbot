@@ -22,7 +22,7 @@
         <form class="form-signin" action="${loginUrl}" method="post">
             <div class="welcome">
                 <div class="imglogo"><img class="mb-4" src="<c:url value='/assets/imagens/logo.png'/>" alt="logoFleckBot" width="172" height="172"></div>
-                <h1 class="h3 mb-3 font-weight-normal">Bem-vindo ao Fleckbot</h1>
+                <h1 class="h3 mb-3 font-weight-normal">Fleckbot</h1>
             </div>
             <c:if test="${param.error != null}">
                 <p style='color:red'>
@@ -34,6 +34,7 @@
                     Você se deslogou.
                 </p>
             </c:if>
+            <div class="loginform">
             <div class="form-group row">
                 <label for="username" class="col-sm-2 col-form-label">Usuário</label>
                 <div class="col-sm-10">
@@ -47,7 +48,8 @@
                 </div>
             </div>
             <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-            <button type="submit" class="btn btn-lg btn-primary btn-block">Log in</button>
+            <button type="submit" class="btn btn-lg btn-primary btn-block btnlogin">Log in</button>
+            </div>
         </form>
     </div>
 </div>

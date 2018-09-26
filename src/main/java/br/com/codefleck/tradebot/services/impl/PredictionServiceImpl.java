@@ -2,6 +2,7 @@ package br.com.codefleck.tradebot.services.impl;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -17,6 +18,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.ta4j.core.BaseTimeSeries;
+import org.ta4j.core.TimeSeries;
 
 import br.com.codefleck.tradebot.core.util.CsvBarsLoader;
 import br.com.codefleck.tradebot.redesneurais.*;
@@ -29,10 +32,9 @@ public class PredictionServiceImpl {
 
     private static final Logger log = LoggerFactory.getLogger(PredictionServiceImpl.class);
 
-    //private static int exampleLength = 218; // time series length for 1 prediction
-    private static int exampleLength = 127; // displaying prediction for 90 days
+    private static int exampleLength = 178; // time series length for 1 prediction
 
-    public List<String> initTraining(int epocas, String simbolo, String categoria) throws IOException {
+    public List<String> initTraining(int epocas, String simbolo, String categoria, BaseTimeSeries customTimeSeries) throws IOException {
         String file = new ClassPathResource("coinBaseDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
         String symbol = simbolo; // stock name
         int batchSize = 64; // mini-batch size
@@ -43,6 +45,10 @@ public class PredictionServiceImpl {
         log.info("Create dataSet iterator...");
         PriceCategory category = verifyCategory(chosenCategory); // CLOSE: predict close price
         StockDataSetIterator iterator = new StockDataSetIterator(file, symbol, batchSize, exampleLength, splitRatio, category);
+
+        int split = (int) Math.round(customTimeSeries.getBarCount() * splitRatio);
+        TimeSeries testTimeSeries = customTimeSeries.getSubSeries(split, customTimeSeries.getEndIndex());
+
         log.info("Load test dataset...");
         List<Pair<INDArray, INDArray>> test = iterator.getTestDataSet();
 
@@ -75,7 +81,7 @@ public class PredictionServiceImpl {
         } else {
             double max = iterator.getMaxNum(category);
             double min = iterator.getMinNum(category);
-            List<String> dataPointsList = predictPriceOneAhead(net, test, max, min, category);
+            List<String> dataPointsList = predictPriceOneAhead(net, test, max, min, category, testTimeSeries);
             log.info("Done...");
             return dataPointsList;
         }
@@ -98,7 +104,7 @@ public class PredictionServiceImpl {
     }
 
     /** Predict one feature of a stock one-day ahead */
-    public List<String> predictPriceOneAhead (MultiLayerNetwork net, List<Pair<INDArray, INDArray>> testData, double max, double min, PriceCategory category) {
+    public List<String> predictPriceOneAhead (MultiLayerNetwork net, List<Pair<INDArray, INDArray>> testData, double max, double min, PriceCategory category, TimeSeries testTimeSeries) {
         double[] predicts = new double[testData.size()];
         double[] actuals = new double[testData.size()];
         for (int i = 0; i < testData.size(); i++) {
@@ -109,7 +115,7 @@ public class PredictionServiceImpl {
         log.info("Predict,Actual");
         for (int i = 0; i < predicts.length; i++) log.info(predicts[i] + "," + actuals[i]);
         log.info("Plot...");
-        List<String> dataPointList = PlotUtil.plot(predicts, actuals, String.valueOf(category));
+        List<String> dataPointList = PlotUtil.plot(predicts, actuals, String.valueOf(category), testTimeSeries);
 
         return dataPointList;
     }
@@ -147,12 +153,13 @@ public class PredictionServiceImpl {
         }
     }
 
-    public void createCSVFileForNeuralNets(Date beginDate, Date endDate, String period) {
+    public BaseTimeSeries createCSVFileForNeuralNets(Date beginDate, Date endDate, String period) {
 
         CsvBarsLoader csvBarsLoader = new CsvBarsLoader();
 
-        csvBarsLoader.createCSVFileForNeuralNets(beginDate, endDate, period);
+        BaseTimeSeries customTimeSeries = csvBarsLoader.createCSVFileForNeuralNets(beginDate, endDate, period);
 
+        return customTimeSeries;
     }
 
     public DataPointsListModel prepareDataPointToBeSaved(List<String> dataPointList, String nomeDoConjunto, String categoria) throws IOException {

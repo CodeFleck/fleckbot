@@ -33,9 +33,9 @@
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
-            <li class="nav-item">
-                <a class="nav-link" href="<c:url value='/noticias'/>">Not&iacute;cias</a>
-            </li>
+            <%--<li class="nav-item">--%>
+                <%--<a class="nav-link" href="<c:url value='/noticias'/>">Not&iacute;cias</a>--%>
+            <%--</li>--%>
             <li class="nav-item">
                 <a class="nav-link" href="<c:url value='/analise'/>">An&aacute;lise</a>
             </li>
