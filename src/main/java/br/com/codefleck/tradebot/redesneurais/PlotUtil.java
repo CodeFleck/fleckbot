@@ -28,32 +28,22 @@ public class PlotUtil {
         dataPointsList.add(predictsDataPoints);
         dataPointsList.add(actualsDataPoints);
 
-//        final JFreeChart chart = ChartFactory.createXYLineChart(
-//            "Prediction Result", // chart title
-//            "Index", // x axis label
-//            name, // y axis label
-//            dataSet, // data
-//            PlotOrientation.VERTICAL,
-//            true, // include legend
-//            true, // tooltips
-//            false // urls
-//        );
-//        XYPlot xyPlot = chart.getXYPlot();
-//        // X-axis
-//        final NumberAxis domainAxis = (NumberAxis) xyPlot.getDomainAxis();
-//        domainAxis.setRange((int) index[0], (int) (index[index.length - 1] + 2));
-//        domainAxis.setTickUnit(new NumberTickUnit(20));
-//        domainAxis.setVerticalTickLabels(true);
-//        // Y-axis
-//        final NumberAxis rangeAxis = (NumberAxis) xyPlot.getRangeAxis();
-//        rangeAxis.setRange(min, max);
-//        rangeAxis.setTickUnit(new NumberTickUnit(50));
-//        final ChartPanel panel = new ChartPanel(chart);
-//        final JFrame f = new JFrame();
-//        f.add(panel);
-//        f.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
-//        f.pack();
-//        f.setVisible(false);
+        return dataPointsList;
+    }
+
+    public static List<String> plotForecast(double[] predicts, double[] actuals, String name){
+        double[] index = new double[predicts.length];
+        for (int i = 0; i < predicts.length; i++)
+            index[i] = i;
+        int min = minValue(predicts, actuals);
+        int max = maxValue(predicts, actuals);
+
+        String predictsDataPoints = addSeriesForecast(index, predicts, "Predicts");
+        String actualsDataPoints = addSeriesForecast(index, actuals, "Actuals");
+
+        List<String> dataPointsList = new ArrayList<>();
+        dataPointsList.add(predictsDataPoints);
+        dataPointsList.add(actualsDataPoints);
 
         return dataPointsList;
     }
@@ -79,6 +69,20 @@ public class PlotUtil {
         System.out.println("**************************");
 
         dataSet.addSeries(s);
+        String dataPoints = gsonObj.toJson(list);
+        return dataPoints;
+    }
+
+    private static String addSeriesForecast (double[] x, double[] y, String label){
+        Gson gsonObj = new Gson();
+        Map<Object,Object> map = null;
+        List<Map<Object,Object>> list = new ArrayList<Map<Object,Object>>();
+
+        for( int j = 0; j < x.length; j++ ){
+            map = new HashMap<Object,Object>();
+            map.put("x", x[j]);  map.put("y", y[j]);
+            list.add(map);
+        }
         String dataPoints = gsonObj.toJson(list);
         return dataPoints;
     }

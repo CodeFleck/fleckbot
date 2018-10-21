@@ -2,12 +2,16 @@ package br.com.codefleck.tradebot.core.util;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.ta4j.core.Bar;
 import org.ta4j.core.BaseBar;
 import org.ta4j.core.BaseTimeSeries;
+
+import br.com.codefleck.tradebot.tradingInterfaces.Ticker;
 
 public class CsvFileWriter {
 
@@ -117,5 +121,58 @@ public class CsvFileWriter {
             }
 
         }
+    }
+
+    public void writeCsvFileForForecast(List<Ticker> tickerList) {
+
+        final String FILE_HEADER= "date,close,low,high,volume";
+
+        List<Ticker> linesList = new ArrayList<>();
+
+        for (int i=0; i<tickerList.size();i++){
+            linesList.add(tickerList.get(i));
+        }
+
+        String filePathName = System.getProperty("user.home") + "/Projects/fleckbot/src/main/resources/bitfinexTickerPriceForForecasting.csv";
+
+        FileWriter fileWriter = null;
+
+        try {
+            fileWriter = new FileWriter(filePathName);
+
+            //Write the CSV file header
+            fileWriter.append(FILE_HEADER).append(NEW_LINE_SEPARATOR);
+            int i = 0;
+            for (Ticker ticker : linesList) {
+
+                if (ticker == null) {
+                    break;
+                }
+
+                fileWriter.append(ticker.getTimestamp().toString()).append(COMMA_DELIMITER)
+                    .append(String.valueOf(String.valueOf(ticker.getLast()))).append(COMMA_DELIMITER)
+                    .append(String.valueOf(String.valueOf(ticker.getLow()))).append(COMMA_DELIMITER)
+                    .append(String.valueOf(String.valueOf(ticker.getHigh()))).append(COMMA_DELIMITER)
+                    .append(String.valueOf(String.valueOf(ticker.getVolume()))).append(NEW_LINE_SEPARATOR);
+                i++;
+            }
+
+            System.out.println("CSV file was created successfully !!!");
+
+        } catch (Exception e) {
+            System.out.println("Error in CsvFileWriter !!!");
+            e.printStackTrace();
+        } finally {
+
+            try {
+                fileWriter.flush();
+                fileWriter.close();
+            } catch (IOException e) {
+                System.out.println("Error while flushing/closing fileWriter !!!");
+                e.printStackTrace();
+            }
+
+        }
+
     }
 }

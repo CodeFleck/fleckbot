@@ -1,4 +1,4 @@
-package br.com.codefleck.tradebot.redesneurais;
+package br.com.codefleck.tradebot.models;
 
 import java.util.List;
 

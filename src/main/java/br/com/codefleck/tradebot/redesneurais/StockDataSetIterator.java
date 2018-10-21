@@ -1,19 +1,27 @@
 package br.com.codefleck.tradebot.redesneurais;
 
-import com.google.common.collect.ImmutableMap;
-import com.opencsv.CSVReader;
-import javafx.util.Pair;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.*;
+
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.dataset.DataSet;
 import org.nd4j.linalg.dataset.api.DataSetPreProcessor;
 import org.nd4j.linalg.dataset.api.iterator.DataSetIterator;
 import org.nd4j.linalg.factory.Nd4j;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.*;
+import com.google.common.collect.ImmutableMap;
+import com.opencsv.CSVReader;
+
+import br.com.codefleck.tradebot.daos.StockDataDao;
+import br.com.codefleck.tradebot.models.StockData;
+import javafx.util.Pair;
 
 public class StockDataSetIterator implements DataSetIterator {
+
+    @Autowired
+    StockDataDao stockDataDao;
 
     /** category and its index */
     private final Map<PriceCategory, Integer> featureMapIndex = ImmutableMap.of(PriceCategory.OPEN, 0, PriceCategory.CLOSE, 1,
@@ -23,6 +31,7 @@ public class StockDataSetIterator implements DataSetIterator {
     private int miniBatchSize; // mini-batch size
     private int exampleLength;
     private int predictLength = 1; // default 1, say, one day ahead prediction
+    private int timePeriod;
 
     /** minimal values of each feature in stock dataset */
     private double[] minArray = new double[VECTOR_SIZE];
@@ -40,11 +49,25 @@ public class StockDataSetIterator implements DataSetIterator {
     /** adjusted stock dataset for testing */
     private List<Pair<INDArray, INDArray>> test;
 
-    public StockDataSetIterator (String filename, String symbol, int miniBatchSize, int exampleLength, double splitRatio, PriceCategory category) {
+    private List<StockData> stockDataList;
+
+    public StockDataSetIterator (List<StockData> stockList, int miniBatchSize, int exampleLength){
+        this.stockDataList = stockList;
+        this.miniBatchSize = miniBatchSize;
+        this.exampleLength = exampleLength;
+        this.category = PriceCategory.CLOSE;
+        int split = (int) Math.round(stockDataList.size() * 0.8);
+        train = stockDataList.subList(0, split);
+        test = generateTestDataSet(stockDataList.subList(split, stockDataList.size()));
+        initializeOffsets();
+    }
+
+    public StockDataSetIterator (String filename, String symbol, int miniBatchSize, int exampleLength, double splitRatio, PriceCategory category, int timePeriod) {
         List<StockData> stockDataList = readStockDataFromFile(filename, symbol);
         this.miniBatchSize = miniBatchSize;
         this.exampleLength = exampleLength;
         this.category = category;
+        this.timePeriod = timePeriod;
         int split = (int) Math.round(stockDataList.size() * splitRatio);
         train = stockDataList.subList(0, split);
         test = generateTestDataSet(stockDataList.subList(split, stockDataList.size()));
@@ -151,7 +174,7 @@ public class StockDataSetIterator implements DataSetIterator {
 
     @Override public DataSet next() { return next(miniBatchSize); }
 
-    private List<Pair<INDArray, INDArray>> generateTestDataSet (List<StockData> stockDataList) {
+    public List<Pair<INDArray, INDArray>> generateTestDataSet (List<StockData> stockDataList) {
         int window = exampleLength + predictLength;
         List<Pair<INDArray, INDArray>> test = new ArrayList<>();
         for (int i = 0; i < stockDataList.size() - window; i++) {
@@ -189,7 +212,7 @@ public class StockDataSetIterator implements DataSetIterator {
         return test;
     }
 
-    private List<StockData> readStockDataFromFile (String filename, String symbol) {
+    public List<StockData> readStockDataFromFile (String filename, String symbol) {
         List<StockData> stockDataList = new ArrayList<>();
         try {
             for (int i = 0; i < maxArray.length; i++) { // initialize max and min arrays
@@ -212,4 +235,4 @@ public class StockDataSetIterator implements DataSetIterator {
         }
         return stockDataList;
     }
-}
+ }

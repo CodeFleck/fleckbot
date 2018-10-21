@@ -68,6 +68,13 @@
             <p>Categoria: ${categoria}</p>
             <p>Porcentagem média de erro: ${errorPercentageAvg}%</p>
             <p>Porcentagem de erro no último dia: ${errorPercentageLastDay}%</p>
+            <p>Número de épocas: ${epocas}</p>
+            <p>Data de inicio: ${beginDate}</p>
+            <p>Data final: ${endDate}</p>
+            <p>Período: ${period}</p>
+            <p>Maior erro: ${majorError}%</p>
+            <p>Menor erro: ${minorError}%</p>
+
             <div id='chartContainer'></div><br>
         </div>
 

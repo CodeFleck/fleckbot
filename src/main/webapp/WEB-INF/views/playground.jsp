@@ -71,6 +71,7 @@
                             <tr>
                                 <td>
                                     <select class="form-control selectpicker" name="strategy">
+                                        <%--<option>LSTM Prediction Strategy</option>--%>
                                         <option>SMA Duplo</option>
                                         <option>LSTM Prediction</option>
                                     </select>

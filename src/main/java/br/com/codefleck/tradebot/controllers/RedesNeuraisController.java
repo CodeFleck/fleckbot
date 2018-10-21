@@ -11,6 +11,7 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
+import org.apache.avro.ipc.specific.Person;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -21,8 +22,10 @@ import com.google.gson.Gson;
 
 import br.com.codefleck.tradebot.core.engine.TradingEngine;
 import br.com.codefleck.tradebot.daos.DataPointsModelDao;
-import br.com.codefleck.tradebot.redesneurais.DataPointsListModel;
-import br.com.codefleck.tradebot.redesneurais.DataPointsModel;
+import br.com.codefleck.tradebot.daos.StockDataDao;
+import br.com.codefleck.tradebot.models.DataPointsListModel;
+import br.com.codefleck.tradebot.models.DataPointsModel;
+import br.com.codefleck.tradebot.models.StockData;
 import br.com.codefleck.tradebot.services.impl.PredictionServiceImpl;
 
 @Controller
@@ -36,6 +39,8 @@ public class RedesNeuraisController {
     PredictionServiceImpl predictionService;
     @Autowired
     DataPointsModelDao dataPointsModelDao;
+    @Autowired
+    StockDataDao stockDataDao;
 
     @GetMapping
     public ModelAndView redesNeuraisLandingDataProvider(ModelAndView model) {
@@ -49,10 +54,10 @@ public class RedesNeuraisController {
 
         for (DataPointsModel dataPoint : todosDataPoints) {
 
-            if (dataPoint.getNomeConjunto().equals("b)5epocas-jan17jun17-1D")){
+            if (dataPoint.getNomeConjunto().equals("LR0.001-15min_1ep_jun16jun17Prediction-Fechamento")){
                 predictsList.add(dataPoint);
             }
-            if (dataPoint.getNomeConjunto().equals("b)5epocas-jan17jun17-1D")){
+            if (dataPoint.getNomeConjunto().equals("LR0.001-15min_1ep_jun16jun17Actual-Fechamento")) {
                 actualsList.add(dataPoint);
             }
         }
@@ -82,36 +87,60 @@ public class RedesNeuraisController {
 
         BaseTimeSeries customTimeSeries = predictionService.createCSVFileForNeuralNets(begingDate, endingDate, period);
 
-        List<String> dataPointList = predictionService.initTraining(epocas, simbolo, categoria, customTimeSeries);
+        List<String> dataPointList = predictionService.initTraining(epocas, simbolo, categoria, customTimeSeries, Integer.valueOf(period));
 
         ModelAndView model = new ModelAndView();
         model.setViewName("admin/redes-neurais");
         model.addObject("predictsDataPoints", dataPointList.get(0));
         model.addObject("actualsDataPoints", dataPointList.get(1));
+        model.addObject("epocas", epocas);
+        model.addObject("beginDate", beginDate);
+        model.addObject("endDate", endDate);
+        model.addObject("period", period);
+
         String cat = categoria;
         model.addObject("categoria", cat);
 
         DataPointsListModel dataPointsList = predictionService.prepareDataPointToBeSaved(dataPointList, nomeDoConjunto, categoria);
         Double errorPercentageAvg = predictionService.calculateErrorPercentageAverage(dataPointsList);
         Double errorPercentageLastDay = predictionService.calculateErrorPercentageLastDay(dataPointsList);
+        Double majorError = predictionService.calculateMajorError(dataPointsList);
+        Double minorError = predictionService.calculateMinorError(dataPointsList);
 
         NumberFormat formatter = new DecimalFormat("#0.00");
 
         model.addObject("errorPercentageAvg", formatter.format(errorPercentageAvg));
         model.addObject("errorPercentageLastDay", formatter.format(errorPercentageLastDay));
-        System.out.println("Prediction: ");
-            System.out.println("*** BEGIN   ->>>");
+        model.addObject("majorError", formatter.format(majorError));
+        model.addObject("minorError", formatter.format(minorError));
+
         for (DataPointsModel dataPoint : dataPointsList.getPredictDataPointsModelList()) {
-           System.out.println(dataPoint.getX() + "," + dataPoint.getY());
             //dataPointsModelDao.save(dataPoint);
         }
-        System.out.println("Actual price: ");
+
         for (DataPointsModel dataPoint : dataPointsList.getActualDataPointsModelList()) {
-            System.out.println(dataPoint.getX() + "," + dataPoint.getY());
             //dataPointsModelDao.save(dataPoint);
         }
-            System.out.println("<<<- END ***");
+        System.out.println("finished saving...");
 
         return model;
+    }
+
+    public void saveAllStockData(BaseTimeSeries customTimeSeries) {
+
+            List<StockData> stockDataList = new ArrayList<>();
+        for(int i=0; i<customTimeSeries.getEndIndex();i++){
+
+            StockData stockData = new StockData(customTimeSeries.getBar(i).getSimpleDateName(),
+                "BTC",
+                customTimeSeries.getBar(i).getOpenPrice().doubleValue(),
+                customTimeSeries.getBar(i).getClosePrice().doubleValue(),
+                customTimeSeries.getBar(i).getMinPrice().doubleValue(),
+                customTimeSeries.getBar(i).getMaxPrice().doubleValue(),
+                customTimeSeries.getBar(i).getVolume().doubleValue());
+            stockDataList.add(stockData);
+        }
+
+        stockDataList.stream().forEach(s -> stockDataDao.save(s));
     }
 }

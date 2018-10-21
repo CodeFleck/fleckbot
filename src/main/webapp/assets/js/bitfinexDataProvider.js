@@ -64,14 +64,16 @@
   function responseTicker(data) {
 
     var LAST_PRICE = data[7];
+    var LAST_PRICE_FORMATTED = LAST_PRICE.toFixed(2);
     var ASK = data[3];
     var BID = data[1];
     var VOLUME = data[8];
     var HIGH = data[9];
     var LOW = data[10];
 
-    document.getElementById("btc").innerHTML = "preco: " + LAST_PRICE + "<br> compra: " + ASK + " | venda: " + BID
-      + "<br>volume: " + VOLUME + "<br> alta: " + HIGH + "  |  baixa: " + LOW;
+    // document.getElementById("btc").innerHTML = "preco: " + LAST_PRICE + "<br> compra: " + ASK + " | venda: " + BID
+    //   + "<br>volume: " + VOLUME + "<br> alta: " + HIGH + "  |  baixa: " + LOW;
+    document.getElementById("btc").innerHTML = LAST_PRICE_FORMATTED;
   }
 
 })();

@@ -74,4 +74,6 @@ public interface Ticker {
    * @return the current time on the exchange if provided, null otherwise.
    */
   Long getTimestamp();
+
+    void setOpen(BigDecimal bid);
 }

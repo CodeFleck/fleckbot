@@ -1,4 +1,6 @@
-package br.com.codefleck.tradebot.redesneurais;
+package br.com.codefleck.tradebot.models;
+
+import java.time.LocalDateTime;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -14,13 +16,17 @@ public class DataPointsModel {
     double x;
     double y;
     String nomeConjunto;
+    LocalDateTime timeStamp;
 
-    public DataPointsModel(){}
+    public DataPointsModel(){
+        this.timeStamp = LocalDateTime.now();
+    }
 
-    public DataPointsModel(double x, double y, String nomeConjunto) {
+    public DataPointsModel(double x, double y, String nomeConjunto, LocalDateTime timeStamp) {
         this.x = x;
         this.y = y;
         this.nomeConjunto = nomeConjunto;
+        this.timeStamp = LocalDateTime.now();
     }
 
     public Integer getId() {
@@ -55,9 +61,17 @@ public class DataPointsModel {
         this.nomeConjunto = nomeConjunto;
     }
 
+    public LocalDateTime getTimeStamp() {
+        return timeStamp;
+    }
+
+    public void setTimeStamp(LocalDateTime timeStamp) {
+        this.timeStamp = timeStamp;
+    }
+
     @Override
     public String toString() {
-        return "DataPointsModel{" + "id=" + id + ", x=" + x + ", y=" + y + ", nomeConjunto='" + nomeConjunto + '\'' + '}';
+        return "DataPointsModel{" + "id=" + id + ", x=" + x + ", y=" + y + ", nomeConjunto='" + nomeConjunto + '\'' + ", timeStamp=" + timeStamp + '}';
     }
 }
 

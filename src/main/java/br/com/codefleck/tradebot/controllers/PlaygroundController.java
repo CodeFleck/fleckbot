@@ -24,6 +24,8 @@ import br.com.codefleck.tradebot.exchanges.trading.CustomBaseBarForGraph;
 import br.com.codefleck.tradebot.services.impl.EventServiceImpl;
 import br.com.codefleck.tradebot.services.impl.TradeServiceImpl;
 import br.com.codefleck.tradebot.strategies.DailyPredictionTradeStrategy;
+import br.com.codefleck.tradebot.strategies.LSTMPredictionStrategy;
+import br.com.codefleck.tradebot.strategies.LSTMPredictionStrategyForPlayground;
 import br.com.codefleck.tradebot.strategies.SMADuplo;
 
 @Controller
@@ -163,6 +165,11 @@ public class PlaygroundController {
         if (strategy.equals("LSTM Prediction")){
             DailyPredictionTradeStrategy dayDailyPredictionTradeStrategy = new DailyPredictionTradeStrategy();
         return dayDailyPredictionTradeStrategy.buildStrategy(customTimeSeries, smaList);
+        }
+        if (strategy.equals("LSTM Prediction Strategy")){
+            LSTMPredictionStrategyForPlayground lstmPredictionStrategyForPlayground = new LSTMPredictionStrategyForPlayground();
+           // return lstmPredictionStrategyForPlayground.buildStrategy(customTimeSeries);
+            return null;
         }
 
         return null;

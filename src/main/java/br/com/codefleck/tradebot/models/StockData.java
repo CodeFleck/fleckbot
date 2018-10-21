@@ -1,6 +1,16 @@
-package br.com.codefleck.tradebot.redesneurais;
+package br.com.codefleck.tradebot.models;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
+@Entity
 public class StockData {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
     private String date; // date
     private String symbol; // stock name
 
@@ -10,7 +20,8 @@ public class StockData {
     private double high; // high price
     private double volume; // volume
 
-    public StockData () {}
+    public StockData() {
+    }
 
     public StockData (String date, String symbol, double open, double close, double low, double high, double volume) {
         this.date = date;
@@ -42,4 +53,17 @@ public class StockData {
 
     public double getVolume() { return volume; }
     public void setVolume(double volume) { this.volume = volume; }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    @Override
+    public String toString() {
+        return "StockData{" + "id=" + id + ", date='" + date + '\'' + ", symbol='" + symbol + '\'' + ", open=" + open + ", close=" + close + ", low=" + low + ", high=" + high + ", volume=" + volume + '}';
+    }
 }

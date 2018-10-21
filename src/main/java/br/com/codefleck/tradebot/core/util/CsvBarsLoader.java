@@ -17,9 +17,14 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.ta4j.core.*;
 
 import com.opencsv.CSVReader;
+
+import br.com.codefleck.tradebot.core.engine.TradingEngine;
+import br.com.codefleck.tradebot.daos.StockDataDao;
+import br.com.codefleck.tradebot.models.StockData;
 
 /**
  * This class build a Ta4j time series from a CSV file containing bars.
@@ -27,6 +32,9 @@ import com.opencsv.CSVReader;
 public class CsvBarsLoader {
 
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy,MM,dd HH:mm:ss");
+
+    @Autowired
+    StockDataDao stockDataDao;
 
     public static TimeSeries loadCoinBaseSeries(Date beginDate, Date endDate) {
 

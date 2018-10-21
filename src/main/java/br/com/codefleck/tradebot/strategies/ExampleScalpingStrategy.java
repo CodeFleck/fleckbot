@@ -305,7 +305,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
       if (!lastOrderFound) {
 
         LOG.info(() -> market.getName() +
-            " ^^^ Yay!!! Last BUY Order Id [" + lastOrder.id + "] filled at [" + lastOrder.price + "]");
+            "Yay!!! Last BUY Order Id [" + lastOrder.id + "] filled at [" + lastOrder.price + "]");
 
         /*
          * The last buy order was filled, so lets see if we can send a new sell order.

@@ -14,8 +14,7 @@ import br.com.codefleck.tradebot.core.util.PaginatedList;
 public class PaginatorQueryHelper
 {
 
-   public PaginatorQueryHelper()
-   {
+   public PaginatorQueryHelper(){
    }
 
    /**

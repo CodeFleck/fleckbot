@@ -253,6 +253,11 @@ public interface TradingApi {
       public Long getTimestamp() {
         return null;
       }
+
+        @Override
+        public void setOpen(BigDecimal bid) {
+
+        }
     };
   }
 }

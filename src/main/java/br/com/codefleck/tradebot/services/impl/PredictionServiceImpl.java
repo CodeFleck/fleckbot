@@ -2,11 +2,8 @@ package br.com.codefleck.tradebot.services.impl;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.Time;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.time.LocalDateTime;
+import java.util.*;
 
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.deeplearning4j.util.ModelSerializer;
@@ -22,7 +19,11 @@ import org.ta4j.core.BaseTimeSeries;
 import org.ta4j.core.TimeSeries;
 
 import br.com.codefleck.tradebot.core.util.CsvBarsLoader;
+import br.com.codefleck.tradebot.models.DataPointsListModel;
+import br.com.codefleck.tradebot.models.DataPointsModel;
+import br.com.codefleck.tradebot.models.StockData;
 import br.com.codefleck.tradebot.redesneurais.*;
+import br.com.codefleck.tradebot.tradingInterfaces.Ticker;
 import javafx.util.Pair;
 
 @Service("predictionService")
@@ -32,19 +33,34 @@ public class PredictionServiceImpl {
 
     private static final Logger log = LoggerFactory.getLogger(PredictionServiceImpl.class);
 
-    private static int exampleLength = 178; // time series length for 1 prediction
+    //private static int exampleLength = 30; //1D - gerou 66 resultados
+    //private static int exampleLength = 40; //4h - gerou 396 ( 2017-04-18 a 2017-06-23)
+    //private static int exampleLength = 40; //2h - gerou 834 (2017-04-18 a 2017-06-26) - média de erro: 25.28%
+    //private static int exampleLength = 80; //2h - gerou de (2017-04-18 a 2017-06-23) -  média de erro: 16.96%
+    //private static int exampleLength = 140; //2h - gerou de (2017-04-18 a 2017-06-18) -  média de erro: 16.78%
+    //private static int exampleLength = 140; //1h - gerou de (2017-04-18 a 2017-06-24) -   média de erro: 16.16%%
+    //private static int exampleLength = 50; //1h - gerou de (2017-04-18 a 2017-06-27) - media de erro: 18.16%
+    //private static int exampleLength = 30; //1h - gerou de (2017-04-18 a 2017-06-28) -  média de erro: 21.54%
+    //private static int exampleLength = 280; //30min - gerou de ( 2017-04-18 a 2017-05-18) - Porcentagem média de erro: 14.63%
+    //private static int exampleLength = 380; //30min - gerou de (2017-04-18 a 2017-06-22) - media de erro: 25.26%
+    //private static int exampleLength = 180; //1min  2017-04-18 to 2017-04-20 - 10.82%
+    //private static int exampleLength = 80; //1min  2017-04-18 to 2017-06-29 - média de erro: 17.96%
+    //private static int exampleLength = 180; //15min fucking 2017-04-18 to 2017-05-03 - media erro: -0,23%!!!!!
+    //private static int exampleLength = 80; //15min 2017-04-18 to 2017-05-29 - media erro: 15.22%!!!!!
 
-    public List<String> initTraining(int epocas, String simbolo, String categoria, BaseTimeSeries customTimeSeries) throws IOException {
+    private static int exampleLength = 80;
+
+    public List<String> initTraining(int epocas, String simbolo, String categoria, BaseTimeSeries customTimeSeries,int period) throws IOException {
         String file = new ClassPathResource("coinBaseDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
         String symbol = simbolo; // stock name
-        int batchSize = 64; // mini-batch size
+        int batchSize = 32; // mini-batch size
         double splitRatio = 0.8; // 80% for training, 20% for testing
         int epochs = epocas; // training epochs
         String chosenCategory = categoria;
 
         log.info("Create dataSet iterator...");
         PriceCategory category = verifyCategory(chosenCategory); // CLOSE: predict close price
-        StockDataSetIterator iterator = new StockDataSetIterator(file, symbol, batchSize, exampleLength, splitRatio, category);
+        StockDataSetIterator iterator = new StockDataSetIterator(file, symbol, batchSize, exampleLength, splitRatio, category, period);
 
         int split = (int) Math.round(customTimeSeries.getBarCount() * splitRatio);
         TimeSeries testTimeSeries = customTimeSeries.getSubSeries(split, customTimeSeries.getEndIndex());
@@ -121,7 +137,7 @@ public class PredictionServiceImpl {
     }
 
     /** Predict all the features (open, close, low, high prices and volume) of a stock one-day ahead */
-    private void predictAllCategories (MultiLayerNetwork net, List<Pair<INDArray, INDArray>> testData, INDArray max, INDArray min) {
+    public void predictAllCategories (MultiLayerNetwork net, List<Pair<INDArray, INDArray>> testData, INDArray max, INDArray min) {
         INDArray[] predicts = new INDArray[testData.size()];
         INDArray[] actuals = new INDArray[testData.size()];
         for (int i = 0; i < testData.size(); i++) {
@@ -265,6 +281,60 @@ public class PredictionServiceImpl {
         errorPercentage.add(result);
 
         return result;
+    }
+
+    public Double calculateMajorError(DataPointsListModel dataPointsList) {
+
+        Double majorError = ((dataPointsList.getActualDataPointsModelList().get(0).getY() - dataPointsList.getPredictDataPointsModelList().get(0).getY()) * 100) / dataPointsList.getActualDataPointsModelList().get(0).getY();
+        Double result;
+        for (int i=0;i<dataPointsList.getActualDataPointsModelList().size();i++) {
+
+            result = ((dataPointsList.getActualDataPointsModelList().get(i).getY() - dataPointsList.getPredictDataPointsModelList().get(i).getY()) * 100) / dataPointsList.getActualDataPointsModelList().get(i).getY();
+
+            if (result > majorError) {
+                majorError = result;
+            }
+        }
+        return majorError;
+    }
+
+    public Double calculateMinorError(DataPointsListModel dataPointsList) {
+
+        Double minorError = ((dataPointsList.getActualDataPointsModelList().get(0).getY() - dataPointsList.getPredictDataPointsModelList().get(0).getY()) * 100) / dataPointsList.getActualDataPointsModelList().get(0).getY();
+
+        Double result;
+
+        for (int i=0;i<dataPointsList.getActualDataPointsModelList().size();i++) {
+
+            result = ((dataPointsList.getActualDataPointsModelList().get(i).getY() - dataPointsList.getPredictDataPointsModelList().get(i).getY()) * 100) / dataPointsList.getActualDataPointsModelList().get(i).getY();
+
+            if (result < minorError) {
+                minorError = result;
+            }
+        }
+
+        return minorError;
+    }
+
+    public StockData transformTickerInStockData(Ticker ticker) {
+
+        String today = LocalDateTime.now().toString();
+
+        if(!(ticker.getOpen() == null)) {
+            ticker.getOpen().doubleValue();
+        } else {
+            ticker.setOpen(ticker.getBid());
+        }
+        StockData stockData = new StockData(
+            today,
+            "BTC",
+            ticker.getOpen().doubleValue(),
+            ticker.getLast().doubleValue(),
+            ticker.getLow().doubleValue(),
+            ticker.getHigh().doubleValue(),
+            ticker.getVolume().doubleValue()
+        );
+        return stockData;
     }
 }
 
