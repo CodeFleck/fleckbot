@@ -42,3 +42,4 @@ proguard/
 .gradle/
 build/
 bin/
+src/main/resources/.DS_Store
