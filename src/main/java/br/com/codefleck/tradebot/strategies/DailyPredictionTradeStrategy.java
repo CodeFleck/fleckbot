@@ -1,18 +1,16 @@
 package br.com.codefleck.tradebot.strategies;
 
-import java.util.List;
-
-import org.ta4j.core.*;
-import org.ta4j.core.indicators.SMAIndicator;
-import org.ta4j.core.indicators.helpers.ClosePriceIndicator;
+import br.com.codefleck.tradebot.core.util.FuturePricetIndicator;
+import br.com.codefleck.tradebot.core.util.SMA;
+import org.ta4j.core.BaseStrategy;
+import org.ta4j.core.BaseTimeSeries;
+import org.ta4j.core.Rule;
+import org.ta4j.core.Strategy;
 import org.ta4j.core.indicators.helpers.MedianPriceIndicator;
-import org.ta4j.core.trading.rules.CrossedDownIndicatorRule;
-import org.ta4j.core.trading.rules.CrossedUpIndicatorRule;
 import org.ta4j.core.trading.rules.OverIndicatorRule;
 import org.ta4j.core.trading.rules.UnderIndicatorRule;
 
-import br.com.codefleck.tradebot.core.util.FuturePricetIndicator;
-import br.com.codefleck.tradebot.core.util.SMA;
+import java.util.List;
 
 public class DailyPredictionTradeStrategy {
 

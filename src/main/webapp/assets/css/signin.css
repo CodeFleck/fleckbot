@@ -54,3 +54,11 @@ div.imglogo{
 .welcome{
     margin-bottom: 40px;
 }
+
+.btnlogin{
+    margin-left: 18%;
+    width: 270px;
+}
+.loginform{
+    margin-right: 10%;
+}

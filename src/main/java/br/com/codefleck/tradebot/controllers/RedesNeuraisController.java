@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+import org.ta4j.core.BaseTimeSeries;
 
 import com.google.gson.Gson;
 
@@ -48,10 +49,10 @@ public class RedesNeuraisController {
 
         for (DataPointsModel dataPoint : todosDataPoints) {
 
-            if (dataPoint.getNomeConjunto().equals("2-epocas-1m-abril2017Prediction-Fechamento")){
+            if (dataPoint.getNomeConjunto().equals("b)5epocas-jan17jun17-1D")){
                 predictsList.add(dataPoint);
             }
-            if (dataPoint.getNomeConjunto().equals("2-epocas-1m-abril2017Actual-Fechamento")){
+            if (dataPoint.getNomeConjunto().equals("b)5epocas-jan17jun17-1D")){
                 actualsList.add(dataPoint);
             }
         }
@@ -79,9 +80,9 @@ public class RedesNeuraisController {
         Date begingDate = formato.parse(beginDate);
         Date endingDate = formato.parse(endDate);
 
-        predictionService.createCSVFileForNeuralNets(begingDate, endingDate, period);
+        BaseTimeSeries customTimeSeries = predictionService.createCSVFileForNeuralNets(begingDate, endingDate, period);
 
-        List<String> dataPointList = predictionService.initTraining(epocas, simbolo, categoria);
+        List<String> dataPointList = predictionService.initTraining(epocas, simbolo, categoria, customTimeSeries);
 
         ModelAndView model = new ModelAndView();
         model.setViewName("admin/redes-neurais");
@@ -98,13 +99,18 @@ public class RedesNeuraisController {
 
         model.addObject("errorPercentageAvg", formatter.format(errorPercentageAvg));
         model.addObject("errorPercentageLastDay", formatter.format(errorPercentageLastDay));
-
+        System.out.println("Prediction: ");
+            System.out.println("*** BEGIN   ->>>");
         for (DataPointsModel dataPoint : dataPointsList.getPredictDataPointsModelList()) {
+           System.out.println(dataPoint.getX() + "," + dataPoint.getY());
             //dataPointsModelDao.save(dataPoint);
         }
+        System.out.println("Actual price: ");
         for (DataPointsModel dataPoint : dataPointsList.getActualDataPointsModelList()) {
+            System.out.println(dataPoint.getX() + "," + dataPoint.getY());
             //dataPointsModelDao.save(dataPoint);
         }
+            System.out.println("<<<- END ***");
 
         return model;
     }

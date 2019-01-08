@@ -34,6 +34,7 @@
                     Você se deslogou.
                 </p>
             </c:if>
+            <div class="loginform">
             <div class="form-group row">
                 <label for="username" class="col-sm-2 col-form-label">Usuário</label>
                 <div class="col-sm-10">
@@ -47,7 +48,8 @@
                 </div>
             </div>
             <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-            <button type="submit" class="btn btn-lg btn-primary btn-block">Log in</button>
+            <button type="submit" class="btn btn-lg btn-primary btn-block btnlogin">Log in</button>
+            </div>
         </form>
     </div>
 </div>
