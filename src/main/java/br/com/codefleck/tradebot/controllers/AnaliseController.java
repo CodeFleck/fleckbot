@@ -53,7 +53,7 @@ public class AnaliseController {
         StockData stockData = predictionService.transformTickerInStockData(ticker);
         stockDataDao.save(stockData);
 
-        List<StockData> stockDataList = stockDataDao.ListLatest(10000);
+        List<StockData> stockDataList = stockDataDao.ListLatest(2880);
 
         List<String> predictionList = forecastService.initializeForecasts(stockDataList);
 

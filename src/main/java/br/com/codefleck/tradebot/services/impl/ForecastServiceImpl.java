@@ -42,7 +42,7 @@ public class ForecastServiceImpl {
 
         List<Pair<INDArray, INDArray>> test = iterator.generateTestDataSet(lastStockData);
 
-        String FileLocation = "/Users/dfleck/Projects/fleckbot/src/main/resources/5epocas_6meses_1d.zip";
+        String FileLocation = "/Users/dfleck/projects/tcc/fleckbot-11-09-2017/fleckbot/src/main/resources/5epocas_6meses_1d.zip";
 
         log.info("Load model...");
         MultiLayerNetwork net = ModelSerializer.restoreMultiLayerNetwork(FileLocation);

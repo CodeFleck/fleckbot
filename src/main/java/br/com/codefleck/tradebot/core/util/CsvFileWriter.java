@@ -79,7 +79,7 @@ public class CsvFileWriter {
             linesList.add(customTimeSeries.getBar(i));
         }
 
-        String filePathName = System.getProperty("user.home") + "/Projects/fleckbot/src/main/resources/coinBaseDataForTrainingNeuralNets.csv";
+        String filePathName = System.getProperty("user.home") + "/projects/tcc/fleckbot-11-09-2017/fleckbot/src/main/resources/coinBaseDataForTrainingNeuralNets.csv";
 
         FileWriter fileWriter = null;
 
