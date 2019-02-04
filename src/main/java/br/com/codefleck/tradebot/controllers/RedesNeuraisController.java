@@ -1,5 +1,20 @@
 package br.com.codefleck.tradebot.controllers;
 
+import br.com.codefleck.tradebot.core.engine.TradingEngine;
+import br.com.codefleck.tradebot.daos.DataPointsModelDao;
+import br.com.codefleck.tradebot.daos.StockDataDao;
+import br.com.codefleck.tradebot.models.DataPointsListModel;
+import br.com.codefleck.tradebot.models.DataPointsModel;
+import br.com.codefleck.tradebot.models.StockData;
+import br.com.codefleck.tradebot.services.impl.PredictionServiceImpl;
+import com.google.gson.Gson;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
+import org.ta4j.core.BaseTimeSeries;
+
+import javax.transaction.Transactional;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -8,25 +23,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import javax.transaction.Transactional;
-
-import org.apache.avro.ipc.specific.Person;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
-import org.ta4j.core.BaseTimeSeries;
-
-import com.google.gson.Gson;
-
-import br.com.codefleck.tradebot.core.engine.TradingEngine;
-import br.com.codefleck.tradebot.daos.DataPointsModelDao;
-import br.com.codefleck.tradebot.daos.StockDataDao;
-import br.com.codefleck.tradebot.models.DataPointsListModel;
-import br.com.codefleck.tradebot.models.DataPointsModel;
-import br.com.codefleck.tradebot.models.StockData;
-import br.com.codefleck.tradebot.services.impl.PredictionServiceImpl;
 
 @Controller
 @RequestMapping("/admin/redes-neurais")
@@ -87,7 +83,7 @@ public class RedesNeuraisController {
 
         BaseTimeSeries customTimeSeries = predictionService.createCSVFileForNeuralNets(begingDate, endingDate, period);
 
-        List<String> dataPointList = predictionService.initTraining(epocas, simbolo, categoria, customTimeSeries, Integer.valueOf(period));
+        List<String> dataPointList = predictionService.initTraining(epocas, simbolo, categoria, customTimeSeries);
 
         ModelAndView model = new ModelAndView();
         model.setViewName("admin/redes-neurais");

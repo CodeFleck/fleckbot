@@ -25,13 +25,12 @@ public class StockDataSetIterator implements DataSetIterator {
 
     /** category and its index */
     private final Map<PriceCategory, Integer> featureMapIndex = ImmutableMap.of(PriceCategory.OPEN, 0, PriceCategory.CLOSE, 1,
-        PriceCategory.LOW, 2, PriceCategory.HIGH, 3, PriceCategory.VOLUME, 4);
+            PriceCategory.LOW, 2, PriceCategory.HIGH, 3, PriceCategory.VOLUME, 4);
 
     private final int VECTOR_SIZE = 5; // number of features for a stock data
     private int miniBatchSize; // mini-batch size
     private int exampleLength;
     private int predictLength = 1; // default 1, say, one day ahead prediction
-    private int timePeriod;
 
     /** minimal values of each feature in stock dataset */
     private double[] minArray = new double[VECTOR_SIZE];
@@ -51,26 +50,27 @@ public class StockDataSetIterator implements DataSetIterator {
 
     private List<StockData> stockDataList;
 
-    public StockDataSetIterator (List<StockData> stockList, int miniBatchSize, int exampleLength){
+    public StockDataSetIterator (List<StockData> stockList, int miniBatchSize, int exampleLength){ //forecast constructor
         this.stockDataList = stockList;
         this.miniBatchSize = miniBatchSize;
         this.exampleLength = exampleLength;
         this.category = PriceCategory.CLOSE;
-        int split = (int) Math.round(stockDataList.size() * 0.8);
+        int split = (stockDataList.size());
         train = stockDataList.subList(0, split);
-        test = generateTestDataSet(stockDataList.subList(split, stockDataList.size()));
+        updateExampleLengthForForecast(exampleLength, stockDataList.size());
+        test = generateTestDataSet(stockDataList);
         initializeOffsets();
     }
 
-    public StockDataSetIterator (String filename, String symbol, int miniBatchSize, int exampleLength, double splitRatio, PriceCategory category, int timePeriod) {
+    public StockDataSetIterator (String filename, String symbol, int miniBatchSize, int exampleLength, double splitRatio, PriceCategory category) {
         List<StockData> stockDataList = readStockDataFromFile(filename, symbol);
         this.miniBatchSize = miniBatchSize;
         this.exampleLength = exampleLength;
         this.category = category;
-        this.timePeriod = timePeriod;
         int split = (int) Math.round(stockDataList.size() * splitRatio);
         train = stockDataList.subList(0, split);
         test = generateTestDataSet(stockDataList.subList(split, stockDataList.size()));
+        updateExampleLength(exampleLength, test.size());
         initializeOffsets();
     }
 
@@ -235,4 +235,18 @@ public class StockDataSetIterator implements DataSetIterator {
         }
         return stockDataList;
     }
- }
+
+    private void updateExampleLengthForForecast(int exampleLength, int stockSize){
+        if (exampleLength > stockSize){
+            this.exampleLength = stockSize-32;
+        }
+    }
+
+    private void updateExampleLength(int exampleLength, int testSize){
+        if (exampleLength > testSize){
+            this.exampleLength = testSize;
+        }
+    }
+}
+
+

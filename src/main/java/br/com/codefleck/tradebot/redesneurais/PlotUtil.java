@@ -1,15 +1,12 @@
 package br.com.codefleck.tradebot.redesneurais;
 
+import com.google.gson.Gson;
+import org.ta4j.core.TimeSeries;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.jfree.data.xy.XYSeries;
-import org.jfree.data.xy.XYSeriesCollection;
-import org.ta4j.core.TimeSeries;
-
-import com.google.gson.Gson;
 
 public class PlotUtil {
 
@@ -17,12 +14,9 @@ public class PlotUtil {
         double[] index = new double[predicts.length];
         for (int i = 0; i < predicts.length; i++)
             index[i] = i;
-        int min = minValue(predicts, actuals);
-        int max = maxValue(predicts, actuals);
-        final XYSeriesCollection dataSet = new XYSeriesCollection();
 
-        String predictsDataPoints = addSeries(dataSet, index, predicts, "Predicts", testTimeSeries);
-        String actualsDataPoints = addSeries(dataSet, index, actuals, "Actuals", testTimeSeries);
+        String predictsDataPoints = addSeries(index, predicts, "Predicts", testTimeSeries);
+        String actualsDataPoints = addSeries(index, actuals, "Actuals", testTimeSeries);
 
         List<String> dataPointsList = new ArrayList<>();
         dataPointsList.add(predictsDataPoints);
@@ -31,36 +25,17 @@ public class PlotUtil {
         return dataPointsList;
     }
 
-    public static List<String> plotForecast(double[] predicts, double[] actuals, String name){
-        double[] index = new double[predicts.length];
-        for (int i = 0; i < predicts.length; i++)
-            index[i] = i;
-        int min = minValue(predicts, actuals);
-        int max = maxValue(predicts, actuals);
+    private static String addSeries (double[] x, double[] y, String label, TimeSeries testTimeSeries){
 
-        String predictsDataPoints = addSeriesForecast(index, predicts, "Predicts");
-        String actualsDataPoints = addSeriesForecast(index, actuals, "Actuals");
-
-        List<String> dataPointsList = new ArrayList<>();
-        dataPointsList.add(predictsDataPoints);
-        dataPointsList.add(actualsDataPoints);
-
-        return dataPointsList;
-    }
-
-    private static String addSeries (final XYSeriesCollection dataSet, double[] x, double[] y, String label, TimeSeries testTimeSeries){
-
-        final XYSeries s = new XYSeries(label);
         Gson gsonObj = new Gson();
 
-        Map<Object,Object> map = null;
-        List<Map<Object,Object>> list = new ArrayList<Map<Object,Object>>();
+        Map<Object,Object> map;
+        List<Map<Object,Object>> list = new ArrayList<>();
 
         System.out.println("************" + label + "**************");
 
         for( int j = 0; j < x.length; j++ ){
-            s.add(x[j], y[j]);
-            map = new HashMap<Object,Object>();
+            map = new HashMap<>();
             map.put("x", x[j]);  map.put("y", y[j]);
             System.out.println(x[j] + ", " + y[j] + ", " + testTimeSeries.getBar(j).getSimpleDateName());
             list.add(map);
@@ -68,7 +43,6 @@ public class PlotUtil {
 
         System.out.println("**************************");
 
-        dataSet.addSeries(s);
         String dataPoints = gsonObj.toJson(list);
         return dataPoints;
     }

@@ -48,9 +48,10 @@ public class PredictionServiceImpl {
     //private static int exampleLength = 180; //15min fucking 2017-04-18 to 2017-05-03 - media erro: -0,23%!!!!!
     //private static int exampleLength = 80; //15min 2017-04-18 to 2017-05-29 - media erro: 15.22%!!!!!
 
-    private static int exampleLength = 80;
+//    private static int exampleLength = 180; //1D gerou 36
+    private static int exampleLength = 30; //1D gerou 166 ou mais...
 
-    public List<String> initTraining(int epocas, String simbolo, String categoria, BaseTimeSeries customTimeSeries,int period) throws IOException {
+    public List<String> initTraining(int epocas, String simbolo, String categoria, BaseTimeSeries customTimeSeries) throws IOException {
         String file = new ClassPathResource("coinBaseDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
         String symbol = simbolo; // stock name
         int batchSize = 32; // mini-batch size
@@ -60,7 +61,7 @@ public class PredictionServiceImpl {
 
         log.info("Create dataSet iterator...");
         PriceCategory category = verifyCategory(chosenCategory); // CLOSE: predict close price
-        StockDataSetIterator iterator = new StockDataSetIterator(file, symbol, batchSize, exampleLength, splitRatio, category, period);
+        StockDataSetIterator iterator = new StockDataSetIterator(file, symbol, batchSize, exampleLength, splitRatio, category);
 
         int split = (int) Math.round(customTimeSeries.getBarCount() * splitRatio);
         TimeSeries testTimeSeries = customTimeSeries.getSubSeries(split, customTimeSeries.getEndIndex());
