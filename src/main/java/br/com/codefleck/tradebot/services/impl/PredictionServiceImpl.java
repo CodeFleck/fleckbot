@@ -1,10 +1,15 @@
 package br.com.codefleck.tradebot.services.impl;
 
-import java.io.File;
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.*;
-
+import br.com.codefleck.tradebot.core.util.CsvBarsLoader;
+import br.com.codefleck.tradebot.models.DataPointsListModel;
+import br.com.codefleck.tradebot.models.DataPointsModel;
+import br.com.codefleck.tradebot.models.StockData;
+import br.com.codefleck.tradebot.redesneurais.PlotUtil;
+import br.com.codefleck.tradebot.redesneurais.PriceCategory;
+import br.com.codefleck.tradebot.redesneurais.RecurrentNets;
+import br.com.codefleck.tradebot.redesneurais.StockDataSetIterator;
+import br.com.codefleck.tradebot.tradingInterfaces.Ticker;
+import javafx.util.Pair;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.deeplearning4j.util.ModelSerializer;
 import org.nd4j.linalg.api.ndarray.INDArray;
@@ -19,13 +24,15 @@ import org.ta4j.core.Bar;
 import org.ta4j.core.BaseTimeSeries;
 import org.ta4j.core.TimeSeries;
 
-import br.com.codefleck.tradebot.core.util.CsvBarsLoader;
-import br.com.codefleck.tradebot.models.DataPointsListModel;
-import br.com.codefleck.tradebot.models.DataPointsModel;
-import br.com.codefleck.tradebot.models.StockData;
-import br.com.codefleck.tradebot.redesneurais.*;
-import br.com.codefleck.tradebot.tradingInterfaces.Ticker;
-import javafx.util.Pair;
+import java.io.File;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service("predictionService")
 @Transactional
@@ -82,7 +89,10 @@ public class PredictionServiceImpl {
         }
 
         log.info("Saving model...");
-        File locationToSave = new File("/Users/dfleck/projects/tcc/fleckbot-11-09-2017/fleckbot/src/main/resources/StockPriceLSTM_".concat(String.valueOf(category)).concat(".zip"));
+        LocalDateTime localDateTime = LocalDateTime.now();
+        LocalTime localTime = localDateTime.toLocalTime();
+        DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy-HH:mm:ss");
+        File locationToSave = new File("/Users/dfleck/projects/tcc/fleckbot-11-09-2017/fleckbot/src/main/resources/StockPriceLSTM_".concat(String.valueOf(category)).concat(localTime.format(DATE_FORMAT)).concat(".zip"));
         // saveUpdater: i.e., the state for Momentum, RMSProp, Adagrad etc. Save this to train your network more in the future
         ModelSerializer.writeModel(net, locationToSave, true);
 
