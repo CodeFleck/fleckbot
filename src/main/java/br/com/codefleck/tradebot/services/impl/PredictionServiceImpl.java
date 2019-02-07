@@ -10,6 +10,7 @@ import br.com.codefleck.tradebot.redesneurais.RecurrentNets;
 import br.com.codefleck.tradebot.redesneurais.StockDataSetIterator;
 import br.com.codefleck.tradebot.tradingInterfaces.Ticker;
 import javafx.util.Pair;
+import org.apache.commons.lang.time.StopWatch;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.deeplearning4j.util.ModelSerializer;
 import org.nd4j.linalg.api.ndarray.INDArray;
@@ -81,12 +82,16 @@ public class PredictionServiceImpl {
         MultiLayerNetwork net = RecurrentNets.buildLstmNetworks(iterator.inputColumns(), iterator.totalOutcomes());
 
         log.info("Training...");
+        StopWatch watch = new StopWatch();
+        watch.start();
+
         for (int i = 0; i < epochs; i++) {
             System.out.println("Epoch: " + i);
             while (iterator.hasNext()) net.fit(iterator.next()); // fit model using mini-batch data
             iterator.reset(); // reset iterator
             net.rnnClearPreviousState(); // clear previous state
         }
+        watch.stop();
 
         log.info("Saving model...");
         LocalDateTime localDateTime = LocalDateTime.now();
@@ -105,12 +110,14 @@ public class PredictionServiceImpl {
             INDArray min = Nd4j.create(iterator.getMinArray());
             predictAllCategories(net, test, max, min);
             log.info("Done...");
+            System.out.println("Time Elapsed: " + (((watch.getTime()/1000)/60)/60) + " hours");
             return null;
         } else {
             double max = iterator.getMaxNum(category);
             double min = iterator.getMinNum(category);
             List<String> dataPointsList = predictPriceOneAhead(net, test, max, min, category, testTimeSeries);
             log.info("Done...");
+            System.out.println("Time Elapsed: " + (((watch.getTime()/1000)/60)/60) + " hours");
             return dataPointsList;
         }
     }
