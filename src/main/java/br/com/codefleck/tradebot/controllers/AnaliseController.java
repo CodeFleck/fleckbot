@@ -8,6 +8,8 @@ import java.util.Map;
 
 import javax.transaction.Transactional;
 
+import br.com.codefleck.tradebot.core.util.CsvBarsLoader;
+import br.com.codefleck.tradebot.redesneurais.PriceCategory;
 import org.hibernate.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -42,24 +44,31 @@ public class AnaliseController {
     PredictionServiceImpl predictionService;
 
     @GetMapping
-    public ModelAndView noticiasLandingDataProvider(ModelAndView model) throws ExchangeNetworkException, TradingApiException, IOException {
+    public ModelAndView analiseLandingDataProvider(ModelAndView model) throws ExchangeNetworkException, TradingApiException, IOException {
 
         model.addObject("botStatus", fleckBot.isRunning());
         model.setViewName("analise");
 
         fleckBot.initConfig();
 
-        final Ticker ticker = fleckBot.getExchangeAdapter().getTicker("btcusd");
+        final Ticker ticker = fleckBot.getExchangeAdapter().getTicker("BTCUSD");
         StockData stockData = predictionService.transformTickerInStockData(ticker);
         stockDataDao.save(stockData);
 
-        List<StockData> stockDataList = stockDataDao.ListLatest(2880);
+//        List<StockData> stockDataList = stockDataDao.ListLatest(1000);
 
-        List<String> predictionList = forecastService.initializeForecasts(stockDataList);
+        //temporarely gather stock data from bitfinex to mock latest 1000 entries
+        CsvBarsLoader barsLoader = new CsvBarsLoader();
+        List<StockData> stockDataList = barsLoader.loadBitfinexHourlySeries();
+
+        PriceCategory category = PriceCategory.CLOSE;
+
+        List<String> results = forecastService.gatherForecasts(stockDataList, category);
 
         System.out.println("Final results coming in ....");
 
-        //predictionList.stream().forEach(s -> System.out.println(s));
+        System.out.println("Predicts: " + results.get(0));
+        System.out.println("Actuals: " + results.get(1));
 
         HashMap<String, Double> predictions = new HashMap<>();
 

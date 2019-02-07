@@ -1,10 +1,17 @@
 package br.com.codefleck.tradebot.core.util;
 
+import br.com.codefleck.tradebot.models.StockData;
+import br.com.codefleck.tradebot.services.impl.PredictionServiceImpl;
+import com.opencsv.CSVReader;
+import org.ta4j.core.Bar;
+import org.ta4j.core.BaseBar;
+import org.ta4j.core.BaseTimeSeries;
+import org.ta4j.core.TimeSeries;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -17,24 +24,12 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.ta4j.core.*;
-
-import com.opencsv.CSVReader;
-
-import br.com.codefleck.tradebot.core.engine.TradingEngine;
-import br.com.codefleck.tradebot.daos.StockDataDao;
-import br.com.codefleck.tradebot.models.StockData;
-
 /**
  * This class build a Ta4j time series from a CSV file containing bars.
  */
 public class CsvBarsLoader {
 
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy,MM,dd HH:mm:ss");
-
-    @Autowired
-    StockDataDao stockDataDao;
 
     public static TimeSeries loadCoinBaseSeries(Date beginDate, Date endDate) {
 
@@ -74,26 +69,39 @@ public class CsvBarsLoader {
         return new BaseTimeSeries("coinbase_bars", bars);
     }
 
-    public static void editCoinBaseSeriesForNeuralNets(List<SMA> smaList) {
+    public BaseTimeSeries loadBitfinexDailySeries() {
 
-        InputStream stream = CsvBarsLoader.class.getClassLoader().getResourceAsStream("coinBaseForNeuralNet.csv");
+        InputStream stream = CsvBarsLoader.class.getClassLoader().getResourceAsStream("Bitfinex_BTCUSD_d.csv");
 
-        List<CustomBaseBar> customBaseBars = new ArrayList<>();
+        List<Bar> bars = new ArrayList<>();
 
         CSVReader csvReader = new CSVReader(new InputStreamReader(stream, Charset.forName("UTF-8")), ',', '"', 1);
         try {
             String[] line;
             while ((line = csvReader.readNext()) != null) {
 
-                String date = line[0];
-                String symbol = line[1];
-                double open = Double.parseDouble(line[2]);
-                double high = Double.parseDouble(line[3]);
-                double low = Double.parseDouble(line[4]);
-                double close = Double.parseDouble(line[5]);
-                double volume = Double.parseDouble(line[6]);
+                String tempDate = line[0];
 
-                customBaseBars.add(new CustomBaseBar(date, symbol, open, high, low, close, volume));
+                int year = Integer.valueOf(tempDate.substring(0,4));
+                int month = Integer.valueOf(tempDate.substring(5,7));
+                int day = Integer.valueOf(tempDate.substring(8,10));
+                Date tempDate2 = new Date(year, month, day);
+
+                String dateAsText = new SimpleDateFormat("yyyy,MM,dd HH:mm:ss")
+                        .format(tempDate2);
+                dateAsText.replaceAll("39", "20");
+
+                ZonedDateTime date = ZonedDateTime.of(LocalDate.parse(dateAsText, DATE_FORMAT), LocalTime.parse(dateAsText, DATE_FORMAT), ZoneId.systemDefault());
+
+
+                double open = Double.parseDouble(line[3]);
+                double high = Double.parseDouble(line[4]);
+                double low = Double.parseDouble(line[5]);
+                double close = Double.parseDouble(line[6]);
+                double volume = Double.parseDouble(line[7]);
+
+                bars.add(new BaseBar(date, open, high, low, close, volume));
+
             }
         } catch (IOException ioe) {
             Logger.getLogger(CsvBarsLoader.class.getName()).log(Level.SEVERE, "Unable to load bars from CSV", ioe);
@@ -101,13 +109,52 @@ public class CsvBarsLoader {
             Logger.getLogger(CsvBarsLoader.class.getName()).log(Level.SEVERE, "Error while parsing value", nfe);
         }
 
-        DownSamplingTimeSeries downSamplingTimeSeries = new DownSamplingTimeSeries("day");
+        return new BaseTimeSeries("bitfinex_daily", bars);
+    }
 
-        List<CustomBaseBar> AgregatedCustomBaseBars = downSamplingTimeSeries.customAggregate(customBaseBars);
+    public List<StockData> loadBitfinexHourlySeries() {
 
-        CsvFileWriter csvFileWriter = new CsvFileWriter();
-        csvFileWriter.writeCsvFile(AgregatedCustomBaseBars, smaList);
+        InputStream stream = CsvBarsLoader.class.getClassLoader().getResourceAsStream("Bitfinex_BTCUSD_1h.csv");
+        List<Bar> bars = new ArrayList<>();
 
+        CSVReader csvReader = new CSVReader(new InputStreamReader(stream, Charset.forName("UTF-8")), ',', '"', 1);
+        try {
+            String[] line;
+            while ((line = csvReader.readNext()) != null) {
+
+                String tempDate = line[0];
+
+                int year = Integer.valueOf(tempDate.substring(0,4));
+                int month = Integer.valueOf(tempDate.substring(5,7));
+                int day = Integer.valueOf(tempDate.substring(8,10));
+                int hour = Integer.valueOf(tempDate.substring(11,13));
+                Date tempDate2 = new Date(year, month, day, hour, 0, 0);
+
+                String dateAsText = new SimpleDateFormat("yyyy,MM,dd HH:mm:ss")
+                        .format(tempDate2);
+                dateAsText.replaceAll("39", "20");
+
+                ZonedDateTime date = ZonedDateTime.of(LocalDate.parse(dateAsText, DATE_FORMAT), LocalTime.parse(dateAsText, DATE_FORMAT), ZoneId.systemDefault());
+
+                double open = Double.parseDouble(line[3]);
+                double high = Double.parseDouble(line[4]);
+                double low = Double.parseDouble(line[5]);
+                double close = Double.parseDouble(line[6]);
+                double volume = Double.parseDouble(line[7]);
+
+                bars.add(new BaseBar(date, open, high, low, close, volume));
+            }
+        } catch (IOException ioe) {
+            Logger.getLogger(CsvBarsLoader.class.getName()).log(Level.SEVERE, "Unable to load bars from CSV", ioe);
+        } catch (NumberFormatException nfe) {
+            Logger.getLogger(CsvBarsLoader.class.getName()).log(Level.SEVERE, "Error while parsing value", nfe);
+        }
+
+        BaseTimeSeries timeSeries = new BaseTimeSeries("bitfinex_hourly", bars);
+        PredictionServiceImpl predictionService = new PredictionServiceImpl();
+        List<StockData> stockDataList = predictionService.transformBarInStockData(timeSeries);
+
+        return stockDataList;
     }
 
     public BaseTimeSeries createCSVFileForNeuralNets(Date beginDate, Date endDate, String period) {

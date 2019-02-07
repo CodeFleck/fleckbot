@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.ta4j.core.Bar;
 import org.ta4j.core.BaseTimeSeries;
 import org.ta4j.core.TimeSeries;
 
@@ -49,7 +50,7 @@ public class PredictionServiceImpl {
     //private static int exampleLength = 80; //15min 2017-04-18 to 2017-05-29 - media erro: 15.22%!!!!!
 
 //    private static int exampleLength = 180; //1D gerou 36
-    private static int exampleLength = 30; //1D gerou 166 ou mais...
+    private static int exampleLength = 140;
 
     public List<String> initTraining(int epocas, String simbolo, String categoria, BaseTimeSeries customTimeSeries) throws IOException {
         String file = new ClassPathResource("coinBaseDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
@@ -337,5 +338,41 @@ public class PredictionServiceImpl {
         );
         return stockData;
     }
+
+    public List<StockData> transformBarInStockData(BaseTimeSeries baseTimeSeries) {
+
+        List<Bar> barList = baseTimeSeries.getBarData();
+        List<StockData> stockDataList = new ArrayList<>();
+
+        double openPrice;
+
+        for (int i=0; i < barList.size(); i++) {
+
+            if (barList.get(i) != null) {
+                if (!(barList.get(i).getOpenPrice() == null)) {
+                    openPrice = barList.get(i).getOpenPrice().doubleValue();
+                } else {
+                    openPrice = barList.get(i).getMinPrice().doubleValue();
+                }
+
+                String simpleDateName = barList.get(i).getSimpleDateName();
+                simpleDateName.replaceAll("39", "20");
+
+                StockData stockData = new StockData(
+                        simpleDateName,
+                        "BTCUSD",
+                        openPrice,
+                        barList.get(i).getClosePrice().doubleValue(),
+                        barList.get(i).getMinPrice().doubleValue(),
+                        barList.get(i).getMaxPrice().doubleValue(),
+                        barList.get(i).getVolume().doubleValue()
+                );
+
+                stockDataList.add(stockData);
+            }
+        }
+        return stockDataList;
+    }
+
 }
 

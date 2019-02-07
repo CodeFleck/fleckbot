@@ -30,7 +30,7 @@ public class StockDataSetIterator implements DataSetIterator {
     private final int VECTOR_SIZE = 5; // number of features for a stock data
     private int miniBatchSize; // mini-batch size
     private int exampleLength;
-    private int predictLength = 1; // default 1, say, one day ahead prediction
+    private int predictLength = 1; // default 1, say, one time period ahead prediction
 
     /** minimal values of each feature in stock dataset */
     private double[] minArray = new double[VECTOR_SIZE];
@@ -41,24 +41,23 @@ public class StockDataSetIterator implements DataSetIterator {
     private PriceCategory category;
 
     /** mini-batch offset */
-    private LinkedList<Integer> exampleStartOffsets = new LinkedList<>();
+    public LinkedList<Integer> exampleStartOffsets = new LinkedList<>();
 
     /** stock dataset for training */
-    private List<StockData> train;
+    public List<StockData> train;
     /** adjusted stock dataset for testing */
     private List<Pair<INDArray, INDArray>> test;
 
     private List<StockData> stockDataList;
 
-    public StockDataSetIterator (List<StockData> stockList, int miniBatchSize, int exampleLength){ //forecast constructor
+    //forecast constructor
+    public StockDataSetIterator (List<StockData> stockList, int miniBatchSize, int exampleLength, PriceCategory category){
         this.stockDataList = stockList;
         this.miniBatchSize = miniBatchSize;
         this.exampleLength = exampleLength;
-        this.category = PriceCategory.CLOSE;
-        int split = (stockDataList.size());
-        train = stockDataList.subList(0, split);
-        updateExampleLengthForForecast(exampleLength, stockDataList.size());
-        test = generateTestDataSet(stockDataList);
+        this.category = category;
+        this.train = stockList;
+        this.test = null;
         initializeOffsets();
     }
 
@@ -212,6 +211,44 @@ public class StockDataSetIterator implements DataSetIterator {
         return test;
     }
 
+    public List<Pair<INDArray, INDArray>> generateForecastDataSet (List<StockData> stockDataList, int exampleLength, int predictLength, PriceCategory category) {
+        int window = exampleLength + predictLength;
+        List<Pair<INDArray, INDArray>> test = new ArrayList<>();
+        for (int i = 0; i < stockDataList.size() - window; i++) {
+            INDArray input = Nd4j.create(new int[] {exampleLength, VECTOR_SIZE}, 'f');
+            for (int j = i; j < i + exampleLength; j++) {
+                StockData stock = stockDataList.get(j);
+                input.putScalar(new int[] {j - i, 0}, (stock.getOpen() - minArray[0]) / (maxArray[0] - minArray[0]));
+                input.putScalar(new int[] {j - i, 1}, (stock.getClose() - minArray[1]) / (maxArray[1] - minArray[1]));
+                input.putScalar(new int[] {j - i, 2}, (stock.getLow() - minArray[2]) / (maxArray[2] - minArray[2]));
+                input.putScalar(new int[] {j - i, 3}, (stock.getHigh() - minArray[3]) / (maxArray[3] - minArray[3]));
+                input.putScalar(new int[] {j - i, 4}, (stock.getVolume() - minArray[4]) / (maxArray[4] - minArray[4]));
+            }
+            StockData stock = stockDataList.get(i + exampleLength);
+            INDArray label;
+            if (category.equals(PriceCategory.ALL)) {
+                label = Nd4j.create(new int[]{VECTOR_SIZE}, 'f'); // ordering is set as 'f', faster construct
+                label.putScalar(new int[] {0}, stock.getOpen());
+                label.putScalar(new int[] {1}, stock.getClose());
+                label.putScalar(new int[] {2}, stock.getLow());
+                label.putScalar(new int[] {3}, stock.getHigh());
+                label.putScalar(new int[] {4}, stock.getVolume());
+            } else {
+                label = Nd4j.create(new int[] {1}, 'f');
+                switch (category) {
+                    case OPEN: label.putScalar(new int[] {0}, stock.getOpen()); break;
+                    case CLOSE: label.putScalar(new int[] {0}, stock.getClose()); break;
+                    case LOW: label.putScalar(new int[] {0}, stock.getLow()); break;
+                    case HIGH: label.putScalar(new int[] {0}, stock.getHigh()); break;
+                    case VOLUME: label.putScalar(new int[] {0}, stock.getVolume()); break;
+                    default: throw new NoSuchElementException();
+                }
+            }
+            test.add(new Pair<>(input, label));
+        }
+        return test;
+    }
+
     public List<StockData> readStockDataFromFile (String filename, String symbol) {
         List<StockData> stockDataList = new ArrayList<>();
         try {
@@ -246,6 +283,22 @@ public class StockDataSetIterator implements DataSetIterator {
         if (exampleLength > testSize){
             this.exampleLength = testSize;
         }
+    }
+
+    public List<Pair<INDArray, INDArray>> getTest() {
+        return test;
+    }
+
+    public void setTest(List<Pair<INDArray, INDArray>> test) {
+        this.test = test;
+    }
+
+    public PriceCategory getCategory() {
+        return category;
+    }
+
+    public void setCategory(PriceCategory category) {
+        this.category = category;
     }
 }
 
