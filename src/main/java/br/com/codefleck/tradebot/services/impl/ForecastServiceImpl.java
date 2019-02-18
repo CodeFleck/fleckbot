@@ -1,8 +1,9 @@
 package br.com.codefleck.tradebot.services.impl;
 
 import br.com.codefleck.tradebot.models.StockData;
+import br.com.codefleck.tradebot.redesneurais.OneHourStockDataSetIterator;
 import br.com.codefleck.tradebot.redesneurais.PriceCategory;
-import br.com.codefleck.tradebot.redesneurais.StockDataSetIterator;
+import com.google.common.collect.Lists;
 import javafx.util.Pair;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.deeplearning4j.util.ModelSerializer;
@@ -14,6 +15,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -30,43 +32,37 @@ public class ForecastServiceImpl {
 
     final Logger log = LoggerFactory.getLogger(ForecastServiceImpl.class);
 
-    public List<String> gatherForecasts(List<StockData> lastStockData, PriceCategory category) {
-        int miniBatchSize = 32;						//Size of mini batch to use when  training
-        int exampleLength = 140;					//Length of each training example sequence to use. This could certainly be increased
-        int predictionLength = 1;
-        List<StockData> generationInitialization = lastStockData;		//Optional stock data initialization; a random character is used if null
+    public List<String> initializeForecasts(List<StockData> lastStockData, PriceCategory category) throws IOException {
+
+        List<StockData> generationInitialization = lastStockData;		//stock data initialization;
         PriceCategory priceCategory = category;
 
-        StockDataSetIterator iter = new StockDataSetIterator(lastStockData, miniBatchSize, exampleLength, priceCategory);
-
-        String FileLocation = "/Users/dfleck/projects/tcc/fleckbot-11-09-2017/fleckbot/src/main/resources/5epocas_6meses_1d.zip";
         log.info("Load model...");
-        MultiLayerNetwork net = null;
-        try {
-            net = ModelSerializer.restoreMultiLayerNetwork(FileLocation);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        File FileLocation = new File("/Users/dfleck/projects/tcc/fleckbot-11-09-2017/fleckbot/src/main/resources/5epocas_6meses_1min.zip");
+        MultiLayerNetwork net = ModelSerializer.restoreMultiLayerNetwork(FileLocation);
 
-        List<String> results = forecastTickersFromNetwork(generationInitialization,net,iter, exampleLength, predictionLength);
+        List<String> results = forecastWithLatestTickers(generationInitialization,net, category);
+
+
+
         return results;
     }
 
-    private List<String> forecastTickersFromNetwork(List<StockData> init, MultiLayerNetwork net, StockDataSetIterator iter, int exampleLength, int predictionLength) {
+    private List<String> forecastWithLatestTickers(List<StockData> init, MultiLayerNetwork net, PriceCategory category) {
 
-        PriceCategory priceCategory = iter.getCategory();
-
-        List<Pair<INDArray, INDArray>> pairList = iter.generateForecastDataSet(init, exampleLength, predictionLength, priceCategory);
-        iter.setTest(pairList);
+        Lists.reverse(init);
+        OneHourStockDataSetIterator oneHourIterator = OneHourStockDataSetIterator.getInstance();
+        List<Pair<INDArray, INDArray>> pairList = oneHourIterator.generateTestDataSet(init);
+        oneHourIterator.setTest(pairList);
 
         log.info("Training...");
-        net.fit(iter.next()) ; // fit model using mini-batch data
-        iter.reset(); // reset iterator
+        net.fit(oneHourIterator.next()) ; // fit model using mini-batch data
+        oneHourIterator.reset(); // reset iterator
         net.rnnClearPreviousState(); // clear previous state
         log.info("Forecasting...");
-        double max = iter.getMaxNum(priceCategory);
-        double min = iter.getMinNum(priceCategory);
-        List<String> dataPointsList = predictionService.predictPriceOneAhead(net, iter.getTest(), max, min,PriceCategory.CLOSE, null);
+        double max = oneHourIterator.getMaxNum(category);
+        double min = oneHourIterator.getMinNum(category);
+        List<String> dataPointsList = predictionService.predictPriceOneAhead(net, oneHourIterator.getTest(), max, min, null);
         log.info("Done forecasting...");
 
         return dataPointsList;

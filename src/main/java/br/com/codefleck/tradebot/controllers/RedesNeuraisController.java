@@ -83,7 +83,7 @@ public class RedesNeuraisController {
 
         BaseTimeSeries customTimeSeries = predictionService.createCSVFileForNeuralNets(begingDate, endingDate, period);
 
-        List<String> dataPointList = predictionService.initTraining(epocas, simbolo, categoria, customTimeSeries);
+        List<String> dataPointList = predictionService.initTraining(epocas, simbolo, categoria, customTimeSeries, period);
 
         ModelAndView model = new ModelAndView();
         model.setViewName("admin/redes-neurais");
@@ -97,7 +97,7 @@ public class RedesNeuraisController {
         String cat = categoria;
         model.addObject("categoria", cat);
 
-        DataPointsListModel dataPointsList = predictionService.prepareDataPointToBeSaved(dataPointList, nomeDoConjunto, categoria);
+        DataPointsListModel dataPointsList = predictionService.prepareDataPointToBeSaved(dataPointList, nomeDoConjunto);
         Double errorPercentageAvg = predictionService.calculateErrorPercentageAverage(dataPointsList);
         Double errorPercentageLastDay = predictionService.calculateErrorPercentageLastDay(dataPointsList);
         Double majorError = predictionService.calculateMajorError(dataPointsList);

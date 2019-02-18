@@ -237,7 +237,7 @@ public class DownSamplingTimeSeries {
 
     public BaseTimeSeries aggregateTimeSeriesToHour(TimeSeries series) {
         Objects.requireNonNull(series);
-        List<Bar> aggBars = new ArrayList<Bar>();
+        List<Bar> aggBars = new ArrayList<>();
         for(int i=series.getBeginIndex(); i<=series.getEndIndex(); i++){
             Bar currentBar = series.getBar(i);
             Decimal currentOpen = currentBar.getOpenPrice();

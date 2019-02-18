@@ -79,7 +79,7 @@ public class CsvFileWriter {
             linesList.add(customTimeSeries.getBar(i));
         }
 
-        String filePathName = System.getProperty("user.home") + "/projects/tcc/fleckbot-11-09-2017/fleckbot/src/main/resources/coinBaseDataForTrainingNeuralNets.csv";
+        String filePathName = System.getProperty("user.home") + "/projects/tcc/fleckbot-11-09-2017/fleckbot/src/main/resources/ForecastcoinBaseDataForTrainingNeuralNets.csv";
 
         FileWriter fileWriter = null;
 
@@ -96,7 +96,7 @@ public class CsvFileWriter {
                 }
 
                 fileWriter.append(bar.getSimpleDateName().substring(0,10)).append(COMMA_DELIMITER)
-                    .append(String.valueOf("BTC")).append(COMMA_DELIMITER)
+                    .append(("BTC")).append(COMMA_DELIMITER)
                     .append(String.valueOf(bar.getOpenPrice())).append(COMMA_DELIMITER)
                     .append(String.valueOf(bar.getClosePrice())).append(COMMA_DELIMITER)
                     .append(String.valueOf(bar.getMinPrice())).append(COMMA_DELIMITER)

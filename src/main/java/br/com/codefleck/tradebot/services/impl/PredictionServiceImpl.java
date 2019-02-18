@@ -4,10 +4,7 @@ import br.com.codefleck.tradebot.core.util.CsvBarsLoader;
 import br.com.codefleck.tradebot.models.DataPointsListModel;
 import br.com.codefleck.tradebot.models.DataPointsModel;
 import br.com.codefleck.tradebot.models.StockData;
-import br.com.codefleck.tradebot.redesneurais.PlotUtil;
-import br.com.codefleck.tradebot.redesneurais.PriceCategory;
-import br.com.codefleck.tradebot.redesneurais.RecurrentNets;
-import br.com.codefleck.tradebot.redesneurais.StockDataSetIterator;
+import br.com.codefleck.tradebot.redesneurais.*;
 import br.com.codefleck.tradebot.tradingInterfaces.Ticker;
 import javafx.util.Pair;
 import org.apache.commons.lang.time.StopWatch;
@@ -21,14 +18,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.ta4j.core.Bar;
-import org.ta4j.core.BaseTimeSeries;
-import org.ta4j.core.TimeSeries;
+import org.ta4j.core.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
@@ -57,12 +53,11 @@ public class PredictionServiceImpl {
     //private static int exampleLength = 180; //15min fucking 2017-04-18 to 2017-05-03 - media erro: -0,23%!!!!!
     //private static int exampleLength = 80; //15min 2017-04-18 to 2017-05-29 - media erro: 15.22%!!!!!
 
-//    private static int exampleLength = 180; //1D gerou 36
-    private static int exampleLength = 140;
+    //    private static int exampleLength = 180; //1D gerou 36
+    private static int exampleLength = 50;
 
-    public List<String> initTraining(int epocas, String simbolo, String categoria, BaseTimeSeries customTimeSeries) throws IOException {
-        String file = new ClassPathResource("coinBaseDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
-        String symbol = simbolo; // stock name
+    public List<String> initTraining(int epocas, String simbolo, String categoria, BaseTimeSeries customTimeSeries, String period) throws IOException {
+        String file = new ClassPathResource("DataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
         int batchSize = 32; // mini-batch size
         double splitRatio = 0.8; // 80% for training, 20% for testing
         int epochs = epocas; // training epochs
@@ -70,16 +65,24 @@ public class PredictionServiceImpl {
 
         log.info("Create dataSet iterator...");
         PriceCategory category = verifyCategory(chosenCategory); // CLOSE: predict close price
-        StockDataSetIterator iterator = new StockDataSetIterator(file, symbol, batchSize, exampleLength, splitRatio, category);
+        OneHourStockDataSetIterator oneHourIterator = getIterator(period);
+        List<StockData> stockDataList = oneHourIterator.readStockDataFromFile(file, simbolo);
+        oneHourIterator.setMiniBatchSize(batchSize);
+        oneHourIterator.setExampleLength(exampleLength);
+        oneHourIterator.setCategory(category);
+        oneHourIterator.setSplit((int) Math.round(stockDataList.size() * splitRatio));
+        oneHourIterator.setTrain(stockDataList.subList(0, oneHourIterator.getSplit()));
+        oneHourIterator.setTest(oneHourIterator.generateTestDataSet(stockDataList.subList(oneHourIterator.getSplit(), stockDataList.size())));
+        oneHourIterator.initializeOffsets();
 
         int split = (int) Math.round(customTimeSeries.getBarCount() * splitRatio);
         TimeSeries testTimeSeries = customTimeSeries.getSubSeries(split, customTimeSeries.getEndIndex());
 
         log.info("Load test dataset...");
-        List<Pair<INDArray, INDArray>> test = iterator.getTestDataSet();
+        List<Pair<INDArray, INDArray>> test = oneHourIterator.getTestDataSet();
 
         log.info("Build lstm networks...");
-        MultiLayerNetwork net = RecurrentNets.buildLstmNetworks(iterator.inputColumns(), iterator.totalOutcomes());
+        MultiLayerNetwork net = RecurrentNets.buildLstmNetworks(oneHourIterator.inputColumns(), oneHourIterator.totalOutcomes());
 
         log.info("Training...");
         StopWatch watch = new StopWatch();
@@ -87,17 +90,14 @@ public class PredictionServiceImpl {
 
         for (int i = 0; i < epochs; i++) {
             System.out.println("Epoch: " + i);
-            while (iterator.hasNext()) net.fit(iterator.next()); // fit model using mini-batch data
-            iterator.reset(); // reset iterator
+            while (oneHourIterator.hasNext()) net.fit(oneHourIterator.next()); // fit model using mini-batch data
+            oneHourIterator.reset(); // reset iterator
             net.rnnClearPreviousState(); // clear previous state
         }
         watch.stop();
 
         log.info("Saving model...");
-        LocalDateTime localDateTime = LocalDateTime.now();
-        LocalTime localTime = localDateTime.toLocalTime();
-        DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy-HH:mm:ss");
-        File locationToSave = new File("/Users/dfleck/projects/tcc/fleckbot-11-09-2017/fleckbot/src/main/resources/StockPriceLSTM_".concat(String.valueOf(category)).concat(localTime.format(DATE_FORMAT)).concat(".zip"));
+        File locationToSave = new File("/Users/dfleck/projects/tcc/fleckbot-11-09-2017/fleckbot/src/main/resources/StockPriceLSTM_".concat(String.valueOf(category)).concat(".zip"));
         // saveUpdater: i.e., the state for Momentum, RMSProp, Adagrad etc. Save this to train your network more in the future
         ModelSerializer.writeModel(net, locationToSave, true);
 
@@ -106,21 +106,63 @@ public class PredictionServiceImpl {
 
         log.info("Testing...");
         if (category.equals(PriceCategory.ALL)) {
-            INDArray max = Nd4j.create(iterator.getMaxArray());
-            INDArray min = Nd4j.create(iterator.getMinArray());
+            INDArray max = Nd4j.create(oneHourIterator.getMaxArray());
+            INDArray min = Nd4j.create(oneHourIterator.getMinArray());
             predictAllCategories(net, test, max, min);
             log.info("Done...");
-            System.out.println("Time Elapsed: " + (((watch.getTime()/1000)/60)/60) + " hours");
+            System.out.println("Time Elapsed: " + (watch.getTime()));
             return null;
         } else {
-            double max = iterator.getMaxNum(category);
-            double min = iterator.getMinNum(category);
-            List<String> dataPointsList = predictPriceOneAhead(net, test, max, min, category, testTimeSeries);
+            double max = oneHourIterator.getMaxNum(category);
+            double min = oneHourIterator.getMinNum(category);
+            List<String> dataPointsList = predictPriceOneAhead(net, test, max, min, testTimeSeries);
             log.info("Done...");
-            System.out.println("Time Elapsed: " + (((watch.getTime()/1000)/60)/60) + " hours");
+            System.out.println("Time Elapsed: " + watch.getTime());
             return dataPointsList;
         }
     }
+
+    private OneHourStockDataSetIterator getIterator(String period) {
+
+        if (period.equals("1 minuto")){
+            return null;
+        }
+        if (period.equals("5 minutos")) {
+            return null;
+        }
+        if (period.equals("10 minutos")){
+            return null;
+        }
+        if (period.equals("15 minutos")){
+            return null;
+        }
+        if (period.equals("30 minutos")){
+            return null;
+        }
+        if (period.equals("1 hora")){
+            return OneHourStockDataSetIterator.getInstance();
+        }
+        if (period.equals("2 horas")){
+            return null;
+        }
+        if (period.equals("3 horas")){
+            return null;
+        }
+        if (period.equals("4 horas")){
+            return null;
+        }
+        if (period.equals("1 dia")){
+            return null;
+        }
+        if (period.equals("1 semana")){
+            return null;
+        }
+        if (period.equals("1 mês")){
+            return null;
+        }
+        return null;
+    }
+
 
     private PriceCategory verifyCategory(String chosenCategory) {
 
@@ -139,7 +181,7 @@ public class PredictionServiceImpl {
     }
 
     /** Predict one feature of a stock one-day ahead */
-    public List<String> predictPriceOneAhead (MultiLayerNetwork net, List<Pair<INDArray, INDArray>> testData, double max, double min, PriceCategory category, TimeSeries testTimeSeries) {
+    public List<String> predictPriceOneAhead (MultiLayerNetwork net, List<Pair<INDArray, INDArray>> testData, double max, double min, TimeSeries testTimeSeries) {
         double[] predicts = new double[testData.size()];
         double[] actuals = new double[testData.size()];
         for (int i = 0; i < testData.size(); i++) {
@@ -150,7 +192,7 @@ public class PredictionServiceImpl {
         log.info("Predict,Actual");
         for (int i = 0; i < predicts.length; i++) log.info(predicts[i] + "," + actuals[i]);
         log.info("Plot...");
-        List<String> dataPointList = PlotUtil.plot(predicts, actuals, String.valueOf(category), testTimeSeries);
+        List<String> dataPointList = PlotUtil.plot(predicts, actuals, testTimeSeries);
 
         return dataPointList;
     }
@@ -197,7 +239,7 @@ public class PredictionServiceImpl {
         return customTimeSeries;
     }
 
-    public DataPointsListModel prepareDataPointToBeSaved(List<String> dataPointList, String nomeDoConjunto, String categoria) throws IOException {
+    public DataPointsListModel prepareDataPointToBeSaved(List<String> dataPointList, String nomeDoConjunto) {
 
         //predicts
         String predictsDataPointsArray[] = dataPointList.get(0).replace("[", "").replace("{", "").replace("}", "").replaceAll("\"\"", "").split(",");
@@ -218,7 +260,9 @@ public class PredictionServiceImpl {
 
         for (int i = 0; i < xPredictToken.size(); i++) {
             DataPointsModel dataPointsModel = new DataPointsModel();
-            dataPointsModel.setNomeConjunto(nomeDoConjunto.concat("Prediction-").concat(categoria));
+            if (nomeDoConjunto != null){
+                dataPointsModel.setNomeConjunto(nomeDoConjunto);
+            }
 
             dataPointsModel.setX(Double.valueOf(xPredictToken.get(i)));
             if (yPredictToken.get(i) != null) {
@@ -246,7 +290,9 @@ public class PredictionServiceImpl {
 
         for (int i = 0; i < xActualToken.size(); i++) {
             DataPointsModel dataPointsModel = new DataPointsModel();
-            dataPointsModel.setNomeConjunto(nomeDoConjunto.concat("Actual-".concat(categoria)));
+            if (nomeDoConjunto != null){
+                dataPointsModel.setNomeConjunto(nomeDoConjunto);
+            }
             dataPointsModel.setX(Double.valueOf(xActualToken.get(i)));
 
             if (yActualToken.get(i) != null) {
@@ -257,7 +303,9 @@ public class PredictionServiceImpl {
         }
 
         DataPointsListModel dataPointsListModel = new DataPointsListModel();
-        dataPointsListModel.setName("Prediction&Actuals");
+        if (nomeDoConjunto != null){
+            dataPointsListModel.setName(nomeDoConjunto);
+        }
         dataPointsListModel.setActualDataPointsModelList(actualDataPointsModelListXY);
         dataPointsListModel.setPredictDataPointsModelList(predictsDataPointsModelListXY);
 
@@ -345,13 +393,13 @@ public class PredictionServiceImpl {
             ticker.setOpen(ticker.getBid());
         }
         StockData stockData = new StockData(
-            today,
-            "BTC",
-            ticker.getOpen().doubleValue(),
-            ticker.getLast().doubleValue(),
-            ticker.getLow().doubleValue(),
-            ticker.getHigh().doubleValue(),
-            ticker.getVolume().doubleValue()
+                today,
+                "BTC",
+                ticker.getOpen().doubleValue(),
+                ticker.getLast().doubleValue(),
+                ticker.getLow().doubleValue(),
+                ticker.getHigh().doubleValue(),
+                ticker.getVolume().doubleValue()
         );
         return stockData;
     }

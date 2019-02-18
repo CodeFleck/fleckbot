@@ -10,13 +10,13 @@ import java.util.Map;
 
 public class PlotUtil {
 
-    public static List<String> plot(double[] predicts, double[] actuals, String name, TimeSeries testTimeSeries) {
+    public static List<String> plot(double[] predicts, double[] actuals, TimeSeries testTimeSeries) {
         double[] index = new double[predicts.length];
         for (int i = 0; i < predicts.length; i++)
             index[i] = i;
 
-        String predictsDataPoints = addSeries(index, predicts, "Predicts", testTimeSeries);
-        String actualsDataPoints = addSeries(index, actuals, "Actuals", testTimeSeries);
+        String predictsDataPoints = addSeries(index, predicts, testTimeSeries);
+        String actualsDataPoints = addSeries(index, actuals, testTimeSeries);
 
         List<String> dataPointsList = new ArrayList<>();
         dataPointsList.add(predictsDataPoints);
@@ -25,23 +25,19 @@ public class PlotUtil {
         return dataPointsList;
     }
 
-    private static String addSeries (double[] x, double[] y, String label, TimeSeries testTimeSeries){
+    private static String addSeries (double[] x, double[] y, TimeSeries testTimeSeries){
 
         Gson gsonObj = new Gson();
 
         Map<Object,Object> map;
         List<Map<Object,Object>> list = new ArrayList<>();
 
-        System.out.println("************" + label + "**************");
-
         for( int j = 0; j < x.length; j++ ){
             map = new HashMap<>();
             map.put("x", x[j]);  map.put("y", y[j]);
-            System.out.println(x[j] + ", " + y[j] + ", " + testTimeSeries.getBar(j).getSimpleDateName());
+//            System.out.println(x[j] + ", " + y[j] + ", " + testTimeSeries.getBar(j).getSimpleDateName());
             list.add(map);
         }
-
-        System.out.println("**************************");
 
         String dataPoints = gsonObj.toJson(list);
         return dataPoints;
