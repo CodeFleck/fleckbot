@@ -55,7 +55,7 @@
             </li>
         </ul>
         <form class="form-inline my-5 my-lg-0">
-            <div id="botStatus">
+            <div dataPointModelID="botStatus">
                 <c:choose>
                     <c:when test="${botStatus}">
                         <p class="">Status: Ligado

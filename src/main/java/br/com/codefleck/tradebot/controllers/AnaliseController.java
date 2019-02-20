@@ -2,9 +2,9 @@ package br.com.codefleck.tradebot.controllers;
 
 import br.com.codefleck.tradebot.core.engine.TradingEngine;
 import br.com.codefleck.tradebot.daos.StockDataDao;
-import br.com.codefleck.tradebot.models.DataPointsListModel;
+import br.com.codefleck.tradebot.models.DataPointsListResultSet;
 import br.com.codefleck.tradebot.models.StockData;
-import br.com.codefleck.tradebot.redesneurais.PriceCategory;
+import br.com.codefleck.tradebot.models.PriceCategory;
 import br.com.codefleck.tradebot.services.impl.ForecastServiceImpl;
 import br.com.codefleck.tradebot.services.impl.PredictionServiceImpl;
 import br.com.codefleck.tradebot.tradingInterfaces.ExchangeNetworkException;
@@ -54,33 +54,21 @@ public class AnaliseController {
         StockData stockData = predictionService.transformTickerInStockData(ticker);
         stockDataDao.save(stockData);
 
-        List<StockData> stockDataList = stockDataDao.ListLatest(1000);
+        List<StockData> stockDataList = stockDataDao.ListLatest(1440);
 
-        List<String> results = forecastService.initializeForecasts(stockDataList, PriceCategory.CLOSE);
+        DataPointsListResultSet results = forecastService.initializeForecasts(stockDataList, PriceCategory.CLOSE);
 
-        DataPointsListModel dataPointsList = predictionService.prepareDataPointToBeSaved(results, null);
-        Double errorPercentageAvg = predictionService.calculateErrorPercentageAverage(dataPointsList);
-        Double errorPercentageLastDay = predictionService.calculateErrorPercentageLastDay(dataPointsList);
-        Double majorError = predictionService.calculateMajorError(dataPointsList);
-        Double minorError = predictionService.calculateMinorError(dataPointsList);
 
+        Double errorPercentageAvg = predictionService.calculateErrorPercentageAverage(results);
         NumberFormat formatter = new DecimalFormat("#0.00");
-
         model.addObject("errorPercentageAvg", formatter.format(errorPercentageAvg));
-        model.addObject("errorPercentageLastDay", formatter.format(errorPercentageLastDay));
-        model.addObject("majorError", formatter.format(majorError));
-        model.addObject("minorError", formatter.format(minorError));
-
-        System.out.println("Final results coming in ....");
 
         HashMap<String, Double> predictions = new HashMap<>();
-
-        Lists.reverse(dataPointsList.getPredictDataPointsModelList());
-
+        Lists.reverse(results.getPredictDataPointsModelList());
         predictions.put("oneMinute", 1.0);
         predictions.put("fifteenMinutes", 15.0);
         predictions.put("thirtyMinutes", 30.0);
-        predictions.put("oneHour", dataPointsList.getPredictDataPointsModelList().get(0).getY());
+        predictions.put("oneHour", Double.valueOf(formatter.format(results.getPredictDataPointsModelList().get(0).getY())));
         predictions.put("twoHours", 2.0);
         predictions.put("fourHours", 4.0);
         predictions.put("twentyFourHours", 24.0);
@@ -95,6 +83,4 @@ public class AnaliseController {
 
         return model;
     }
-
-
 }

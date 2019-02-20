@@ -1,4 +1,4 @@
-package br.com.codefleck.tradebot.redesneurais;
+package br.com.codefleck.tradebot.redesneurais.recurrentnets;
 
 import org.deeplearning4j.nn.api.OptimizationAlgorithm;
 import org.deeplearning4j.nn.conf.BackpropType;
@@ -14,11 +14,7 @@ import org.deeplearning4j.optimize.listeners.ScoreIterationListener;
 import org.nd4j.linalg.activations.Activation;
 import org.nd4j.linalg.lossfunctions.LossFunctions;
 
-public class RecurrentNets {
-
-//    private static final double learningRate = 0.05;
-    private static final double learningRate = 0.01;
-
+public class FourHoursRecurrentNets {
 
     private static final int iterations = 5;
     private static final int seed = 12345;
@@ -29,7 +25,18 @@ public class RecurrentNets {
     private static final double dropoutRatio = 0.2;
     private static final int truncatedBPTTLength = 22;
 
-    public static MultiLayerNetwork buildLstmNetworks(int nIn, int nOut) {
+    private static FourHoursRecurrentNets instance;
+
+    private FourHoursRecurrentNets(){}
+
+    public static synchronized FourHoursRecurrentNets getInstance(){
+        if(instance == null){
+            instance = new FourHoursRecurrentNets();
+        }
+        return instance;
+    }
+
+    public static MultiLayerNetwork buildFourHoursLstmNetworks(int nIn, int nOut, double learningRate) {
         MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder()
             .seed(seed)
             .iterations(iterations)

@@ -5,10 +5,10 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import br.com.codefleck.tradebot.models.DataPointsModel;
 import org.springframework.stereotype.Repository;
 
 import br.com.codefleck.tradebot.core.util.PaginatedList;
-import br.com.codefleck.tradebot.models.DataPointsModel;
 
 @Repository
 public class DataPointsModelDao {

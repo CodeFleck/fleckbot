@@ -21,6 +21,7 @@
                             <td>De</td>
                             <td>Até</td>
                             <td>Período</td>
+                            <td>Taxa de Aprendizagem</td>
                             <td>Nome do Conjunto</td>
                         </tr>
                         </thead>
@@ -40,7 +41,7 @@
                                     <option>Volume</option>
                                 </select>
                             </td>
-                            <td><input type="number" class="form-control" name="epocas" min="0" step="1" value="100"></td>
+                            <td><input type="number" class="form-control" name="epocas" min="0" step="1" value="1"></td>
                             <td> <input type="date" class="form-control" name="beginDate" min="2014-01-01" max="2018-01-08" value="2016-06-30"></td>
                             <td><input type="date" class="form-control" name="endDate" min="2014-01-01" max="2018-01-08" value="2017-06-30"></td>
                             <td><select class="form-control selectpicker" name="period">
@@ -58,6 +59,7 @@
                                 <option>1 mês</option>
                             </select>
                             </td>
+                            <td><input type="text" class="form-control" name="learningRate" value="0.01"></td>
                             <td><input type="text" class="form-control" name="nomeDoConjunto" value="nome-teste"></td>
                         </tr>
                         </tbody>

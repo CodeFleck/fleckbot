@@ -25,7 +25,7 @@ public class LSTMPredictionStrategyForPlayground {
 
 //    public static Strategy buildStrategy(TimeSeries series) {
 //
-//        final MarketOrderBook orderBook = tradingApi.getMarketOrders(market.getId());
+//        final MarketOrderBook orderBook = tradingApi.getMarketOrders(market.getDataPointModelID());
 //
 //        return new BaseStrategy(entryRule, exitRule);
 //
@@ -37,7 +37,7 @@ public class LSTMPredictionStrategyForPlayground {
 //
 //        try {
 //            // Grab the latest order book for the market.
-//            final MarketOrderBook orderBook = tradingApi.getMarketOrders(market.getId());
+//            final MarketOrderBook orderBook = tradingApi.getMarketOrders(market.getDataPointModelID());
 //
 //            final List<MarketOrder> buyOrders = orderBook.getBuyOrders();
 //            if (buyOrders.size() == 0) {
