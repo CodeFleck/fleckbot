@@ -1,6 +1,6 @@
-package br.com.codefleck.tradebot.redesneurais;
+package br.com.codefleck.tradebot.redesneurais.iterators;
 
-import br.com.codefleck.tradebot.daos.StockDataDao;
+import br.com.codefleck.tradebot.models.PriceCategory;
 import br.com.codefleck.tradebot.models.StockData;
 import com.google.common.collect.ImmutableMap;
 import com.opencsv.CSVReader;
@@ -10,7 +10,6 @@ import org.nd4j.linalg.dataset.DataSet;
 import org.nd4j.linalg.dataset.api.DataSetPreProcessor;
 import org.nd4j.linalg.dataset.api.iterator.DataSetIterator;
 import org.nd4j.linalg.factory.Nd4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.FileReader;
@@ -18,10 +17,7 @@ import java.io.IOException;
 import java.util.*;
 
 @Component
-public class StockDataSetIterator implements DataSetIterator {
-
-    @Autowired
-    StockDataDao stockDataDao;
+public class FiveMinutesStockDataSetIterator implements DataSetIterator {
 
     /** category and its index */
     private final Map<PriceCategory, Integer> featureMapIndex = ImmutableMap.of(PriceCategory.OPEN, 0, PriceCategory.CLOSE, 1,
@@ -31,6 +27,7 @@ public class StockDataSetIterator implements DataSetIterator {
     private int miniBatchSize; // mini-batch size
     private int exampleLength;
     private int predictLength = 1; // default 1, say, one time period ahead prediction
+    private int split;
 
     /** minimal values of each feature in stock dataset */
     private double[] minArray = new double[VECTOR_SIZE];
@@ -48,28 +45,23 @@ public class StockDataSetIterator implements DataSetIterator {
     /** adjusted stock dataset for testing */
     private List<Pair<INDArray, INDArray>> test;
 
-    public StockDataSetIterator() {
-    }
+    private static FiveMinutesStockDataSetIterator instance;
 
-    public StockDataSetIterator (String filename, String symbol, int miniBatchSize, int exampleLength, double splitRatio, PriceCategory category) {
-        List<StockData> stockDataList = readStockDataFromFile(filename, symbol);
-        this.miniBatchSize = miniBatchSize;
-        this.exampleLength = exampleLength;
-        this.category = category;
-        int split = (int) Math.round(stockDataList.size() * splitRatio);
-        train = stockDataList.subList(0, split);
-        test = generateTestDataSet(stockDataList.subList(split, stockDataList.size()));
-        initializeOffsets();
+    private FiveMinutesStockDataSetIterator(){}
+
+    public static synchronized FiveMinutesStockDataSetIterator getInstance(){
+        if(instance == null){
+            instance = new FiveMinutesStockDataSetIterator();
+        }
+        return instance;
     }
 
     /** initialize the mini-batch offsets */
-    private void initializeOffsets () {
+    public void initializeOffsets () {
         exampleStartOffsets.clear();
         int window = exampleLength + predictLength;
         for (int i = 0; i < train.size() - window; i++) { exampleStartOffsets.add(i); }
     }
-
-    public List<Pair<INDArray, INDArray>> getTestDataSet() { return test; }
 
     public double[] getMaxArray() { return maxArray; }
 
@@ -224,6 +216,70 @@ public class StockDataSetIterator implements DataSetIterator {
         return stockDataList;
     }
 
+    public Map<PriceCategory, Integer> getFeatureMapIndex() {
+        return featureMapIndex;
+    }
+
+    public int getVECTOR_SIZE() {
+        return VECTOR_SIZE;
+    }
+
+    public int getMiniBatchSize() {
+        return miniBatchSize;
+    }
+
+    public void setMiniBatchSize(int miniBatchSize) {
+        this.miniBatchSize = miniBatchSize;
+    }
+
+    public int getExampleLength() {
+        return exampleLength;
+    }
+
+    public void setExampleLength(int exampleLength) {
+        this.exampleLength = exampleLength;
+    }
+
+    public int getPredictLength() {
+        return predictLength;
+    }
+
+    public void setPredictLength(int predictLength) {
+        this.predictLength = predictLength;
+    }
+
+    public void setMinArray(double[] minArray) {
+        this.minArray = minArray;
+    }
+
+    public void setMaxArray(double[] maxArray) {
+        this.maxArray = maxArray;
+    }
+
+    public PriceCategory getCategory() {
+        return category;
+    }
+
+    public void setCategory(PriceCategory category) {
+        this.category = category;
+    }
+
+    public LinkedList<Integer> getExampleStartOffsets() {
+        return exampleStartOffsets;
+    }
+
+    public void setExampleStartOffsets(LinkedList<Integer> exampleStartOffsets) {
+        this.exampleStartOffsets = exampleStartOffsets;
+    }
+
+    public List<StockData> getTrain() {
+        return train;
+    }
+
+    public void setTrain(List<StockData> train) {
+        this.train = train;
+    }
+
     public List<Pair<INDArray, INDArray>> getTest() {
         return test;
     }
@@ -232,6 +288,17 @@ public class StockDataSetIterator implements DataSetIterator {
         this.test = test;
     }
 
+    public static void setInstance(FiveMinutesStockDataSetIterator instance) {
+        FiveMinutesStockDataSetIterator.instance = instance;
+    }
+
+    public int getSplit() {
+        return split;
+    }
+
+    public void setSplit(int split) {
+        this.split = split;
+    }
 }
 
 

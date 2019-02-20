@@ -1,6 +1,6 @@
-package br.com.codefleck.tradebot.redesneurais;
+package br.com.codefleck.tradebot.redesneurais.iterators;
 
-import br.com.codefleck.tradebot.daos.StockDataDao;
+import br.com.codefleck.tradebot.models.PriceCategory;
 import br.com.codefleck.tradebot.models.StockData;
 import com.google.common.collect.ImmutableMap;
 import com.opencsv.CSVReader;
@@ -10,7 +10,6 @@ import org.nd4j.linalg.dataset.DataSet;
 import org.nd4j.linalg.dataset.api.DataSetPreProcessor;
 import org.nd4j.linalg.dataset.api.iterator.DataSetIterator;
 import org.nd4j.linalg.factory.Nd4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.FileReader;
@@ -18,7 +17,7 @@ import java.io.IOException;
 import java.util.*;
 
 @Component
-public class OneHourStockDataSetIterator implements DataSetIterator {
+public class ThreeHoursStockDataSetIterator implements DataSetIterator {
 
     /** category and its index */
     private final Map<PriceCategory, Integer> featureMapIndex = ImmutableMap.of(PriceCategory.OPEN, 0, PriceCategory.CLOSE, 1,
@@ -46,27 +45,16 @@ public class OneHourStockDataSetIterator implements DataSetIterator {
     /** adjusted stock dataset for testing */
     private List<Pair<INDArray, INDArray>> test;
 
-    private static OneHourStockDataSetIterator instance;
+    private static ThreeHoursStockDataSetIterator instance;
 
-    private OneHourStockDataSetIterator(){}
+    private ThreeHoursStockDataSetIterator(){}
 
-    public static synchronized OneHourStockDataSetIterator getInstance(){
+    public static synchronized ThreeHoursStockDataSetIterator getInstance(){
         if(instance == null){
-            instance = new OneHourStockDataSetIterator();
+            instance = new ThreeHoursStockDataSetIterator();
         }
         return instance;
     }
-
-//    public OneHourStockDataSetIterator(String filename, String symbol, int miniBatchSize, int exampleLength, double splitRatio, PriceCategory category) {
-//        List<StockData> stockDataList = readStockDataFromFile(filename, symbol);
-//        this.miniBatchSize = miniBatchSize;
-//        this.exampleLength = exampleLength;
-//        this.category = category;
-//        int split = (int) Math.round(stockDataList.size() * splitRatio);
-//        train = stockDataList.subList(0, split);
-//        test = generateTestDataSet(stockDataList.subList(split, stockDataList.size()));
-//        initializeOffsets();
-//    }
 
     /** initialize the mini-batch offsets */
     public void initializeOffsets () {
@@ -74,8 +62,6 @@ public class OneHourStockDataSetIterator implements DataSetIterator {
         int window = exampleLength + predictLength;
         for (int i = 0; i < train.size() - window; i++) { exampleStartOffsets.add(i); }
     }
-
-    public List<Pair<INDArray, INDArray>> getTestDataSet() { return test; }
 
     public double[] getMaxArray() { return maxArray; }
 
@@ -302,8 +288,8 @@ public class OneHourStockDataSetIterator implements DataSetIterator {
         this.test = test;
     }
 
-    public static void setInstance(OneHourStockDataSetIterator instance) {
-        OneHourStockDataSetIterator.instance = instance;
+    public static void setInstance(ThreeHoursStockDataSetIterator instance) {
+        ThreeHoursStockDataSetIterator.instance = instance;
     }
 
     public int getSplit() {

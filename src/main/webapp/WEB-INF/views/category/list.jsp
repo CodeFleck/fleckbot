@@ -15,7 +15,7 @@
           <table class="table table-condensed table-bordered table-striped table-hover">
           		  <thead>
 	                  <tr>
-	                  	<td>id</td>
+	                  	<td>ID</td>
 		                  	<td>name</td>
 		                  	<td>description</td>
 						<td>actions</td>
@@ -24,10 +24,10 @@
                   <tbody>
                   <c:forEach items='${paginatedList.currentList}' var='object'>         		
 	                  <tr>
-						<td><a href="<c:url value='/category'/>/${object.id}">${object.id}</a></td>
+						<td><a href="<c:url value='/category'/>/${object.ID}">${object.ID}</a></td>
 		                  	<td>${object.name}</td>
 		                  	<td>${object.description}</td>
-	                    <td><a href="<c:url value='/category/remove'/>/${object.id}">Remove</a></td>
+	                    <td><a href="<c:url value='/category/remove'/>/${object.ID}">Remove</a></td>
 					  </tr>
                   </c:forEach>
                   </tbody>

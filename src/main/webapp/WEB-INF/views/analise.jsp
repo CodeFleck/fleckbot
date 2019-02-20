@@ -60,13 +60,13 @@
                 <tr>
                     <td>Bitcoin</td>
                     <td><div id="btc"></div></td>
-                    <td>${oneMinute}</td>
-                    <td>${fifteenMinutes}</td>
-                    <td>${thirtyMinutes}</td>
-                    <td>${oneHour}</td>
-                    <td>${twoHours}</td>
-                    <td>${fourHours}</td>
-                    <td>${twentyFourHours}</td>
+                    <td>$${oneMinute}</td>
+                    <td>$${fifteenMinutes}</td>
+                    <td>$${thirtyMinutes}</td>
+                    <td>$${oneHour}</td>
+                    <td>$${twoHours}</td>
+                    <td>$${fourHours}</td>
+                    <td>$${twentyFourHours}</td>
                 </tr>
                 </tbody>
             </table>
@@ -74,14 +74,6 @@
         <br><br>
         <p>Categoria: ${categoria}</p>
         <p>Porcentagem média de erro: ${errorPercentageAvg}%</p>
-        <p>Porcentagem de erro no último dia: ${errorPercentageLastDay}%</p>
-        <p>Número de épocas: ${epocas}</p>
-        <p>Data de inicio: ${beginDate}</p>
-        <p>Data final: ${endDate}</p>
-        <p>Período: ${period}</p>
-        <p>Maior erro: ${majorError}%</p>
-        <p>Menor erro: ${minorError}%</p>
-
 
         <%--<p>*************</p>--%>
         <%--<div>--%>

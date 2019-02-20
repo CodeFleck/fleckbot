@@ -3,7 +3,7 @@ package br.com.codefleck.tradebot.controllers;
 import br.com.codefleck.tradebot.core.engine.TradingEngine;
 import br.com.codefleck.tradebot.daos.DataPointsModelDao;
 import br.com.codefleck.tradebot.daos.StockDataDao;
-import br.com.codefleck.tradebot.models.DataPointsListModel;
+import br.com.codefleck.tradebot.models.DataPointsListResultSet;
 import br.com.codefleck.tradebot.models.DataPointsModel;
 import br.com.codefleck.tradebot.models.StockData;
 import br.com.codefleck.tradebot.services.impl.PredictionServiceImpl;
@@ -74,16 +74,18 @@ public class RedesNeuraisController {
                                      @RequestParam("beginDate") String beginDate,
                                      @RequestParam("endDate") String endDate,
                                      @ModelAttribute("period") String period,
-                                     @ModelAttribute("nomeDoConjunto") String nomeDoConjunto) throws IOException, ParseException {
+                                     @ModelAttribute("nomeDoConjunto") String nomeDoConjunto,
+                                     @ModelAttribute("learningRate") String learningRate) throws IOException, ParseException {
 
         SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
 
         Date begingDate = formato.parse(beginDate);
         Date endingDate = formato.parse(endDate);
+        Double dlearningRate = Double.valueOf(learningRate);
 
-        BaseTimeSeries customTimeSeries = predictionService.createCSVFileForNeuralNets(begingDate, endingDate, period);
+        predictionService.createCSVFileForNeuralNets(begingDate, endingDate, period);
 
-        List<String> dataPointList = predictionService.initTraining(epocas, simbolo, categoria, customTimeSeries, period);
+        List<String> dataPointList = predictionService.initTraining(epocas, simbolo, categoria, period, dlearningRate);
 
         ModelAndView model = new ModelAndView();
         model.setViewName("admin/redes-neurais");
@@ -97,11 +99,11 @@ public class RedesNeuraisController {
         String cat = categoria;
         model.addObject("categoria", cat);
 
-        DataPointsListModel dataPointsList = predictionService.prepareDataPointToBeSaved(dataPointList, nomeDoConjunto);
-        Double errorPercentageAvg = predictionService.calculateErrorPercentageAverage(dataPointsList);
-        Double errorPercentageLastDay = predictionService.calculateErrorPercentageLastDay(dataPointsList);
-        Double majorError = predictionService.calculateMajorError(dataPointsList);
-        Double minorError = predictionService.calculateMinorError(dataPointsList);
+        DataPointsListResultSet dataPointsListResultSet = predictionService.prepareDataPointToBeSaved(dataPointList, nomeDoConjunto);
+        Double errorPercentageAvg = predictionService.calculateErrorPercentageAverage(dataPointsListResultSet);
+        Double errorPercentageLastDay = predictionService.calculateErrorPercentageLastDay(dataPointsListResultSet);
+        Double majorError = predictionService.calculateMajorError(dataPointsListResultSet);
+        Double minorError = predictionService.calculateMinorError(dataPointsListResultSet);
 
         NumberFormat formatter = new DecimalFormat("#0.00");
 
@@ -110,11 +112,11 @@ public class RedesNeuraisController {
         model.addObject("majorError", formatter.format(majorError));
         model.addObject("minorError", formatter.format(minorError));
 
-        for (DataPointsModel dataPoint : dataPointsList.getPredictDataPointsModelList()) {
+        for (DataPointsModel dataPoint : dataPointsListResultSet.getPredictDataPointsModelList()) {
             //dataPointsModelDao.save(dataPoint);
         }
 
-        for (DataPointsModel dataPoint : dataPointsList.getActualDataPointsModelList()) {
+        for (DataPointsModel dataPoint : dataPointsListResultSet.getActualDataPointsModelList()) {
             //dataPointsModelDao.save(dataPoint);
         }
         System.out.println("finished saving...");

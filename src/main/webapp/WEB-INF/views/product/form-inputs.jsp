@@ -25,11 +25,11 @@
           </div>
         </div>
         <div class="form-group">
-          <label for="category.id">category.id</label>
+          <label for="category.ID">category.ID</label>
           <div class="input-group">
-            <span class="input-group-addon"><i class="glyphicon glyphicon-unchecked"></i></span><form:select path='category.id' items='${categoryList}' itemValue='id' itemLabel='name'>
+            <span class="input-group-addon"><i class="glyphicon glyphicon-unchecked"></i></span><form:select path='category.ID' items='${categoryList}' itemValue='ID' itemLabel='name'>
 </form:select>
-<form:errors path='category.id'/>
+<form:errors path='category.ID'/>
 
           </div>
         </div>
