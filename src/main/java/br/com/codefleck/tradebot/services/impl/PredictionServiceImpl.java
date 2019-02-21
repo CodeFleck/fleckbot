@@ -321,12 +321,9 @@ public class PredictionServiceImpl {
         OneMonthStockDataSetIterator oneMonthIterator = OneMonthStockDataSetIterator.getInstance();
         List<StockData> stockDataList = duplicate(oneMonthIterator.readStockDataFromFile(file, simbolo));
         oneMonthIterator.setMiniBatchSize(8);
-        oneMonthIterator.setExampleLength(5);
+        oneMonthIterator.setExampleLength(30);
         oneMonthIterator.setCategory(category);
-//        oneMonthIterator.setSplit((int) Math.round(stockDataList.size() * splitRatio));
-//        oneMonthIterator.setTrain(stockDataList.subList(0, oneMonthIterator.getSplit()));
         oneMonthIterator.setTrain(stockDataList);
-//        oneMonthIterator.setTest(oneMonthIterator.generateTestDataSet(stockDataList.subList(oneMonthIterator.getSplit(), stockDataList.size())));
         oneMonthIterator.setTest(oneMonthIterator.generateTestDataSet(stockDataList));
         oneMonthIterator.initializeOffsets();
         return oneMonthIterator;
@@ -334,6 +331,15 @@ public class PredictionServiceImpl {
 
     private List<StockData> duplicate(List<StockData> stockDataList) {
         List<StockData> duplicatedStockDataList = new ArrayList<>();
+        for (StockData stock : stockDataList) {
+            duplicatedStockDataList.add(stock);
+        }
+        for (StockData stock : stockDataList) {
+            duplicatedStockDataList.add(stock);
+        }
+        for (StockData stock : stockDataList) {
+            duplicatedStockDataList.add(stock);
+        }
         for (StockData stock : stockDataList) {
             duplicatedStockDataList.add(stock);
         }
@@ -421,6 +427,7 @@ public class PredictionServiceImpl {
             if (token != null){
                 if (token.substring(1, 2).equals("x")) {
                     xPredictToken.add(token.replaceAll("\"", "").replace("x:", "").replace("]", ""));
+
                 } else if (token.substring(1, 2).equals("y")) {
                     yPredictToken.add(token.replaceAll("\"", "").replace("y:", "").replace("]", ""));
                 }

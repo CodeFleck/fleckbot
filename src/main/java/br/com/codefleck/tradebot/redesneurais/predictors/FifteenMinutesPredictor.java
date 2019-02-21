@@ -1,5 +1,6 @@
 package br.com.codefleck.tradebot.redesneurais.predictors;
 
+import br.com.codefleck.tradebot.core.util.CsvFileWriter;
 import br.com.codefleck.tradebot.models.PriceCategory;
 import br.com.codefleck.tradebot.redesneurais.iterators.FifteenMinutesStockDataSetIterator;
 import br.com.codefleck.tradebot.redesneurais.iterators.TenMinutesStockDataSetIterator;
@@ -19,6 +20,8 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.List;
 
 @Component
@@ -51,7 +54,8 @@ public class FifteenMinutesPredictor {
         }
         watch.stop();
         log.info("Saving model...");
-        File locationToSave = new File("/Users/dfleck/projects/tcc/fleckbot-11-09-2017/fleckbot/src/main/resources/StockPriceLSTM_".concat(period).concat(String.valueOf(category)).concat(".zip"));
+        File locationToSave = new File("/Users/dfleck/projects/tcc/fleckbot-11-09-2017/fleckbot/src/main/resources/fifteenminutes/StockPriceLSTM_".concat(period).concat(String.valueOf(category)).concat(".zip"));
+
         ModelSerializer.writeModel(fifteenMinutesNet, locationToSave, true); // saveUpdater: i.e., the state for Momentum, RMSProp, Adagrad etc. Save this to train your network more in the future
 
         log.info("Loading model...");

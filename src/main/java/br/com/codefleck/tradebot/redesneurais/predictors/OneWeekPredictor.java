@@ -49,7 +49,7 @@ public class OneWeekPredictor {
         }
         watch.stop();
         log.info("Saving model...");
-        File locationToSave = new File("/Users/dfleck/projects/tcc/fleckbot-11-09-2017/fleckbot/src/main/resources/StockPriceLSTM_".concat(period).concat(String.valueOf(category)).concat(".zip"));
+        File locationToSave = new File("/Users/dfleck/projects/tcc/fleckbot-11-09-2017/fleckbot/src/main/resources/onemonth/StockPriceLSTM_".concat(period).concat(String.valueOf(category)).concat(".zip"));
         ModelSerializer.writeModel(oneWeekNet, locationToSave, true); // saveUpdater: i.e., the state for Momentum, RMSProp, Adagrad etc. Save this to train your network more in the future
 
         log.info("Loading model...");
