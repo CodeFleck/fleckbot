@@ -49,7 +49,7 @@ public class OneHourPredictor {
         }
         watch.stop();
         log.info("Saving model...");
-        File locationToSave = new File("src/main/resources/StockPriceLSTM_".concat(period).concat(String.valueOf(category)).concat(".zip"));
+        File locationToSave = new File("src/main/resources/StockPriceLSTM_".concat(period.replace(" ", "")).concat(String.valueOf(category)).concat(".zip"));
         ModelSerializer.writeModel(oneHourNet, locationToSave, true); // saveUpdater: i.e., the state for Momentum, RMSProp, Adagrad etc. Save this to train your network more in the future
 
         log.info("Loading model...");

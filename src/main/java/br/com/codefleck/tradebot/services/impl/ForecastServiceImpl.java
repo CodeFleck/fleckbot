@@ -24,7 +24,6 @@ import java.util.List;
  * @author Daniel Fleck
  */
 @Service("forecastService")
-@Transactional
 @ComponentScan(basePackages = {"br.com.codefleck.tradebot"})
 public class ForecastServiceImpl {
 

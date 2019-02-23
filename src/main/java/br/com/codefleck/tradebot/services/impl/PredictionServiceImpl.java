@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.ta4j.core.Bar;
 import org.ta4j.core.BaseTimeSeries;
 
@@ -30,7 +29,6 @@ import java.util.Date;
 import java.util.List;
 
 @Service("predictionService")
-@Transactional
 @ComponentScan(basePackages = {"br.com.codefleck.tradebot.repository"})
 public class PredictionServiceImpl {
 
@@ -85,7 +83,7 @@ public class PredictionServiceImpl {
 
         double learningRate = 0.01;
         int batchSize = 32; // mini-batch size
-        double splitRatio = 0.8; // 90% for training, 10% for testing
+        double splitRatio = 0.8; // 80% for training, 10% for testing
         String chosenCategory = categoria;
 
         log.info("Creating dataSet iterators...");
@@ -138,7 +136,7 @@ public class PredictionServiceImpl {
 
     public File getCSVFilePathForTrainingNeuralNetsTest(String period) throws IOException {
         if (period.equals("1 dia")){
-            return new ClassPathResource("TesteOneDayDataForTrainingNeuralNets.csv").getFile();
+            return new ClassPathResource("OneDayDataForTrainingNeuralNets.csv").getFile();
         }
         return null;
     }
@@ -174,7 +172,7 @@ public class PredictionServiceImpl {
             return new ClassPathResource("FourHoursDataForTrainingNeuralNets.csv").getFile();
         }
         if (period.equals("1 dia")){
-            return new ClassPathResource("TesteOneDayDataForTrainingNeuralNets.csv").getFile();
+            return new ClassPathResource("OneDayDataForTrainingNeuralNets.csv").getFile();
         }
         if (period.equals("1 semana")){
             return new ClassPathResource("OneWeekDataForTrainingNeuralNets.csv").getFile();

@@ -21,7 +21,6 @@
                             <td>De</td>
                             <td>Até</td>
                             <td>Período</td>
-                            <td>Taxa de Aprendizagem</td>
                             <td>Nome do Conjunto</td>
                         </tr>
                         </thead>
@@ -59,7 +58,6 @@
                                 <option>1 mês</option>
                             </select>
                             </td>
-                            <td><input type="text" class="form-control" name="learningRate" value="0.01"></td>
                             <td><input type="text" class="form-control" name="nomeDoConjunto" value="nome-teste"></td>
                         </tr>
                         </tbody>
