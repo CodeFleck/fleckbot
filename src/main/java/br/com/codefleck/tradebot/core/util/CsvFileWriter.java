@@ -3,20 +3,11 @@ package br.com.codefleck.tradebot.core.util;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.Paths;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
-import org.nd4j.linalg.io.ClassPathResource;
 import org.ta4j.core.Bar;
-import org.ta4j.core.BaseBar;
 import org.ta4j.core.BaseTimeSeries;
-
-import br.com.codefleck.tradebot.tradingInterfaces.Ticker;
 
 public class CsvFileWriter {
 
@@ -74,22 +65,22 @@ public class CsvFileWriter {
         }
     }
 
-    public void writeCsvFileForNeuralNets(BaseTimeSeries customTimeSeries, String period) {
+    public void writeCsvFileForNeuralNets(BaseTimeSeries customTimeSeries, String period) throws IOException {
 
         final String FILE_HEADER_FOR_NEURAL_NETS = "date,symbol,open,close,low, high, volume";
 
         List<Bar> linesList = new ArrayList<>();
 
-        for (int i=0; i<customTimeSeries.getEndIndex();i++){
+        for (int i = 0; i < customTimeSeries.getEndIndex(); i++) {
             linesList.add(customTimeSeries.getBar(i));
         }
 
-        String filePathName = getFilePathNameAccordingToPeriod(period);
+        String csvFileForTrainingNeuralNets = getFilePathNameAccordingToPeriod(period);
 
         FileWriter fileWriter = null;
 
         try {
-            fileWriter = new FileWriter(filePathName);
+            fileWriter = new FileWriter(csvFileForTrainingNeuralNets);
 
             //Write the CSV file header
             fileWriter.append(FILE_HEADER_FOR_NEURAL_NETS).append(NEW_LINE_SEPARATOR);
@@ -100,7 +91,7 @@ public class CsvFileWriter {
                     break;
                 }
 
-                fileWriter.append(bar.getSimpleDateName().substring(0,10)).append(COMMA_DELIMITER) //check if it is creating the correct date in csv file for training Nets (need time and minute)
+                fileWriter.append(bar.getSimpleDateName().substring(0, 10)).append(COMMA_DELIMITER) //check if it is creating the correct date in csv file for training Nets (need time and minute)
                         .append(("BTC")).append(COMMA_DELIMITER)
                         .append(String.valueOf(bar.getOpenPrice())).append(COMMA_DELIMITER)
                         .append(String.valueOf(bar.getClosePrice())).append(COMMA_DELIMITER)
@@ -129,41 +120,41 @@ public class CsvFileWriter {
 
     private String getFilePathNameAccordingToPeriod(String period) {
 
-        if (period.equals("1 minuto")){
-            return CsvFileWriter.class.getResource("/oneminute/OneMinuteDataForTrainingNeuralNets.csv").getPath();
+        if (period.equals("1 minuto")) {
+            return new File("OneMinuteDataForTrainingNeuralNets.csv").getPath();
         }
         if (period.equals("5 minutos")) {
-            return CsvFileWriter.class.getResource("/fiveminutes/FiveMinutesDataForTrainingNeuralNets.csv").getPath();
+            return new File("FiveMinutesDataForTrainingNeuralNets.csv").getPath();
         }
-        if (period.equals("10 minutos")){
-            return CsvFileWriter.class.getResource("/tenminutes/TenMinutesDataForTrainingNeuralNets.csv").getPath();
+        if (period.equals("10 minutos")) {
+            return new File("TenMinutesDataForTrainingNeuralNets.csv").getPath();
         }
-        if (period.equals("15 minutos")){
-            return CsvFileWriter.class.getResource("/fifteenminutes/FifteenMinutesDataForTrainingNeuralNets.csv").getPath();
+        if (period.equals("15 minutos")) {
+            return new File("FifteenMinutesDataForTrainingNeuralNets.csv").getPath();
         }
-        if (period.equals("30 minutos")){
-            return CsvFileWriter.class.getResource("/thirtyminutes/ThirtyMinutesDataForTrainingNeuralNets.csv").getPath();
+        if (period.equals("30 minutos")) {
+            return new File("ThirtyMinutesDataForTrainingNeuralNets.csv").getPath();
         }
-        if (period.equals("1 hora")){
-            return CsvFileWriter.class.getResource("/onehour/OneHourDataForTrainingNeuralNets.csv").getPath();
+        if (period.equals("1 hora")) {
+            return new File("OneHourDataForTrainingNeuralNets.csv").getPath();
         }
-        if (period.equals("2 horas")){
-            return CsvFileWriter.class.getResource("/twohours/TwoHoursDataForTrainingNeuralNets.csv").getPath();
+        if (period.equals("2 horas")) {
+            return new File("TwoHoursDataForTrainingNeuralNets.csv").getPath();
         }
-        if (period.equals("3 horas")){
-            return CsvFileWriter.class.getResource("/threehours/ThreeHoursDataForTrainingNeuralNets.csv").getPath();
+        if (period.equals("3 horas")) {
+            return new File("ThreeHoursDataForTrainingNeuralNets.csv").getPath();
         }
-        if (period.equals("4 horas")){
-            return CsvFileWriter.class.getResource("/fourhours/FourHoursDataForTrainingNeuralNets.csv").getPath();
+        if (period.equals("4 horas")) {
+            return new File("FourHoursDataForTrainingNeuralNets.csv").getPath();
         }
-        if (period.equals("1 dia")){
-            return CsvFileWriter.class.getResource("/oneday/OneDayDataForTrainingNeuralNets.csv").getPath();
+        if (period.equals("1 dia")) {
+            return new File("TesteOneDayDataForTrainingNeuralNets.csv").getPath();
         }
-        if (period.equals("1 semana")){
-            return CsvFileWriter.class.getResource("/oneweek/OneWeekDataForTrainingNeuralNets.csv").getPath();
+        if (period.equals("1 semana")) {
+            return new File("OneWeekDataForTrainingNeuralNets.csv").getPath();
         }
-        if (period.equals("1 mês")){
-            return CsvFileWriter.class.getResource("/onemonth/OneMonthDataForTrainingNeuralNets.csv").getPath();
+        if (period.equals("1 mês")) {
+            return new File("OneMonthDataForTrainingNeuralNets.csv").getPath();
         }
         return null;
     }

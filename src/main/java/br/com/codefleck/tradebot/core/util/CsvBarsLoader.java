@@ -11,7 +11,6 @@ import org.ta4j.core.TimeSeries;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -158,7 +157,7 @@ public class CsvBarsLoader {
         return stockDataList;
     }
 
-    public void createCSVFileForNeuralNets(Date beginDate, Date endDate, String period) {
+    public BaseTimeSeries createCSVFileForNeuralNets(Date beginDate, Date endDate, String period) {
 
         InputStream stream = CsvBarsLoader.class.getClassLoader().getResourceAsStream("coinbaseUSD_1-min_data_2014-12-01_to_2018-01-08.csv");
 
@@ -199,6 +198,11 @@ public class CsvBarsLoader {
         BaseTimeSeries customTimeSeries = downSamplingTimeSeries.aggregate(baseTimeSeries);
 
         CsvFileWriter csvFileWriter = new CsvFileWriter();
-        csvFileWriter.writeCsvFileForNeuralNets(customTimeSeries, period);
+        try {
+            csvFileWriter.writeCsvFileForNeuralNets(customTimeSeries, period);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return customTimeSeries;
     }
 }

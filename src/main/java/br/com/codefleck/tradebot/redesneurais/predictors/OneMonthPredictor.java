@@ -32,7 +32,7 @@ public class OneMonthPredictor {
         List<String> dataPointsList;
 
         StopWatch watch = new StopWatch();
-        OneMonthStockDataSetIterator oneMonthIterator = predictionService.getOneMonthStockDataSetIterator(simbolo, predictionService.getFileForTrainingNeuralNets(period), batchSize, splitRatio, category);
+        OneMonthStockDataSetIterator oneMonthIterator = predictionService.getOneMonthStockDataSetIterator(simbolo, predictionService.getCSVFilePathForTrainingNeuralNets(period).getName(), batchSize, splitRatio, category);
         List<Pair<INDArray, INDArray>> test = oneMonthIterator.getTest();
 
         log.info("Build lstm networks...");
@@ -49,7 +49,7 @@ public class OneMonthPredictor {
         }
         watch.stop();
         log.info("Saving model...");
-        File locationToSave = new File("/Users/dfleck/projects/tcc/fleckbot-11-09-2017/fleckbot/src/main/resources/onemonth/StockPriceLSTM_".concat(period).concat(String.valueOf(category)).concat(".zip"));
+        File locationToSave = new File("src/main/resources/StockPriceLSTM_".concat(period).concat(String.valueOf(category)).concat(".zip"));
         ModelSerializer.writeModel(oneMonthNet, locationToSave, true); // saveUpdater: i.e., the state for Momentum, RMSProp, Adagrad etc. Save this to train your network more in the future
 
         log.info("Loading model...");
@@ -59,14 +59,14 @@ public class OneMonthPredictor {
         if (category.equals(PriceCategory.ALL)) {
             INDArray max = Nd4j.create(oneMonthIterator.getMaxArray());
             INDArray min = Nd4j.create(oneMonthIterator.getMinArray());
-            predictionService.predictAllCategories(oneMonthNet, test, max, min);
+            predictionService.predictAllCategories(oneMonthNet, test, max, min, oneMonthIterator.getExampleLength());
             log.info(period + " done testing...");
             System.out.println("Time Elapsed: " + watch.getTime());
             return null;
         } else {
             double max = oneMonthIterator.getMaxNum(category);
             double min = oneMonthIterator.getMinNum(category);
-            dataPointsList = predictionService.predictPriceOneAhead(oneMonthNet, test, max, min);
+            dataPointsList = predictionService.predictPriceOneAhead(oneMonthNet, test, max, min, oneMonthIterator.getExampleLength());
             log.info(period + " done testing...");
             System.out.println("Time Elapsed: " + watch.getTime());
         }

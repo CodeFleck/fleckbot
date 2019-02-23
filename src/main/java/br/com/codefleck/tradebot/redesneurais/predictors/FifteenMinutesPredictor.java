@@ -1,11 +1,8 @@
 package br.com.codefleck.tradebot.redesneurais.predictors;
 
-import br.com.codefleck.tradebot.core.util.CsvFileWriter;
 import br.com.codefleck.tradebot.models.PriceCategory;
 import br.com.codefleck.tradebot.redesneurais.iterators.FifteenMinutesStockDataSetIterator;
-import br.com.codefleck.tradebot.redesneurais.iterators.TenMinutesStockDataSetIterator;
 import br.com.codefleck.tradebot.redesneurais.recurrentnets.FifteenMinutesRecurrentNets;
-import br.com.codefleck.tradebot.redesneurais.recurrentnets.FiveMinutesRecurrentNets;
 import br.com.codefleck.tradebot.services.impl.PredictionServiceImpl;
 import javafx.util.Pair;
 import org.apache.commons.lang.time.StopWatch;
@@ -20,8 +17,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.List;
 
 @Component
@@ -37,7 +32,7 @@ public class FifteenMinutesPredictor {
         List<String> dataPointsList;
 
         StopWatch watch = new StopWatch();
-        FifteenMinutesStockDataSetIterator fifteenMinutesStockDataSetIterator = predictionService.getFifteenMinutesStockDataSetIterator(simbolo, predictionService.getFileForTrainingNeuralNets(period), batchSize, splitRatio, category);
+        FifteenMinutesStockDataSetIterator fifteenMinutesStockDataSetIterator = predictionService.getFifteenMinutesStockDataSetIterator(simbolo, predictionService.getCSVFilePathForTrainingNeuralNets(period).getName(), batchSize, splitRatio, category);
         List<Pair<INDArray, INDArray>> test = fifteenMinutesStockDataSetIterator.getTest();
 
         log.info("Build lstm networks...");
@@ -54,7 +49,7 @@ public class FifteenMinutesPredictor {
         }
         watch.stop();
         log.info("Saving model...");
-        File locationToSave = new File("/Users/dfleck/projects/tcc/fleckbot-11-09-2017/fleckbot/src/main/resources/fifteenminutes/StockPriceLSTM_".concat(period).concat(String.valueOf(category)).concat(".zip"));
+        File locationToSave = new File("src/main/resources/StockPriceLSTM_".concat(period).concat(String.valueOf(category)).concat(".zip"));
 
         ModelSerializer.writeModel(fifteenMinutesNet, locationToSave, true); // saveUpdater: i.e., the state for Momentum, RMSProp, Adagrad etc. Save this to train your network more in the future
 
@@ -65,14 +60,14 @@ public class FifteenMinutesPredictor {
         if (category.equals(PriceCategory.ALL)) {
             INDArray max = Nd4j.create(fifteenMinutesStockDataSetIterator.getMaxArray());
             INDArray min = Nd4j.create(fifteenMinutesStockDataSetIterator.getMinArray());
-            predictionService.predictAllCategories(fifteenMinutesNet, test, max, min);
+            predictionService.predictAllCategories(fifteenMinutesNet, test, max, min, fifteenMinutesStockDataSetIterator.getExampleLength());
             log.info(period + " done testing...");
             System.out.println("Time Elapsed: " + watch.getTime());
             return null;
         } else {
             double max = fifteenMinutesStockDataSetIterator.getMaxNum(category);
             double min = fifteenMinutesStockDataSetIterator.getMinNum(category);
-            dataPointsList = predictionService.predictPriceOneAhead(fifteenMinutesNet, test, max, min);
+            dataPointsList = predictionService.predictPriceOneAhead(fifteenMinutesNet, test, max, min, fifteenMinutesStockDataSetIterator.getExampleLength());
             log.info(period + " done testing...");
             System.out.println("Time Elapsed: " + watch.getTime());
         }

@@ -15,7 +15,7 @@ public class DataPointsModel {
     double x;
     double y;
     String nomeConjunto;
-    LocalDateTime timeStamp;
+    LocalDateTime localDateTime;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dataPointModelID")
@@ -27,11 +27,11 @@ public class DataPointsModel {
     public DataPointsModel(){
     }
 
-    public DataPointsModel(double x, double y, String nomeConjunto, LocalDateTime timeStamp, DataPointsListResultSet dataPointsListResultSet, DataPointModelistType dataPointModelistType) {
+    public DataPointsModel(double x, double y, String nomeConjunto, LocalDateTime localDateTime, DataPointsListResultSet dataPointsListResultSet, DataPointModelistType dataPointModelistType) {
         this.x = x;
         this.y = y;
         this.nomeConjunto = nomeConjunto;
-        this.timeStamp = timeStamp;
+        this.localDateTime = localDateTime;
         this.dataPointsListResultSet = dataPointsListResultSet;
         this.dataPointModelistType = dataPointModelistType;
     }
@@ -68,12 +68,12 @@ public class DataPointsModel {
         this.nomeConjunto = nomeConjunto;
     }
 
-    public LocalDateTime getTimeStamp() {
-        return timeStamp;
+    public LocalDateTime getLocalDateTime() {
+        return localDateTime;
     }
 
-    public void setTimeStamp(LocalDateTime timeStamp) {
-        this.timeStamp = timeStamp;
+    public void setLocalDateTime(LocalDateTime localDateTime) {
+        this.localDateTime = localDateTime;
     }
 
     public DataPointsListResultSet getDataPointsListResultSet() {
@@ -99,7 +99,7 @@ public class DataPointsModel {
                 ", x=" + x +
                 ", y=" + y +
                 ", nomeConjunto='" + nomeConjunto + '\'' +
-                ", timeStamp=" + timeStamp +
+                ", localDateTime=" + localDateTime +
                 ", dataPointsListResultSet=" + dataPointsListResultSet +
                 ", dataPointModelistType=" + dataPointModelistType +
                 '}';

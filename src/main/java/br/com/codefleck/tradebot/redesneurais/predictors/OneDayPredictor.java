@@ -2,9 +2,7 @@ package br.com.codefleck.tradebot.redesneurais.predictors;
 
 import br.com.codefleck.tradebot.models.PriceCategory;
 import br.com.codefleck.tradebot.redesneurais.iterators.OneDayStockDataSetIterator;
-import br.com.codefleck.tradebot.redesneurais.iterators.OneHourStockDataSetIterator;
 import br.com.codefleck.tradebot.redesneurais.recurrentnets.OneDayRecurrentNets;
-import br.com.codefleck.tradebot.redesneurais.recurrentnets.OneHourRecurrentNets;
 import br.com.codefleck.tradebot.services.impl.PredictionServiceImpl;
 import javafx.util.Pair;
 import org.apache.commons.lang.time.StopWatch;
@@ -12,6 +10,7 @@ import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.deeplearning4j.util.ModelSerializer;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
+import org.nd4j.linalg.io.ClassPathResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +33,8 @@ public class OneDayPredictor {
         List<String> dataPointsList;
 
         StopWatch watch = new StopWatch();
-        OneDayStockDataSetIterator oneDayIterator = predictionService.getOneDayStockDataSetIterator(simbolo, predictionService.getFileForTrainingNeuralNets(period), batchSize, splitRatio, category);
+
+        OneDayStockDataSetIterator oneDayIterator = predictionService.getOneDayStockDataSetIterator(simbolo, predictionService.getCSVFilePathForTrainingNeuralNetsTest(period), batchSize, splitRatio, category);
         List<Pair<INDArray, INDArray>> test = oneDayIterator.getTest();
 
         log.info("Build lstm networks...");
@@ -51,7 +51,7 @@ public class OneDayPredictor {
         }
         watch.stop();
         log.info("Saving model...");
-        File locationToSave = new File("/Users/dfleck/projects/tcc/fleckbot-11-09-2017/fleckbot/src/main/resources/oneday/StockPriceLSTM_".concat(period).concat(String.valueOf(category)).concat(".zip"));
+        File locationToSave = new File("src/main/resources/StockPriceLSTM_".concat(period).concat(String.valueOf(category)).concat(".zip"));
         ModelSerializer.writeModel(oneDayNet, locationToSave, true); // saveUpdater: i.e., the state for Momentum, RMSProp, Adagrad etc. Save this to train your network more in the future
 
         log.info("Loading model...");
@@ -61,16 +61,16 @@ public class OneDayPredictor {
         if (category.equals(PriceCategory.ALL)) {
             INDArray max = Nd4j.create(oneDayIterator.getMaxArray());
             INDArray min = Nd4j.create(oneDayIterator.getMinArray());
-            predictionService.predictAllCategories(oneDayNet, test, max, min);
+            predictionService.predictAllCategories(oneDayNet, test, max, min, oneDayIterator.getExampleLength());
             log.info(period + " done testing...");
-            System.out.println("Time Elapsed: " + watch.getTime());
+            System.out.println("Time Elapsed: " + (watch.getTime()/1000) + " seg");
             return null;
         } else {
             double max = oneDayIterator.getMaxNum(category);
             double min = oneDayIterator.getMinNum(category);
-            dataPointsList = predictionService.predictPriceOneAhead(oneDayNet, test, max, min);
+            dataPointsList = predictionService.predictPriceOneAhead(oneDayNet, test, max, min, oneDayIterator.getExampleLength());
             log.info(period + " done testing...");
-            System.out.println("Time Elapsed: " + watch.getTime());
+            System.out.println("Time Elapsed: " + (watch.getTime()/1000) + " get");
         }
         return dataPointsList;
     }

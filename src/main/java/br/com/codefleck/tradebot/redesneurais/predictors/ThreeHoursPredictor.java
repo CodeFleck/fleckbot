@@ -2,9 +2,7 @@ package br.com.codefleck.tradebot.redesneurais.predictors;
 
 import br.com.codefleck.tradebot.models.PriceCategory;
 import br.com.codefleck.tradebot.redesneurais.iterators.ThreeHoursStockDataSetIterator;
-import br.com.codefleck.tradebot.redesneurais.iterators.TwoHoursStockDataSetIterator;
 import br.com.codefleck.tradebot.redesneurais.recurrentnets.ThreeHoursRecurrentNets;
-import br.com.codefleck.tradebot.redesneurais.recurrentnets.TwoHoursRecurrentNets;
 import br.com.codefleck.tradebot.services.impl.PredictionServiceImpl;
 import javafx.util.Pair;
 import org.apache.commons.lang.time.StopWatch;
@@ -34,7 +32,7 @@ public class ThreeHoursPredictor {
         List<String> dataPointsList;
 
         StopWatch watch = new StopWatch();
-        ThreeHoursStockDataSetIterator threeHoursIterator = predictionService.getThreeHoursStockDataSetIterator(simbolo, predictionService.getFileForTrainingNeuralNets(period), batchSize, splitRatio, category);
+        ThreeHoursStockDataSetIterator threeHoursIterator = predictionService.getThreeHoursStockDataSetIterator(simbolo, predictionService.getCSVFilePathForTrainingNeuralNets(period).getName(), batchSize, splitRatio, category);
         List<Pair<INDArray, INDArray>> test = threeHoursIterator.getTest();
 
         log.info("Build lstm networks...");
@@ -51,7 +49,7 @@ public class ThreeHoursPredictor {
         }
         watch.stop();
         log.info("Saving model...");
-        File locationToSave = new File("/Users/dfleck/projects/tcc/fleckbot-11-09-2017/fleckbot/src/main/resources/threehours/StockPriceLSTM_".concat(period).concat(String.valueOf(category)).concat(".zip"));
+        File locationToSave = new File("src/main/resources/StockPriceLSTM_".concat(period).concat(String.valueOf(category)).concat(".zip"));
         ModelSerializer.writeModel(threeHoursNet, locationToSave, true); // saveUpdater: i.e., the state for Momentum, RMSProp, Adagrad etc. Save this to train your network more in the future
 
         log.info("Loading model...");
@@ -61,14 +59,14 @@ public class ThreeHoursPredictor {
         if (category.equals(PriceCategory.ALL)) {
             INDArray max = Nd4j.create(threeHoursIterator.getMaxArray());
             INDArray min = Nd4j.create(threeHoursIterator.getMinArray());
-            predictionService.predictAllCategories(threeHoursNet, test, max, min);
+            predictionService.predictAllCategories(threeHoursNet, test, max, min, threeHoursIterator.getExampleLength());
             log.info(period + " done testing...");
             System.out.println("Time Elapsed: " + watch.getTime());
             return null;
         } else {
             double max = threeHoursIterator.getMaxNum(category);
             double min = threeHoursIterator.getMinNum(category);
-            dataPointsList = predictionService.predictPriceOneAhead(threeHoursNet, test, max, min);
+            dataPointsList = predictionService.predictPriceOneAhead(threeHoursNet, test, max, min, threeHoursIterator.getExampleLength());
             log.info(period + " done testing...");
             System.out.println("Time Elapsed: " + watch.getTime());
         }

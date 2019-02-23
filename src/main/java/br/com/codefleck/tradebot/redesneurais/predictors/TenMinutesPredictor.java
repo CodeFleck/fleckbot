@@ -2,7 +2,6 @@ package br.com.codefleck.tradebot.redesneurais.predictors;
 
 import br.com.codefleck.tradebot.models.PriceCategory;
 import br.com.codefleck.tradebot.redesneurais.iterators.TenMinutesStockDataSetIterator;
-import br.com.codefleck.tradebot.redesneurais.recurrentnets.FiveMinutesRecurrentNets;
 import br.com.codefleck.tradebot.redesneurais.recurrentnets.TenMinutesRecurrentNets;
 import br.com.codefleck.tradebot.services.impl.PredictionServiceImpl;
 import javafx.util.Pair;
@@ -33,7 +32,7 @@ public class TenMinutesPredictor {
         List<String> dataPointsList;
 
         StopWatch watch = new StopWatch();
-        TenMinutesStockDataSetIterator tenMinutesStockDataSetIterator = predictionService.getTenMinutesStockDataSetIterator(simbolo, predictionService.getFileForTrainingNeuralNets(period), batchSize, splitRatio, category);
+        TenMinutesStockDataSetIterator tenMinutesStockDataSetIterator = predictionService.getTenMinutesStockDataSetIterator(simbolo, predictionService.getCSVFilePathForTrainingNeuralNets(period).getName(), batchSize, splitRatio, category);
         List<Pair<INDArray, INDArray>> test = tenMinutesStockDataSetIterator.getTest();
 
         log.info("Build lstm networks...");
@@ -50,7 +49,7 @@ public class TenMinutesPredictor {
         }
         watch.stop();
         log.info("Saving model...");
-        File locationToSave = new File("/Users/dfleck/projects/tcc/fleckbot-11-09-2017/fleckbot/src/main/resources/tenminutes/StockPriceLSTM_".concat(period).concat(String.valueOf(category)).concat(".zip"));
+        File locationToSave = new File("src/main/resources/StockPriceLSTM_".concat(period).concat(String.valueOf(category)).concat(".zip"));
         ModelSerializer.writeModel(fiveMinutesNet, locationToSave, true); // saveUpdater: i.e., the state for Momentum, RMSProp, Adagrad etc. Save this to train your network more in the future
 
         log.info("Loading model...");
@@ -60,14 +59,14 @@ public class TenMinutesPredictor {
         if (category.equals(PriceCategory.ALL)) {
             INDArray max = Nd4j.create(tenMinutesStockDataSetIterator.getMaxArray());
             INDArray min = Nd4j.create(tenMinutesStockDataSetIterator.getMinArray());
-            predictionService.predictAllCategories(fiveMinutesNet, test, max, min);
+            predictionService.predictAllCategories(fiveMinutesNet, test, max, min, tenMinutesStockDataSetIterator.getExampleLength());
             log.info(period + " done testing...");
             System.out.println("Time Elapsed: " + watch.getTime());
             return null;
         } else {
             double max = tenMinutesStockDataSetIterator.getMaxNum(category);
             double min = tenMinutesStockDataSetIterator.getMinNum(category);
-            dataPointsList = predictionService.predictPriceOneAhead(fiveMinutesNet, test, max, min);
+            dataPointsList = predictionService.predictPriceOneAhead(fiveMinutesNet, test, max, min, tenMinutesStockDataSetIterator.getExampleLength());
             log.info(period + " done testing...");
             System.out.println("Time Elapsed: " + watch.getTime());
         }

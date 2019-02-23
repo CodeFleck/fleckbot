@@ -74,18 +74,31 @@ public class RedesNeuraisController {
                                      @RequestParam("beginDate") String beginDate,
                                      @RequestParam("endDate") String endDate,
                                      @ModelAttribute("period") String period,
-                                     @ModelAttribute("nomeDoConjunto") String nomeDoConjunto,
-                                     @ModelAttribute("learningRate") String learningRate) throws IOException, ParseException {
+                                     @ModelAttribute("nomeDoConjunto") String nomeDoConjunto) {
 
         SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
 
-        Date begingDate = formato.parse(beginDate);
-        Date endingDate = formato.parse(endDate);
-        Double dlearningRate = Double.valueOf(learningRate);
+        Date begingDate = null;
+        try {
+            begingDate = formato.parse(beginDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Date endingDate = null;
+        try {
+            endingDate = formato.parse(endDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
-        predictionService.createCSVFileForNeuralNets(begingDate, endingDate, period);
+        BaseTimeSeries customTimeSeries = predictionService.createCSVFileForNeuralNets(begingDate, endingDate, period);
 
-        List<String> dataPointList = predictionService.initTraining(epocas, simbolo, categoria, period, dlearningRate);
+        List<String> dataPointList = null;
+        try {
+            dataPointList = predictionService.initTraining(epocas, simbolo, categoria, period);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         ModelAndView model = new ModelAndView();
         model.setViewName("admin/redes-neurais");
@@ -99,7 +112,7 @@ public class RedesNeuraisController {
         String cat = categoria;
         model.addObject("categoria", cat);
 
-        DataPointsListResultSet dataPointsListResultSet = predictionService.prepareDataPointToBeSaved(dataPointList, nomeDoConjunto);
+        DataPointsListResultSet dataPointsListResultSet = predictionService.prepareDataPointToBeSaved(dataPointList, nomeDoConjunto, customTimeSeries);
         Double errorPercentageAvg = predictionService.calculateErrorPercentageAverage(dataPointsListResultSet);
         Double errorPercentageLastDay = predictionService.calculateErrorPercentageLastDay(dataPointsListResultSet);
         Double majorError = predictionService.calculateMajorError(dataPointsListResultSet);

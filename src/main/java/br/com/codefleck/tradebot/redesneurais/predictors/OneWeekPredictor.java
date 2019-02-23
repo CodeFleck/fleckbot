@@ -32,7 +32,7 @@ public class OneWeekPredictor {
         List<String> dataPointsList;
 
         StopWatch watch = new StopWatch();
-        OneWeekStockDataSetIterator oneWeekIterator = predictionService.getOneWeekStockDataSetIterator(simbolo, predictionService.getFileForTrainingNeuralNets(period), batchSize, splitRatio, category);
+        OneWeekStockDataSetIterator oneWeekIterator = predictionService.getOneWeekStockDataSetIterator(simbolo, predictionService.getCSVFilePathForTrainingNeuralNets(period).getName(), batchSize, splitRatio, category);
         List<Pair<INDArray, INDArray>> test = oneWeekIterator.getTest();
 
         log.info("Build lstm networks...");
@@ -49,7 +49,7 @@ public class OneWeekPredictor {
         }
         watch.stop();
         log.info("Saving model...");
-        File locationToSave = new File("/Users/dfleck/projects/tcc/fleckbot-11-09-2017/fleckbot/src/main/resources/onemonth/StockPriceLSTM_".concat(period).concat(String.valueOf(category)).concat(".zip"));
+        File locationToSave = new File("src/main/resources/StockPriceLSTM_".concat(period).concat(String.valueOf(category)).concat(".zip"));
         ModelSerializer.writeModel(oneWeekNet, locationToSave, true); // saveUpdater: i.e., the state for Momentum, RMSProp, Adagrad etc. Save this to train your network more in the future
 
         log.info("Loading model...");
@@ -59,14 +59,14 @@ public class OneWeekPredictor {
         if (category.equals(PriceCategory.ALL)) {
             INDArray max = Nd4j.create(oneWeekIterator.getMaxArray());
             INDArray min = Nd4j.create(oneWeekIterator.getMinArray());
-            predictionService.predictAllCategories(oneWeekNet, test, max, min);
+            predictionService.predictAllCategories(oneWeekNet, test, max, min, oneWeekIterator.getExampleLength());
             log.info(period + " done testing...");
             System.out.println("Time Elapsed: " + watch.getTime());
             return null;
         } else {
             double max = oneWeekIterator.getMaxNum(category);
             double min = oneWeekIterator.getMinNum(category);
-            dataPointsList = predictionService.predictPriceOneAhead(oneWeekNet, test, max, min);
+            dataPointsList = predictionService.predictPriceOneAhead(oneWeekNet, test, max, min, oneWeekIterator.getExampleLength());
             log.info(period + " done testing...");
             System.out.println("Time Elapsed: " + watch.getTime());
         }

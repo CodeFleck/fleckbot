@@ -32,7 +32,7 @@ public class OneMinutePredictor {
         List<String> dataPointsList;
 
         StopWatch watch = new StopWatch();
-        OneMinuteStockDataSetIterator oneMinuteIterator = predictionService.getOneMinuteStockDataSetIterator(simbolo, predictionService.getFileForTrainingNeuralNets(period), batchSize, splitRatio, category);
+        OneMinuteStockDataSetIterator oneMinuteIterator = predictionService.getOneMinuteStockDataSetIterator(simbolo, predictionService.getCSVFilePathForTrainingNeuralNets(period).getName(), batchSize, splitRatio, category);
         List<Pair<INDArray, INDArray>> test = oneMinuteIterator.getTest();
 
         log.info("Build lstm networks...");
@@ -49,7 +49,7 @@ public class OneMinutePredictor {
         }
         watch.stop();
         log.info("Saving model...");
-        File locationToSave = new File("/Users/dfleck/projects/tcc/fleckbot-11-09-2017/fleckbot/src/main/resources/oneminute/StockPriceLSTM_".concat(period).concat(String.valueOf(category)).concat(".zip"));
+        File locationToSave = new File("src/main/resources/StockPriceLSTM_".concat(period).concat(String.valueOf(category)).concat(".zip"));
         ModelSerializer.writeModel(oneMinuteNet, locationToSave, true); // saveUpdater: i.e., the state for Momentum, RMSProp, Adagrad etc. Save this to train your network more in the future
 
         log.info("Loading model...");
@@ -59,14 +59,14 @@ public class OneMinutePredictor {
         if (category.equals(PriceCategory.ALL)) {
             INDArray max = Nd4j.create(oneMinuteIterator.getMaxArray());
             INDArray min = Nd4j.create(oneMinuteIterator.getMinArray());
-            predictionService.predictAllCategories(oneMinuteNet, test, max, min);
+            predictionService.predictAllCategories(oneMinuteNet, test, max, min, oneMinuteIterator.getExampleLength());
             log.info(period + " done testing...");
             System.out.println("Time Elapsed: " + watch.getTime());
             return null;
         } else {
             double max = oneMinuteIterator.getMaxNum(category);
             double min = oneMinuteIterator.getMinNum(category);
-            dataPointsList = predictionService.predictPriceOneAhead(oneMinuteNet, test, max, min);
+            dataPointsList = predictionService.predictPriceOneAhead(oneMinuteNet, test, max, min, oneMinuteIterator.getExampleLength());
             log.info(period + " done testing...");
             System.out.println("Time Elapsed: " + watch.getTime());
         }
