@@ -3,6 +3,7 @@ package br.com.codefleck.tradebot.services.impl;
 import br.com.codefleck.tradebot.core.util.CsvBarsLoader;
 import br.com.codefleck.tradebot.daos.DataPointsListResultSetlDao;
 import br.com.codefleck.tradebot.daos.DataPointsModelDao;
+import br.com.codefleck.tradebot.daos.StockDataDao;
 import br.com.codefleck.tradebot.models.*;
 import br.com.codefleck.tradebot.redesneurais.PlotUtil;
 import br.com.codefleck.tradebot.redesneurais.iterators.*;
@@ -36,6 +37,8 @@ public class PredictionServiceImpl {
 
     @Autowired
     DataPointsModelDao dataPointsModelDao;
+    @Autowired
+    StockDataDao stockDataDao;
     @Autowired
     DataPointsListResultSetlDao dataPointsListResultSetlDao;
     @Autowired
@@ -133,14 +136,6 @@ public class PredictionServiceImpl {
 
         return dataPointsList;
     }
-
-    public File getCSVFilePathForTrainingNeuralNetsTest(String period) throws IOException {
-        if (period.equals("1 dia")){
-            return new ClassPathResource("OneDayDataForTrainingNeuralNets.csv").getFile();
-        }
-        return null;
-    }
-
 
     public File getCSVFilePathForTrainingNeuralNets(String period) throws IOException {
 
@@ -493,7 +488,7 @@ public class PredictionServiceImpl {
                 dataPoints.setNomeConjunto(nomeDoConjunto);
 
                 String simpleDateName = customTimeSeries.getBar(predictIndex).getSimpleDateName();
-                        simpleDateName.replaceAll("39", "20");
+                simpleDateName.replaceAll("39", "20");
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"); //Verificar se a data está sendo formatada corretamente no banco
                 dataPoints.setLocalDateTime(LocalDateTime.parse(simpleDateName, formatter));
                 predictIndex++;
@@ -623,15 +618,13 @@ public class PredictionServiceImpl {
 
     public StockData transformTickerInStockData(Ticker ticker) {
 
-        String today = LocalDateTime.now().toString();
-
         if(!(ticker.getOpen() == null)) {
             ticker.getOpen().doubleValue();
         } else {
             ticker.setOpen(ticker.getBid());
         }
         StockData stockData = new StockData(
-                today,
+                ticker.getTimestamp(),
                 "BTC",
                 ticker.getOpen().doubleValue(),
                 ticker.getLast().doubleValue(),
@@ -658,11 +651,19 @@ public class PredictionServiceImpl {
                     openPrice = barList.get(i).getMinPrice().doubleValue();
                 }
 
-                String simpleDateName = barList.get(i).getSimpleDateName();
-                simpleDateName.replaceAll("39", "20");
+                String dateName = barList.get(i).getDateName().substring(0,19);
+                Integer year = Integer.valueOf(dateName.substring(0,4));
+                Integer month = Integer.valueOf(dateName.substring(5,7));
+                Integer day = Integer.valueOf(dateName.substring(8,10));
+                Integer hour = Integer.valueOf(dateName.substring(11,13));
+                Integer minutes = Integer.valueOf(dateName.substring(14,15));
+                Integer sec = Integer.valueOf(dateName.substring(17,19));
+
+
+                Date dateTime = new Date(year, month, day, hour, minutes, sec);
 
                 StockData stockData = new StockData(
-                        simpleDateName,
+                        dateTime.getTime(),
                         "BTCUSD",
                         openPrice,
                         barList.get(i).getClosePrice().doubleValue(),
@@ -677,5 +678,11 @@ public class PredictionServiceImpl {
         return stockDataList;
     }
 
+    public void saveAllStockDataListInDataBase(List<StockData> stockDataList) {
+
+        for (StockData stock : stockDataList) {
+            stockDataDao.save(stock);
+        }
+    }
 }
 

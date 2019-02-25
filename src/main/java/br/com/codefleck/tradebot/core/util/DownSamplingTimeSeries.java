@@ -392,7 +392,7 @@ public class DownSamplingTimeSeries {
             Double currentMin = customBaseBars.get(i).getLow();
             Double currentVolume = customBaseBars.get(i).getVolume();
 
-            while(i < customBaseBars.size()-1 && (customBaseBars.get(i+1).getDate()).equals(customBaseBars.get(i).getDate())){
+            while(i < customBaseBars.size()-1 && (customBaseBars.get(i+1).getDate())==(customBaseBars.get(i).getDate())){
                 i++;
                 if (currentMax <= customBaseBars.get(i).getHigh()){
                     currentMax = customBaseBars.get(i).getHigh();
@@ -402,7 +402,7 @@ public class DownSamplingTimeSeries {
                 }
                 currentVolume += customBaseBars.get(i).getVolume();
             }
-            String currentEndTime = customBaseBars.get(i).getDate();
+            long currentEndTime = customBaseBars.get(i).getDate();
             Double currentClose = customBaseBars.get(i).getClose();
             aggregatedCustomBaseBars.add(new CustomBaseBar(currentEndTime, "BTC",currentOpen,currentMax,currentMin,
                 currentClose,currentVolume));

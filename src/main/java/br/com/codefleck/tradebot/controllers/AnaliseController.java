@@ -3,8 +3,8 @@ package br.com.codefleck.tradebot.controllers;
 import br.com.codefleck.tradebot.core.engine.TradingEngine;
 import br.com.codefleck.tradebot.daos.StockDataDao;
 import br.com.codefleck.tradebot.models.DataPointsListResultSet;
-import br.com.codefleck.tradebot.models.StockData;
 import br.com.codefleck.tradebot.models.PriceCategory;
+import br.com.codefleck.tradebot.models.StockData;
 import br.com.codefleck.tradebot.services.impl.ForecastServiceImpl;
 import br.com.codefleck.tradebot.services.impl.PredictionServiceImpl;
 import br.com.codefleck.tradebot.tradingInterfaces.ExchangeNetworkException;
@@ -42,7 +42,7 @@ public class AnaliseController {
     PredictionServiceImpl predictionService;
 
     @GetMapping
-    public ModelAndView analiseLandingDataProvider(ModelAndView model) throws ExchangeNetworkException, TradingApiException, IOException {
+    public ModelAndView analiseLanding(ModelAndView model) throws ExchangeNetworkException, TradingApiException, IOException {
 
         model.addObject("botStatus", fleckBot.isRunning());
         model.setViewName("analise");

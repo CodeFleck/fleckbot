@@ -11,7 +11,7 @@ public class StockData {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private String date; // date
+    private Long date; // date
     private String symbol; // stock name
 
     private double open; // open price
@@ -23,7 +23,7 @@ public class StockData {
     public StockData() {
     }
 
-    public StockData (String date, String symbol, double open, double close, double low, double high, double volume) {
+    public StockData (Long date, String symbol, double open, double close, double low, double high, double volume) {
         this.date = date;
         this.symbol = symbol;
         this.open = open;
@@ -33,8 +33,8 @@ public class StockData {
         this.volume = volume;
     }
 
-    public String getDate() { return date; }
-    public void setDate(String date) { this.date = date; }
+    public Long getDate() { return date; }
+    public void setDate(Long date) { this.date = date; }
 
     public String getSymbol() { return symbol; }
     public void setSymbol(String symbol) { this.symbol = symbol; }

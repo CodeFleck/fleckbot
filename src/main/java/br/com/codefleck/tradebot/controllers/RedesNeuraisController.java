@@ -5,7 +5,6 @@ import br.com.codefleck.tradebot.daos.DataPointsModelDao;
 import br.com.codefleck.tradebot.daos.StockDataDao;
 import br.com.codefleck.tradebot.models.DataPointsListResultSet;
 import br.com.codefleck.tradebot.models.DataPointsModel;
-import br.com.codefleck.tradebot.models.StockData;
 import br.com.codefleck.tradebot.services.impl.PredictionServiceImpl;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,11 +34,9 @@ public class RedesNeuraisController {
     PredictionServiceImpl predictionService;
     @Autowired
     DataPointsModelDao dataPointsModelDao;
-    @Autowired
-    StockDataDao stockDataDao;
 
     @GetMapping
-    public ModelAndView redesNeuraisLandingDataProvider(ModelAndView model) {
+    public ModelAndView redesNeuraisLanding(ModelAndView model) {
 
         model.addObject("botStatus", fleckBot.isRunning());
 
@@ -125,33 +122,6 @@ public class RedesNeuraisController {
         model.addObject("majorError", formatter.format(majorError));
         model.addObject("minorError", formatter.format(minorError));
 
-        for (DataPointsModel dataPoint : dataPointsListResultSet.getPredictDataPointsModelList()) {
-            //dataPointsModelDao.save(dataPoint);
-        }
-
-        for (DataPointsModel dataPoint : dataPointsListResultSet.getActualDataPointsModelList()) {
-            //dataPointsModelDao.save(dataPoint);
-        }
-        System.out.println("finished saving...");
-
         return model;
-    }
-
-    public void saveAllStockData(BaseTimeSeries customTimeSeries) {
-
-            List<StockData> stockDataList = new ArrayList<>();
-        for(int i=0; i<customTimeSeries.getEndIndex();i++){
-
-            StockData stockData = new StockData(customTimeSeries.getBar(i).getSimpleDateName(),
-                "BTC",
-                customTimeSeries.getBar(i).getOpenPrice().doubleValue(),
-                customTimeSeries.getBar(i).getClosePrice().doubleValue(),
-                customTimeSeries.getBar(i).getMinPrice().doubleValue(),
-                customTimeSeries.getBar(i).getMaxPrice().doubleValue(),
-                customTimeSeries.getBar(i).getVolume().doubleValue());
-            stockDataList.add(stockData);
-        }
-
-        stockDataList.stream().forEach(s -> stockDataDao.save(s));
     }
 }

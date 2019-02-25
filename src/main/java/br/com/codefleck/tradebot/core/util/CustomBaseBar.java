@@ -2,7 +2,7 @@ package br.com.codefleck.tradebot.core.util;
 
 public class CustomBaseBar {
 
-    String date;
+    long date;
     String symbol;
     double open;
     double high;
@@ -14,7 +14,7 @@ public class CustomBaseBar {
 
     }
 
-    public CustomBaseBar(String date, String symbol, double open, double high, double low, double close, double volume) {
+    public CustomBaseBar(long date, String symbol, double open, double high, double low, double close, double volume) {
         this.date = date;
         this.symbol = symbol;
         this.open = open;
@@ -24,11 +24,11 @@ public class CustomBaseBar {
         this.volume = volume;
     }
 
-    public String getDate() {
+    public long getDate() {
         return date;
     }
 
-    public void setDate(String date) {
+    public void setDate(long date) {
         this.date = date;
     }
 
