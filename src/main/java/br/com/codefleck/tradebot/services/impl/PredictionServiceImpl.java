@@ -241,75 +241,80 @@ public class PredictionServiceImpl {
 
     public DataPointsListModel prepareDataPointToBeSaved(List<String> dataPointList, String nomeDoConjunto) {
 
-        //predicts
-        String predictsDataPointsArray[] = dataPointList.get(0).replace("[", "").replace("{", "").replace("}", "").replaceAll("\"\"", "").split(",");
+        if (dataPointList.size() > 0 && dataPointList.get(0) != null) {
+            
+            //predicts
+            String predictsDataPointsArray[] = dataPointList.get(0).replace("[", "").replace("{", "").replace("}", "").replaceAll("\"\"", "").split(",");
 
-        List<String> xPredictToken = new ArrayList<>();
-        List<String> yPredictToken = new ArrayList<>();
+            List<String> xPredictToken = new ArrayList<>();
+            List<String> yPredictToken = new ArrayList<>();
 
-        for (String token : predictsDataPointsArray) {
+            for (String token : predictsDataPointsArray) {
 
-            if (token.substring(1, 2).equals("x")) {
-                xPredictToken.add(token.replaceAll("\"", "").replace("x:", "").replace("]", ""));
-            } else if (token.substring(1, 2).equals("y")) {
-                yPredictToken.add(token.replaceAll("\"", "").replace("y:", "").replace("]", ""));
+                if (token.substring(1, 2).equals("x")) {
+                    xPredictToken.add(token.replaceAll("\"", "").replace("x:", "").replace("]", ""));
+                } else if (token.substring(1, 2).equals("y")) {
+                    yPredictToken.add(token.replaceAll("\"", "").replace("y:", "").replace("]", ""));
+                }
             }
-        }
 
-        List<DataPointsModel> predictsDataPointsModelListXY = new ArrayList<>();
+            List<DataPointsModel> predictsDataPointsModelListXY = new ArrayList<>();
 
-        for (int i = 0; i < xPredictToken.size(); i++) {
-            DataPointsModel dataPointsModel = new DataPointsModel();
+            for (int i = 0; i < xPredictToken.size(); i++) {
+                DataPointsModel dataPointsModel = new DataPointsModel();
+                if (nomeDoConjunto != null){
+                    dataPointsModel.setNomeConjunto(nomeDoConjunto);
+                }
+
+                dataPointsModel.setX(Double.valueOf(xPredictToken.get(i)));
+                if (yPredictToken.get(i) != null) {
+                    dataPointsModel.setY(Double.valueOf(yPredictToken.get(i)));
+                }
+                predictsDataPointsModelListXY.add(dataPointsModel);
+            }
+
+            //actuals
+            String actualsDataPointsArray[] = dataPointList.get(1).replace("[", "").replace("{", "").replace("}", "").replaceAll("\"\"", "").split(",");
+
+            List<String> xActualToken = new ArrayList<>();
+            List<String> yActualToken = new ArrayList<>();
+
+            for (String token : actualsDataPointsArray) {
+
+                if (token.substring(1, 2).equals("x")) {
+                    xActualToken.add(token.replaceAll("\"", "").replace("x:", "").replace("]", ""));
+                } else if (token.substring(1, 2).equals("y")) {
+                    yActualToken.add(token.replaceAll("\"", "").replace("y:", "").replace("]", ""));
+                }
+            }
+
+            List<DataPointsModel> actualDataPointsModelListXY = new ArrayList<>();
+
+            for (int i = 0; i < xActualToken.size(); i++) {
+                DataPointsModel dataPointsModel = new DataPointsModel();
+                if (nomeDoConjunto != null){
+                    dataPointsModel.setNomeConjunto(nomeDoConjunto);
+                }
+                dataPointsModel.setX(Double.valueOf(xActualToken.get(i)));
+
+                if (yActualToken.get(i) != null) {
+                    dataPointsModel.setY(Double.valueOf(yActualToken.get(i)));
+                }
+                actualDataPointsModelListXY.add(dataPointsModel);
+
+            }
+
+            DataPointsListModel dataPointsListModel = new DataPointsListModel();
             if (nomeDoConjunto != null){
-                dataPointsModel.setNomeConjunto(nomeDoConjunto);
+                dataPointsListModel.setName(nomeDoConjunto);
             }
-
-            dataPointsModel.setX(Double.valueOf(xPredictToken.get(i)));
-            if (yPredictToken.get(i) != null) {
-                dataPointsModel.setY(Double.valueOf(yPredictToken.get(i)));
-            }
-            predictsDataPointsModelListXY.add(dataPointsModel);
+            dataPointsListModel.setActualDataPointsModelList(actualDataPointsModelListXY);
+            dataPointsListModel.setPredictDataPointsModelList(predictsDataPointsModelListXY);
+            return dataPointsListModel;
+        }else {
+            System.out.println("Unable to get any results... dataPointList.size()=" + dataPointList.size());
         }
-
-        //actuals
-        String actualsDataPointsArray[] = dataPointList.get(1).replace("[", "").replace("{", "").replace("}", "").replaceAll("\"\"", "").split(",");
-
-        List<String> xActualToken = new ArrayList<>();
-        List<String> yActualToken = new ArrayList<>();
-
-        for (String token : actualsDataPointsArray) {
-
-            if (token.substring(1, 2).equals("x")) {
-                xActualToken.add(token.replaceAll("\"", "").replace("x:", "").replace("]", ""));
-            } else if (token.substring(1, 2).equals("y")) {
-                yActualToken.add(token.replaceAll("\"", "").replace("y:", "").replace("]", ""));
-            }
-        }
-
-        List<DataPointsModel> actualDataPointsModelListXY = new ArrayList<>();
-
-        for (int i = 0; i < xActualToken.size(); i++) {
-            DataPointsModel dataPointsModel = new DataPointsModel();
-            if (nomeDoConjunto != null){
-                dataPointsModel.setNomeConjunto(nomeDoConjunto);
-            }
-            dataPointsModel.setX(Double.valueOf(xActualToken.get(i)));
-
-            if (yActualToken.get(i) != null) {
-                dataPointsModel.setY(Double.valueOf(yActualToken.get(i)));
-            }
-            actualDataPointsModelListXY.add(dataPointsModel);
-
-        }
-
-        DataPointsListModel dataPointsListModel = new DataPointsListModel();
-        if (nomeDoConjunto != null){
-            dataPointsListModel.setName(nomeDoConjunto);
-        }
-        dataPointsListModel.setActualDataPointsModelList(actualDataPointsModelListXY);
-        dataPointsListModel.setPredictDataPointsModelList(predictsDataPointsModelListXY);
-
-        return dataPointsListModel;
+        return null;
     }
 
     public Double calculateErrorPercentageAverage(DataPointsListModel dataPointsList) {
