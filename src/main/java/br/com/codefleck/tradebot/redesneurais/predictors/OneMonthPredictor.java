@@ -1,8 +1,10 @@
 package br.com.codefleck.tradebot.redesneurais.predictors;
 
 import br.com.codefleck.tradebot.models.PriceCategory;
+import br.com.codefleck.tradebot.models.StockData;
 import br.com.codefleck.tradebot.redesneurais.iterators.OneMonthStockDataSetIterator;
 import br.com.codefleck.tradebot.redesneurais.recurrentnets.OneMonthRecurrentNets;
+import br.com.codefleck.tradebot.services.impl.IteratorServiceImpl;
 import br.com.codefleck.tradebot.services.impl.PredictionServiceImpl;
 import javafx.util.Pair;
 import org.apache.commons.lang.time.StopWatch;
@@ -26,13 +28,15 @@ public class OneMonthPredictor {
 
     @Autowired
     PredictionServiceImpl predictionService;
+    @Autowired
+    IteratorServiceImpl iteratorService;
 
-    public List<String> predictOneMonth(String simbolo, String period, int batchSize, double splitRatio, PriceCategory category, int epochs, double learningRate) throws IOException {
+    public List<String> predictOneMonth(List<StockData> stockDataList, String period, int batchSize, double splitRatio, PriceCategory category, int epochs, double learningRate) throws IOException {
 
         List<String> dataPointsList;
 
         StopWatch watch = new StopWatch();
-        OneMonthStockDataSetIterator oneMonthIterator = predictionService.getOneMonthStockDataSetIterator(simbolo, predictionService.getCSVFilePathForTrainingNeuralNets(period).getName(), batchSize, splitRatio, category);
+        OneMonthStockDataSetIterator oneMonthIterator = iteratorService.getOneMonthStockDataSetIterator(stockDataList, batchSize, splitRatio, category);
         List<Pair<INDArray, INDArray>> test = oneMonthIterator.getTest();
 
         log.info("Build lstm networks...");

@@ -6,13 +6,11 @@ import br.com.codefleck.tradebot.daos.DataPointsModelDao;
 import br.com.codefleck.tradebot.daos.StockDataDao;
 import br.com.codefleck.tradebot.models.*;
 import br.com.codefleck.tradebot.redesneurais.PlotUtil;
-import br.com.codefleck.tradebot.redesneurais.iterators.*;
 import br.com.codefleck.tradebot.redesneurais.predictors.*;
 import br.com.codefleck.tradebot.tradingInterfaces.Ticker;
 import javafx.util.Pair;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.nd4j.linalg.api.ndarray.INDArray;
-import org.nd4j.linalg.io.ClassPathResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.ta4j.core.Bar;
 import org.ta4j.core.BaseTimeSeries;
 
-import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -82,11 +79,11 @@ public class PredictionServiceImpl {
     //private static int exampleLength = 80; //15min 2017-04-18 to 2017-05-29 - media erro: 15.22%!!!!!
     //private static int exampleLength = 180; //1D gerou 36
 
-    public List<String> initTraining(int epocas, String simbolo, String categoria, String period) throws IOException {
+    public List<String> initTraining(List<StockData> stockDataList, int epocas, String categoria, String period) throws IOException {
 
         double learningRate = 0.01;
         int batchSize = 32; // mini-batch size
-        double splitRatio = 0.8; // 80% for training, 10% for testing
+        double splitRatio = 0.8; // 80% for training, 20% for testing
         String chosenCategory = categoria;
 
         log.info("Creating dataSet iterators...");
@@ -97,257 +94,44 @@ public class PredictionServiceImpl {
 
         switch (period) {
             case "1 minuto":
-                dataPointsList = oneMinutePredictor.predictOneMinute(simbolo, period, batchSize, splitRatio, category, epocas, learningRate);
+                dataPointsList = oneMinutePredictor.predictOneMinute(stockDataList, period, batchSize, splitRatio, category, epocas, learningRate);
                 break;
             case "5 minutos":
-                dataPointsList = fiveMinutesPredictor.predictFiveMinutes(simbolo, period, batchSize, splitRatio, category, epocas, learningRate);
+                dataPointsList = fiveMinutesPredictor.predictFiveMinutes(stockDataList, period, batchSize, splitRatio, category, epocas, learningRate);
                 break;
             case "10 minutos":
-                dataPointsList = tenMinutesPredictor.predictTenMinutes(simbolo, period, batchSize, splitRatio, category, epocas, learningRate);
+                dataPointsList = tenMinutesPredictor.predictTenMinutes(stockDataList, period, batchSize, splitRatio, category, epocas, learningRate);
                 break;
             case "15 minutos":
-                dataPointsList = fifteenMinutesPredictor.predictFifteenMinutes(simbolo, period, batchSize, splitRatio, category, epocas, learningRate);
+                dataPointsList = fifteenMinutesPredictor.predictFifteenMinutes(stockDataList, period, batchSize, splitRatio, category, epocas, learningRate);
                 break;
             case "30 minutos":
-                dataPointsList = thirtyMinutesPredictor.predictThirtyMinutes(simbolo, period, batchSize, splitRatio, category, epocas, learningRate);
+                dataPointsList = thirtyMinutesPredictor.predictThirtyMinutes(stockDataList, period, batchSize, splitRatio, category, epocas, learningRate);
                 break;
             case "1 hora":
-                dataPointsList = oneHourPredictor.predictOneHour(simbolo, period, batchSize, splitRatio, category, epocas, learningRate);
+                dataPointsList = oneHourPredictor.predictOneHour(stockDataList, period, batchSize, splitRatio, category, epocas, learningRate);
                 break;
             case "2 horas":
-                dataPointsList = twoHoursPredictor.predictTwoHours(simbolo, period, batchSize, splitRatio, category, epocas, learningRate);
+                dataPointsList = twoHoursPredictor.predictTwoHours(stockDataList, period, batchSize, splitRatio, category, epocas, learningRate);
                 break;
             case "3 horas":
-                dataPointsList = threeHoursPredictor.predictThreeHours(simbolo, period, batchSize, splitRatio, category, epocas, learningRate);
+                dataPointsList = threeHoursPredictor.predictThreeHours(stockDataList, period, batchSize, splitRatio, category, epocas, learningRate);
                 break;
             case "4 horas":
-                dataPointsList = fourHoursPredictor.predictFourHours(simbolo, period, batchSize, splitRatio, category, epocas, learningRate);
+                dataPointsList = fourHoursPredictor.predictFourHours(stockDataList, period, batchSize, splitRatio, category, epocas, learningRate);
                 break;
             case "1 dia":
-                dataPointsList = oneDayPredictor.predictOneDay(simbolo, period, batchSize, splitRatio, category, epocas, learningRate);
+                dataPointsList = oneDayPredictor.predictOneDay(stockDataList, period, batchSize, splitRatio, category, epocas, learningRate);
                 break;
             case "1 semana":
-                dataPointsList = oneWeekPredictor.predictOneWeek(simbolo, period, batchSize, splitRatio, category, epocas, learningRate);
+                dataPointsList = oneWeekPredictor.predictOneWeek(stockDataList, period, batchSize, splitRatio, category, epocas, learningRate);
                 break;
             case "1 mês":
-                dataPointsList = oneMonthPredictor.predictOneMonth(simbolo, period, batchSize, splitRatio, category, epocas, learningRate);
+                dataPointsList = oneMonthPredictor.predictOneMonth(stockDataList, period, batchSize, splitRatio, category, epocas, learningRate);
                 break;
         }
 
         return dataPointsList;
-    }
-
-    public File getCSVFilePathForTrainingNeuralNets(String period) throws IOException {
-
-        if (period.equals("1 minuto")) {
-            return new ClassPathResource("OneMinuteDataForTrainingNeuralNets.csv").getFile();
-        }
-        if (period.equals("5 minutos")) {
-            return new ClassPathResource("FiveMinutesDataForTrainingNeuralNets.csv").getFile();
-        }
-        if (period.equals("10 minutos")){
-            return new ClassPathResource("TenMinutesDataForTrainingNeuralNets.csv").getFile();
-        }
-        if (period.equals("15 minutos")){
-            return new ClassPathResource("FifteenMinutesDataForTrainingNeuralNets.csv").getFile();
-        }
-        if (period.equals("30 minutos")){
-            return new ClassPathResource("ThirtyMinutesDataForTrainingNeuralNets.csv").getFile();
-        }
-        if (period.equals("1 hora")){
-            return new ClassPathResource("OneHourDataForTrainingNeuralNets.csv").getFile();
-        }
-        if (period.equals("2 horas")){
-            return new ClassPathResource("TwoHoursDataForTrainingNeuralNets.csv").getFile();
-        }
-        if (period.equals("3 horas")){
-            return new ClassPathResource("ThreeHoursDataForTrainingNeuralNets.csv").getFile();
-        }
-        if (period.equals("4 horas")){
-            return new ClassPathResource("FourHoursDataForTrainingNeuralNets.csv").getFile();
-        }
-        if (period.equals("1 dia")){
-            return new ClassPathResource("OneDayDataForTrainingNeuralNets.csv").getFile();
-        }
-        if (period.equals("1 semana")){
-            return new ClassPathResource("OneWeekDataForTrainingNeuralNets.csv").getFile();
-        }
-        if (period.equals("1 mês")){
-            return new ClassPathResource("OneMonthDataForTrainingNeuralNets.csv").getFile();
-        }
-        return null;
-    }
-
-    public OneMinuteStockDataSetIterator getOneMinuteStockDataSetIterator(String simbolo, String filePath, int batchSize, double splitRatio, PriceCategory category) {
-        OneMinuteStockDataSetIterator oneMinuteStockDataSetIterator = OneMinuteStockDataSetIterator.getInstance();
-        List<StockData> stockDataList = oneMinuteStockDataSetIterator.readStockDataFromFile(filePath, simbolo);
-        oneMinuteStockDataSetIterator.setMiniBatchSize(batchSize);
-        oneMinuteStockDataSetIterator.setExampleLength(180);
-        oneMinuteStockDataSetIterator.setCategory(category);
-        oneMinuteStockDataSetIterator.setSplit((int) Math.round(stockDataList.size() * splitRatio));
-        oneMinuteStockDataSetIterator.setTrain(stockDataList.subList(0, oneMinuteStockDataSetIterator.getSplit()));
-        oneMinuteStockDataSetIterator.setTest(oneMinuteStockDataSetIterator.generateTestDataSet(stockDataList.subList(oneMinuteStockDataSetIterator.getSplit(), stockDataList.size())));
-        oneMinuteStockDataSetIterator.initializeOffsets();
-        return oneMinuteStockDataSetIterator;
-    }
-
-    public FiveMinutesStockDataSetIterator getFiveMinutesStockDataSetIterator(String simbolo, String filePath, int batchSize, double splitRatio, PriceCategory category) {
-        FiveMinutesStockDataSetIterator fiveMinutesStockDataSetIterator = FiveMinutesStockDataSetIterator.getInstance();
-        List<StockData> stockDataList = fiveMinutesStockDataSetIterator.readStockDataFromFile(filePath, simbolo);
-        fiveMinutesStockDataSetIterator.setMiniBatchSize(batchSize);
-        fiveMinutesStockDataSetIterator.setExampleLength(80);
-        fiveMinutesStockDataSetIterator.setCategory(category);
-        fiveMinutesStockDataSetIterator.setSplit((int) Math.round(stockDataList.size() * splitRatio));
-        fiveMinutesStockDataSetIterator.setTrain(stockDataList.subList(0, fiveMinutesStockDataSetIterator.getSplit()));
-        fiveMinutesStockDataSetIterator.setTest(fiveMinutesStockDataSetIterator.generateTestDataSet(stockDataList.subList(fiveMinutesStockDataSetIterator.getSplit(), stockDataList.size())));
-        fiveMinutesStockDataSetIterator.initializeOffsets();
-        return fiveMinutesStockDataSetIterator;
-    }
-
-    public TenMinutesStockDataSetIterator getTenMinutesStockDataSetIterator(String simbolo, String filePath, int batchSize, double splitRatio, PriceCategory category) {
-        TenMinutesStockDataSetIterator tenMinutesStockDataSetIterator = TenMinutesStockDataSetIterator.getInstance();
-        List<StockData> stockDataList = tenMinutesStockDataSetIterator.readStockDataFromFile(filePath, simbolo);
-        tenMinutesStockDataSetIterator.setMiniBatchSize(batchSize);
-        tenMinutesStockDataSetIterator.setExampleLength(80);
-        tenMinutesStockDataSetIterator.setCategory(category);
-        tenMinutesStockDataSetIterator.setSplit((int) Math.round(stockDataList.size() * splitRatio));
-        tenMinutesStockDataSetIterator.setTrain(stockDataList.subList(0, tenMinutesStockDataSetIterator.getSplit()));
-        tenMinutesStockDataSetIterator.setTest(tenMinutesStockDataSetIterator.generateTestDataSet(stockDataList.subList(tenMinutesStockDataSetIterator.getSplit(), stockDataList.size())));
-        tenMinutesStockDataSetIterator.initializeOffsets();
-        return tenMinutesStockDataSetIterator;
-    }
-
-    public FifteenMinutesStockDataSetIterator getFifteenMinutesStockDataSetIterator(String simbolo, String filePath, int batchSize, double splitRatio, PriceCategory category) {
-        FifteenMinutesStockDataSetIterator fifteenMinutesStockDataSetIterator = FifteenMinutesStockDataSetIterator.getInstance();
-        List<StockData> stockDataList = fifteenMinutesStockDataSetIterator.readStockDataFromFile(filePath, simbolo);
-        fifteenMinutesStockDataSetIterator.setMiniBatchSize(batchSize);
-        fifteenMinutesStockDataSetIterator.setExampleLength(180);
-        fifteenMinutesStockDataSetIterator.setCategory(category);
-        fifteenMinutesStockDataSetIterator.setSplit((int) Math.round(stockDataList.size() * splitRatio));
-        fifteenMinutesStockDataSetIterator.setTrain(stockDataList.subList(0, fifteenMinutesStockDataSetIterator.getSplit()));
-        fifteenMinutesStockDataSetIterator.setTest(fifteenMinutesStockDataSetIterator.generateTestDataSet(stockDataList.subList(fifteenMinutesStockDataSetIterator.getSplit(), stockDataList.size())));
-        fifteenMinutesStockDataSetIterator.initializeOffsets();
-        return fifteenMinutesStockDataSetIterator;
-    }
-
-    public ThirtyMinutesStockDataSetIterator getThirtyMinutesStockDataSetIterator(String simbolo, String filePath, int batchSize, double splitRatio, PriceCategory category) {
-        ThirtyMinutesStockDataSetIterator thirtyMinutesIterator = ThirtyMinutesStockDataSetIterator.getInstance();
-        List<StockData> stockDataList = thirtyMinutesIterator.readStockDataFromFile(filePath, simbolo);
-        thirtyMinutesIterator.setMiniBatchSize(batchSize);
-        thirtyMinutesIterator.setExampleLength(280);
-        thirtyMinutesIterator.setCategory(category);
-        thirtyMinutesIterator.setSplit((int) Math.round(stockDataList.size() * splitRatio));
-        thirtyMinutesIterator.setTrain(stockDataList.subList(0, thirtyMinutesIterator.getSplit()));
-        thirtyMinutesIterator.setTest(thirtyMinutesIterator.generateTestDataSet(stockDataList.subList(thirtyMinutesIterator.getSplit(), stockDataList.size())));
-        thirtyMinutesIterator.initializeOffsets();
-        return thirtyMinutesIterator;
-    }
-
-    public OneHourStockDataSetIterator getOneHourStockDataSetIterator(String simbolo, String filePath, int batchSize, double splitRatio, PriceCategory category) {
-        OneHourStockDataSetIterator oneHourIterator = OneHourStockDataSetIterator.getInstance();
-        List<StockData> stockDataList = oneHourIterator.readStockDataFromFile(filePath, simbolo);
-        oneHourIterator.setMiniBatchSize(batchSize);
-        oneHourIterator.setExampleLength(50);
-        oneHourIterator.setCategory(category);
-        oneHourIterator.setSplit((int) Math.round(stockDataList.size() * splitRatio));
-        oneHourIterator.setTrain(stockDataList.subList(0, oneHourIterator.getSplit()));
-        oneHourIterator.setTest(oneHourIterator.generateTestDataSet(stockDataList.subList(oneHourIterator.getSplit(), stockDataList.size())));
-        oneHourIterator.initializeOffsets();
-        return oneHourIterator;
-    }
-
-    public TwoHoursStockDataSetIterator getTwoHoursStockDataSetIterator(String simbolo, String filePath, int batchSize, double splitRatio, PriceCategory category) {
-        TwoHoursStockDataSetIterator twoHoursIterator = TwoHoursStockDataSetIterator.getInstance();
-        List<StockData> stockDataList = twoHoursIterator.readStockDataFromFile(filePath, simbolo);
-        twoHoursIterator.setMiniBatchSize(batchSize);
-        twoHoursIterator.setExampleLength(80);
-        twoHoursIterator.setCategory(category);
-        twoHoursIterator.setSplit((int) Math.round(stockDataList.size() * splitRatio));
-        twoHoursIterator.setTrain(stockDataList.subList(0, twoHoursIterator.getSplit()));
-        twoHoursIterator.setTest(twoHoursIterator.generateTestDataSet(stockDataList.subList(twoHoursIterator.getSplit(), stockDataList.size())));
-        twoHoursIterator.initializeOffsets();
-        return twoHoursIterator;
-    }
-
-    public ThreeHoursStockDataSetIterator getThreeHoursStockDataSetIterator(String simbolo, String filePath, int batchSize, double splitRatio, PriceCategory category) {
-        ThreeHoursStockDataSetIterator threeHoursStockDataSetIterator = ThreeHoursStockDataSetIterator.getInstance();
-        List<StockData> stockDataList = threeHoursStockDataSetIterator.readStockDataFromFile(filePath, simbolo);
-        threeHoursStockDataSetIterator.setMiniBatchSize(batchSize);
-        threeHoursStockDataSetIterator.setExampleLength(50);
-        threeHoursStockDataSetIterator.setCategory(category);
-        threeHoursStockDataSetIterator.setSplit((int) Math.round(stockDataList.size() * splitRatio));
-        threeHoursStockDataSetIterator.setTrain(stockDataList.subList(0, threeHoursStockDataSetIterator.getSplit()));
-        threeHoursStockDataSetIterator.setTest(threeHoursStockDataSetIterator.generateTestDataSet(stockDataList.subList(threeHoursStockDataSetIterator.getSplit(), stockDataList.size())));
-        threeHoursStockDataSetIterator.initializeOffsets();
-        return threeHoursStockDataSetIterator;
-    }
-
-    public FourHoursStockDataSetIterator getFourHoursStockDataSetIterator(String simbolo, String filePath, int batchSize, double splitRatio, PriceCategory category) {
-        FourHoursStockDataSetIterator fourHoursStockDataSetIterator = FourHoursStockDataSetIterator.getInstance();
-        List<StockData> stockDataList = fourHoursStockDataSetIterator.readStockDataFromFile(filePath, simbolo);
-        fourHoursStockDataSetIterator.setMiniBatchSize(batchSize);
-        fourHoursStockDataSetIterator.setExampleLength(40);
-        fourHoursStockDataSetIterator.setCategory(category);
-        fourHoursStockDataSetIterator.setSplit((int) Math.round(stockDataList.size() * splitRatio));
-        fourHoursStockDataSetIterator.setTrain(stockDataList.subList(0, fourHoursStockDataSetIterator.getSplit()));
-        fourHoursStockDataSetIterator.setTest(fourHoursStockDataSetIterator.generateTestDataSet(stockDataList.subList(fourHoursStockDataSetIterator.getSplit(), stockDataList.size())));
-        fourHoursStockDataSetIterator.initializeOffsets();
-        return fourHoursStockDataSetIterator;
-    }
-
-    public OneDayStockDataSetIterator getOneDayStockDataSetIterator(String simbolo, File filePath, int batchSize, double splitRatio, PriceCategory category) {
-        OneDayStockDataSetIterator oneDayIterator = OneDayStockDataSetIterator.getInstance();
-        List<StockData> stockDataList = oneDayIterator.readStockDataFromFile(filePath.getName(), simbolo);
-        oneDayIterator.setMiniBatchSize(batchSize);
-        oneDayIterator.setExampleLength(40);
-        oneDayIterator.setCategory(category);
-        oneDayIterator.setSplit((int) Math.round(stockDataList.size() * splitRatio));
-        oneDayIterator.setTrain(stockDataList.subList(0, oneDayIterator.getSplit()));
-        oneDayIterator.setTest(oneDayIterator.generateTestDataSet(stockDataList.subList(oneDayIterator.getSplit(), stockDataList.size())));
-        oneDayIterator.initializeOffsets();
-        return oneDayIterator;
-    }
-
-    public OneWeekStockDataSetIterator getOneWeekStockDataSetIterator(String simbolo, String filePath, int batchSize, double splitRatio, PriceCategory category) {
-        OneWeekStockDataSetIterator oneWeekIterator = OneWeekStockDataSetIterator.getInstance();
-        List<StockData> stockDataList = oneWeekIterator.readStockDataFromFile(filePath, simbolo);
-        oneWeekIterator.setMiniBatchSize(batchSize);
-        oneWeekIterator.setExampleLength(30);
-        oneWeekIterator.setCategory(category);
-        oneWeekIterator.setSplit((int) Math.round(stockDataList.size() * splitRatio));
-        oneWeekIterator.setTrain(stockDataList.subList(0, oneWeekIterator.getSplit()));
-        oneWeekIterator.setTest(oneWeekIterator.generateTestDataSet(stockDataList.subList(oneWeekIterator.getSplit(), stockDataList.size())));
-        oneWeekIterator.initializeOffsets();
-        return oneWeekIterator;
-    }
-
-    public OneMonthStockDataSetIterator getOneMonthStockDataSetIterator(String simbolo, String filePath, int batchSize, double splitRatio, PriceCategory category) {
-        OneMonthStockDataSetIterator oneMonthIterator = OneMonthStockDataSetIterator.getInstance();
-        List<StockData> stockDataList = duplicate(oneMonthIterator.readStockDataFromFile(filePath, simbolo));
-        oneMonthIterator.setMiniBatchSize(8);
-        oneMonthIterator.setExampleLength(30);
-        oneMonthIterator.setCategory(category);
-        oneMonthIterator.setTrain(stockDataList);
-        oneMonthIterator.setTest(oneMonthIterator.generateTestDataSet(stockDataList));
-        oneMonthIterator.initializeOffsets();
-        return oneMonthIterator;
-    }
-
-    private List<StockData> duplicate(List<StockData> stockDataList) {
-        List<StockData> duplicatedStockDataList = new ArrayList<>();
-        for (StockData stock : stockDataList) {
-            duplicatedStockDataList.add(stock);
-        }
-        for (StockData stock : stockDataList) {
-            duplicatedStockDataList.add(stock);
-        }
-        for (StockData stock : stockDataList) {
-            duplicatedStockDataList.add(stock);
-        }
-        for (StockData stock : stockDataList) {
-            duplicatedStockDataList.add(stock);
-        }
-        return duplicatedStockDataList;
     }
 
     public PriceCategory verifyCategory(String chosenCategory) {
@@ -405,9 +189,9 @@ public class PredictionServiceImpl {
         }
     }
 
-    public BaseTimeSeries createCSVFileForNeuralNets(Date beginDate, Date endDate, String period) {
+    public BaseTimeSeries createCustomBaseTimeSeriesForNeuralNets(Date beginDate, Date endDate, String period) {
         CsvBarsLoader csvBarsLoader = new CsvBarsLoader();
-        return csvBarsLoader.createCSVFileForNeuralNets(beginDate, endDate, period);
+        return csvBarsLoader.createCustomBaseTimeSeriesForTrainingNeuralNets(beginDate, endDate, period);
     }
 
     public DataPointsListResultSet transformStringResultsIntoDataPointResultSet(List<String> dataPointList){
@@ -489,7 +273,7 @@ public class PredictionServiceImpl {
 
                 String simpleDateName = customTimeSeries.getBar(predictIndex).getSimpleDateName();
                 simpleDateName.replaceAll("39", "20");
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"); //Verificar se a data está sendo formatada corretamente no banco
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"); //Verificar se a data está sendo formatada corretamente no banco
                 dataPoints.setLocalDateTime(LocalDateTime.parse(simpleDateName, formatter));
                 predictIndex++;
                 if (value != null) {
@@ -623,8 +407,14 @@ public class PredictionServiceImpl {
         } else {
             ticker.setOpen(ticker.getBid());
         }
+
+        String simpleDateName = ticker.getTimestamp().toString();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime dateTime = LocalDateTime.parse(simpleDateName, formatter);
+
+
         StockData stockData = new StockData(
-                ticker.getTimestamp(),
+                dateTime,
                 "BTC",
                 ticker.getOpen().doubleValue(),
                 ticker.getLast().doubleValue(),
@@ -651,19 +441,12 @@ public class PredictionServiceImpl {
                     openPrice = barList.get(i).getMinPrice().doubleValue();
                 }
 
-                String dateName = barList.get(i).getDateName().substring(0,19);
-                Integer year = Integer.valueOf(dateName.substring(0,4));
-                Integer month = Integer.valueOf(dateName.substring(5,7));
-                Integer day = Integer.valueOf(dateName.substring(8,10));
-                Integer hour = Integer.valueOf(dateName.substring(11,13));
-                Integer minutes = Integer.valueOf(dateName.substring(14,15));
-                Integer sec = Integer.valueOf(dateName.substring(17,19));
-
-
-                Date dateTime = new Date(year, month, day, hour, minutes, sec);
+                String simpleDateName = barList.get(i).getDateName().substring(0,19);
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+                LocalDateTime dateTime = LocalDateTime.parse(simpleDateName, formatter);
 
                 StockData stockData = new StockData(
-                        dateTime.getTime(),
+                        dateTime,
                         "BTCUSD",
                         openPrice,
                         barList.get(i).getClosePrice().doubleValue(),
@@ -671,18 +454,12 @@ public class PredictionServiceImpl {
                         barList.get(i).getMaxPrice().doubleValue(),
                         barList.get(i).getVolume().doubleValue()
                 );
-
                 stockDataList.add(stockData);
             }
         }
         return stockDataList;
     }
 
-    public void saveAllStockDataListInDataBase(List<StockData> stockDataList) {
 
-        for (StockData stock : stockDataList) {
-            stockDataDao.save(stock);
-        }
-    }
 }
 

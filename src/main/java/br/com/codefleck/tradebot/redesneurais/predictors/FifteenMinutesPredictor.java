@@ -1,8 +1,10 @@
 package br.com.codefleck.tradebot.redesneurais.predictors;
 
 import br.com.codefleck.tradebot.models.PriceCategory;
+import br.com.codefleck.tradebot.models.StockData;
 import br.com.codefleck.tradebot.redesneurais.iterators.FifteenMinutesStockDataSetIterator;
 import br.com.codefleck.tradebot.redesneurais.recurrentnets.FifteenMinutesRecurrentNets;
+import br.com.codefleck.tradebot.services.impl.IteratorServiceImpl;
 import br.com.codefleck.tradebot.services.impl.PredictionServiceImpl;
 import javafx.util.Pair;
 import org.apache.commons.lang.time.StopWatch;
@@ -26,13 +28,15 @@ public class FifteenMinutesPredictor {
 
     @Autowired
     PredictionServiceImpl predictionService;
+    @Autowired
+    IteratorServiceImpl iteratorService;
 
-    public List<String> predictFifteenMinutes(String simbolo, String period, int batchSize, double splitRatio, PriceCategory category, int epochs, double learningRate) throws IOException {
+    public List<String> predictFifteenMinutes(List<StockData> stockDataList, String period, int batchSize, double splitRatio, PriceCategory category, int epochs, double learningRate) throws IOException {
 
         List<String> dataPointsList;
 
         StopWatch watch = new StopWatch();
-        FifteenMinutesStockDataSetIterator fifteenMinutesStockDataSetIterator = predictionService.getFifteenMinutesStockDataSetIterator(simbolo, predictionService.getCSVFilePathForTrainingNeuralNets(period).getName(), batchSize, splitRatio, category);
+        FifteenMinutesStockDataSetIterator fifteenMinutesStockDataSetIterator = iteratorService.getFifteenMinutesStockDataSetIterator(stockDataList, batchSize, splitRatio, category);
         List<Pair<INDArray, INDArray>> test = fifteenMinutesStockDataSetIterator.getTest();
 
         log.info("Build lstm networks...");

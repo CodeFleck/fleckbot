@@ -2,9 +2,9 @@ package br.com.codefleck.tradebot.controllers;
 
 import br.com.codefleck.tradebot.core.engine.TradingEngine;
 import br.com.codefleck.tradebot.daos.DataPointsModelDao;
-import br.com.codefleck.tradebot.daos.StockDataDao;
 import br.com.codefleck.tradebot.models.DataPointsListResultSet;
 import br.com.codefleck.tradebot.models.DataPointsModel;
+import br.com.codefleck.tradebot.models.StockData;
 import br.com.codefleck.tradebot.services.impl.PredictionServiceImpl;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,11 +88,14 @@ public class RedesNeuraisController {
             e.printStackTrace();
         }
 
-        BaseTimeSeries customTimeSeries = predictionService.createCSVFileForNeuralNets(begingDate, endingDate, period);
+        //creates a custom time series according to selected period
+        BaseTimeSeries customTimeSeries = predictionService.createCustomBaseTimeSeriesForNeuralNets(begingDate, endingDate, period);
+        //Simply transform Bar object into StockData object
+        List<StockData> stockDataList = predictionService.transformBarInStockData(customTimeSeries);
 
         List<String> dataPointList = null;
         try {
-            dataPointList = predictionService.initTraining(epocas, simbolo, categoria, period);
+            dataPointList = predictionService.initTraining(stockDataList, epocas, categoria, period);
         } catch (IOException e) {
             e.printStackTrace();
         }

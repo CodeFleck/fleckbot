@@ -17,7 +17,9 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
 import java.util.*;
 
@@ -214,16 +216,11 @@ public class OneDayStockDataSetIterator implements DataSetIterator {
                     if (nums[i] < minArray[i]) minArray[i] = nums[i];
                 }
                 String simpleDateName = arr[0];
-                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                Date dateTime = null;
-                try {
-                    dateTime = formatter.parse(simpleDateName);
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                LocalDateTime dateTime = LocalDateTime.parse(simpleDateName, formatter);
 
                 stockDataList.add(new StockData(
-                        Instant.ofEpochMilli(dateTime.getTime()).atZone(ZoneId.systemDefault()).toLocalDateTime().getLong(ChronoField.INSTANT_SECONDS),
+                        dateTime,
                         arr[1], nums[0], nums[1], nums[2], nums[3], nums[4]));
             }
         } catch (IOException e) {

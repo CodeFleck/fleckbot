@@ -22,7 +22,7 @@ public class DownSamplingTimeSeries {
 
             if (this.period.equals("1 minuto")){
 
-                List<Bar> aggBars = new ArrayList<Bar>();
+                List<Bar> aggBars = new ArrayList<>();
 
                 for(int i=series.getBeginIndex(); i<=series.getEndIndex(); i++) {
                     Bar currentBar = series.getBar(i);

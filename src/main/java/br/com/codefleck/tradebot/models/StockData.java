@@ -1,9 +1,7 @@
 package br.com.codefleck.tradebot.models;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 public class StockData {
@@ -11,7 +9,8 @@ public class StockData {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private Long date; // date
+
+    private LocalDateTime dateTime; // dateTime
     private String symbol; // stock name
 
     private double open; // open price
@@ -23,8 +22,8 @@ public class StockData {
     public StockData() {
     }
 
-    public StockData (Long date, String symbol, double open, double close, double low, double high, double volume) {
-        this.date = date;
+    public StockData (LocalDateTime date, String symbol, double open, double close, double low, double high, double volume) {
+        this.dateTime = date;
         this.symbol = symbol;
         this.open = open;
         this.close = close;
@@ -33,8 +32,9 @@ public class StockData {
         this.volume = volume;
     }
 
-    public Long getDate() { return date; }
-    public void setDate(Long date) { this.date = date; }
+    public LocalDateTime getDateTime() { return dateTime; }
+
+    public void setDateTime(LocalDateTime dateTime) { this.dateTime = dateTime; }
 
     public String getSymbol() { return symbol; }
     public void setSymbol(String symbol) { this.symbol = symbol; }
@@ -64,6 +64,6 @@ public class StockData {
 
     @Override
     public String toString() {
-        return "StockData{" + "id=" + id + ", date='" + date + '\'' + ", symbol='" + symbol + '\'' + ", open=" + open + ", close=" + close + ", low=" + low + ", high=" + high + ", volume=" + volume + '}';
+        return "StockData{" + "id=" + id + ", dateTime='" + dateTime + '\'' + ", symbol='" + symbol + '\'' + ", open=" + open + ", close=" + close + ", low=" + low + ", high=" + high + ", volume=" + volume + '}';
     }
 }

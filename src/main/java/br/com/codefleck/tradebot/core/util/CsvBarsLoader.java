@@ -1,7 +1,5 @@
 package br.com.codefleck.tradebot.core.util;
 
-import br.com.codefleck.tradebot.models.StockData;
-import br.com.codefleck.tradebot.services.impl.PredictionServiceImpl;
 import com.opencsv.CSVReader;
 import org.ta4j.core.Bar;
 import org.ta4j.core.BaseBar;
@@ -69,7 +67,7 @@ public class CsvBarsLoader {
         return new BaseTimeSeries("coinbase_bars", bars);
     }
 
-    public BaseTimeSeries createCSVFileForNeuralNets(Date beginDate, Date endDate, String period) {
+    public BaseTimeSeries createCustomBaseTimeSeriesForTrainingNeuralNets(Date beginDate, Date endDate, String period) {
 
         InputStream stream = CsvBarsLoader.class.getClassLoader().getResourceAsStream("coinbaseUSD_1-min_data_2014-12-01_to_2018-01-08.csv");
 
@@ -109,12 +107,6 @@ public class CsvBarsLoader {
 
         BaseTimeSeries customTimeSeries = downSamplingTimeSeries.aggregate(baseTimeSeries);
 
-        CsvFileWriter csvFileWriter = new CsvFileWriter();
-        try {
-            csvFileWriter.writeCsvFileForNeuralNets(customTimeSeries, period);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         return customTimeSeries;
     }
 }
