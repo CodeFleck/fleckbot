@@ -4,6 +4,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.time.ZonedDateTime;
 
 @Entity
 public class StockData {
@@ -11,7 +12,7 @@ public class StockData {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private String date; // date
+    private ZonedDateTime date; // date
     private String symbol; // stock name
 
     private double open; // open price
@@ -23,7 +24,7 @@ public class StockData {
     public StockData() {
     }
 
-    public StockData (String date, String symbol, double open, double close, double low, double high, double volume) {
+    public StockData (ZonedDateTime date, String symbol, double open, double close, double low, double high, double volume) {
         this.date = date;
         this.symbol = symbol;
         this.open = open;
@@ -33,8 +34,8 @@ public class StockData {
         this.volume = volume;
     }
 
-    public String getDate() { return date; }
-    public void setDate(String date) { this.date = date; }
+    public ZonedDateTime getDate() { return date; }
+    public void setDate(ZonedDateTime date) { this.date = date; }
 
     public String getSymbol() { return symbol; }
     public void setSymbol(String symbol) { this.symbol = symbol; }

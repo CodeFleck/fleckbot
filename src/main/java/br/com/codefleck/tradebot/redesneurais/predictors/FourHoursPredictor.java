@@ -32,7 +32,7 @@ public class FourHoursPredictor {
         List<String> dataPointsList;
 
         StopWatch watch = new StopWatch();
-        FourHoursStockDataSetIterator fourHoursIterator = predictionService.getFourHoursStockDataSetIterator(simbolo, predictionService.getCSVFilePathForTrainingNeuralNets(period).getName(), batchSize, splitRatio, category);
+        FourHoursStockDataSetIterator fourHoursIterator = predictionService.getFourHoursStockDataSetIterator(simbolo, predictionService.getCSVFilePathForTrainingNeuralNets(period), batchSize, splitRatio, category);
         List<Pair<INDArray, INDArray>> test = fourHoursIterator.getTest();
 
         log.info("Build lstm networks...");

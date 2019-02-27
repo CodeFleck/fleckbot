@@ -1,6 +1,7 @@
 package br.com.codefleck.tradebot.redesneurais.predictors;
 
 import br.com.codefleck.tradebot.models.PriceCategory;
+import br.com.codefleck.tradebot.models.StockData;
 import br.com.codefleck.tradebot.redesneurais.iterators.OneHourStockDataSetIterator;
 import br.com.codefleck.tradebot.redesneurais.recurrentnets.OneHourRecurrentNets;
 import br.com.codefleck.tradebot.services.impl.PredictionServiceImpl;
@@ -32,7 +33,7 @@ public class OneHourPredictor {
         List<String> dataPointsList;
 
         StopWatch watch = new StopWatch();
-        OneHourStockDataSetIterator oneHourIterator = predictionService.getOneHourStockDataSetIterator(simbolo, predictionService.getCSVFilePathForTrainingNeuralNets(period).getName(), batchSize, splitRatio, category);
+        OneHourStockDataSetIterator oneHourIterator = predictionService.getOneHourStockDataSetIterator(simbolo, predictionService.getCSVFilePathForTrainingNeuralNets(period), batchSize, splitRatio, category);
         List<Pair<INDArray, INDArray>> test = oneHourIterator.getTest();
 
         log.info("Build lstm networks...");
@@ -49,7 +50,7 @@ public class OneHourPredictor {
         }
         watch.stop();
         log.info("Saving model...");
-        File locationToSave = new File("src/main/resources/StockPriceLSTM_".concat(period.replace(" ", "")).concat(String.valueOf(category)).concat(".zip"));
+        File locationToSave = new File(System.getProperty("user.home") + "/projects/tcc/fleckbot-11-09-2017/fleckbot/src/main/resources/StockPriceLSTM_".concat(period.replace(" ", "")).concat("_").concat(String.valueOf(category)).concat(".zip"));
         ModelSerializer.writeModel(oneHourNet, locationToSave, true); // saveUpdater: i.e., the state for Momentum, RMSProp, Adagrad etc. Save this to train your network more in the future
 
         log.info("Loading model...");

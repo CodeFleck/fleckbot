@@ -32,7 +32,9 @@ public class StockDataDao {
         return results.getResultList();
     }
 
-    public void save(StockData stockData){manager.persist(stockData);}
+    public void save(StockData stockData){
+        manager.persist(stockData);
+    }
 
     public StockData findById(Integer id)
     {

@@ -5,6 +5,7 @@ import br.com.codefleck.tradebot.models.PriceCategory;
 import com.google.common.collect.ImmutableMap;
 import com.opencsv.CSVReader;
 import javafx.util.Pair;
+import javafx.util.converter.LocalDateTimeStringConverter;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.dataset.DataSet;
 import org.nd4j.linalg.dataset.api.DataSetPreProcessor;
@@ -14,6 +15,9 @@ import org.springframework.stereotype.Component;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Component
@@ -208,7 +212,13 @@ public class OneHourStockDataSetIterator implements DataSetIterator {
                     if (nums[i] > maxArray[i]) maxArray[i] = nums[i];
                     if (nums[i] < minArray[i]) minArray[i] = nums[i];
                 }
-                stockDataList.add(new StockData(arr[0], arr[1], nums[0], nums[1], nums[2], nums[3], nums[4]));
+
+                LocalDate localDate = LocalDate.from(DateTimeFormatter.ISO_LOCAL_DATE.parse(arr[0]));
+                LocalDateTime localDateTime = localDate.atStartOfDay();
+
+                ZonedDateTime zonedDateTime = ZonedDateTime.of(localDate, LocalTime.from(localDateTime), ZoneId.systemDefault());
+
+                stockDataList.add(new StockData(zonedDateTime, arr[1], nums[0], nums[1], nums[2], nums[3], nums[4]));
             }
         } catch (IOException e) {
             e.printStackTrace();

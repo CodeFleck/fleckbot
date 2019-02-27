@@ -32,7 +32,7 @@ public class ThirtyMinutesPredictor {
         List<String> dataPointsList;
 
         StopWatch watch = new StopWatch();
-        ThirtyMinutesStockDataSetIterator thirtyMinutesStockDataSetIterator = predictionService.getThirtyMinutesStockDataSetIterator(simbolo, predictionService.getCSVFilePathForTrainingNeuralNets(period).getName(), batchSize, splitRatio, category);
+        ThirtyMinutesStockDataSetIterator thirtyMinutesStockDataSetIterator = predictionService.getThirtyMinutesStockDataSetIterator(simbolo, predictionService.getCSVFilePathForTrainingNeuralNets(period), batchSize, splitRatio, category);
         List<Pair<INDArray, INDArray>> test = thirtyMinutesStockDataSetIterator.getTest();
 
         log.info("Build lstm networks...");

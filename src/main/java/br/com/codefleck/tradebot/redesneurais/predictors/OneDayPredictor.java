@@ -34,7 +34,7 @@ public class OneDayPredictor {
 
         StopWatch watch = new StopWatch();
 
-        OneDayStockDataSetIterator oneDayIterator = predictionService.getOneDayStockDataSetIterator(simbolo, predictionService.getCSVFilePathForTrainingNeuralNetsTest(period), batchSize, splitRatio, category);
+        OneDayStockDataSetIterator oneDayIterator = predictionService.getOneDayStockDataSetIterator(simbolo, predictionService.getCSVFilePathForTrainingNeuralNets(period), batchSize, splitRatio, category);
         List<Pair<INDArray, INDArray>> test = oneDayIterator.getTest();
 
         log.info("Build lstm networks...");

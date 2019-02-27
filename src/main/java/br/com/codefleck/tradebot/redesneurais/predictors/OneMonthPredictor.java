@@ -32,7 +32,7 @@ public class OneMonthPredictor {
         List<String> dataPointsList;
 
         StopWatch watch = new StopWatch();
-        OneMonthStockDataSetIterator oneMonthIterator = predictionService.getOneMonthStockDataSetIterator(simbolo, predictionService.getCSVFilePathForTrainingNeuralNets(period).getName(), batchSize, splitRatio, category);
+        OneMonthStockDataSetIterator oneMonthIterator = predictionService.getOneMonthStockDataSetIterator(simbolo, predictionService.getCSVFilePathForTrainingNeuralNets(period), batchSize, splitRatio, category);
         List<Pair<INDArray, INDArray>> test = oneMonthIterator.getTest();
 
         log.info("Build lstm networks...");
