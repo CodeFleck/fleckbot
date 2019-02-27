@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.ta4j.core.BaseTimeSeries;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,14 +33,16 @@ public class ForecastServiceImpl {
 
     final Logger log = LoggerFactory.getLogger(ForecastServiceImpl.class);
 
-    public DataPointsListResultSet initializeForecasts(List<StockData> lastStockData, PriceCategory category) throws IOException {
+    public DataPointsListResultSet initializeForecasts(List<StockData> lastStockData, PriceCategory category, BaseTimeSeries customBaseTimeSeriesMock) throws IOException {
 
         PriceCategory priceCategory = category;
         List<StockData> latestStockDataList = lastStockData;    //stock data initialization;
 
         List<String> results = forecastOneHour(latestStockDataList, category);
+        //TODO: create forecast for all time periods
 
-        DataPointsListResultSet dataPointsList = predictionService.transformStringResultsIntoDataPointResultSet(results);
+        String nomeDoConjunto = "forecastMockName";
+        DataPointsListResultSet dataPointsList = predictionService.prepareDataPointToBeSaved(results, nomeDoConjunto,customBaseTimeSeriesMock);
 
         return dataPointsList;
     }
@@ -47,10 +50,10 @@ public class ForecastServiceImpl {
     private List<String> forecastOneHour(List<StockData> init, PriceCategory category) throws IOException {
 
         log.info("Loading model...");
-        File FileLocation = new File("/Users/dfleck/projects/tcc/fleckbot-11-09-2017/fleckbot/src/main/resources/StockPriceLSTM_4 horasCLOSE.zip");
+        File FileLocation = new File("/Users/dfleck/projects/tcc/fleckbot-11-09-2017/fleckbot/src/main/resources/StockPriceLSTM_1hora_CLOSE.zip");
         MultiLayerNetwork net = ModelSerializer.restoreMultiLayerNetwork(FileLocation);
 
-        Lists.reverse(init);
+        Lists.reverse(init); //PROVAVELMENTE ESSE LISTS REVERSE NÃO ESTA FUNCIONANDO TODO: CHECK IT
         OneHourStockDataSetIterator oneHourIterator = OneHourStockDataSetIterator.getInstance();
         List<Pair<INDArray, INDArray>> pairList = oneHourIterator.generateTestDataSet(init);
         oneHourIterator.setTest(pairList);

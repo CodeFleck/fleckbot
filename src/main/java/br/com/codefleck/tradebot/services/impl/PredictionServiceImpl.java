@@ -1,8 +1,6 @@
 package br.com.codefleck.tradebot.services.impl;
 
 import br.com.codefleck.tradebot.core.util.CsvBarsLoader;
-import br.com.codefleck.tradebot.daos.DataPointsListResultSetlDao;
-import br.com.codefleck.tradebot.daos.DataPointsModelDao;
 import br.com.codefleck.tradebot.models.*;
 import br.com.codefleck.tradebot.redesneurais.PlotUtil;
 import br.com.codefleck.tradebot.redesneurais.iterators.*;
@@ -20,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.ta4j.core.Bar;
 import org.ta4j.core.BaseTimeSeries;
 
-import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -404,67 +401,6 @@ public class PredictionServiceImpl {
     public BaseTimeSeries createCSVFileForNeuralNets(Date beginDate, Date endDate, String period) {
         CsvBarsLoader csvBarsLoader = new CsvBarsLoader();
         return csvBarsLoader.createCSVFileForNeuralNets(beginDate, endDate, period);
-    }
-
-    public DataPointsListResultSet transformStringResultsIntoDataPointResultSet(List<String> dataPointList){
-
-        if (dataPointList.size() > 0 && dataPointList.get(0) != null) {
-            //predicts (dataPointList.get(0))
-            String predictsDataPointsArray[] = dataPointList.get(0).replace("[", "").replace("{", "").replace("}", "").replaceAll("\"\"", "").split(",");
-
-            DataPointsListResultSet dataPointsListResultSet = new DataPointsListResultSet();
-            dataPointsListResultSet.setNomeConjunto("forecast");
-            List<DataPointsModel> predictsDataPointsModelListXY = new ArrayList<>();
-
-            for (String value : predictsDataPointsArray) {
-
-                DataPointsModel dataPoints = new DataPointsModel();
-                dataPoints.setNomeConjunto("forecast");
-
-                dataPoints.setLocalDateTime(LocalDateTime.now());
-                if (value != null) {
-                    if (value.substring(1, 2).equals("x")) {
-                        dataPoints.setX(Double.valueOf(value.replaceAll("\"", "").replace("x:", "").replace("]", "")));
-                    } else if (value.substring(1, 2).equals("y")) {
-                        dataPoints.setY(Double.valueOf(value.replaceAll("\"", "").replace("y:", "").replace("]", "")));
-                    }
-                    dataPoints.setDataPointModelistType(DataPointModelistType.PREDICTDATAPOINTSMODELLIST);
-                    predictsDataPointsModelListXY.add(dataPoints); //verificar se dataPoints tem id!!!!
-                } else {
-                    log.info("Couldn't get any results, probably need more data");
-                }
-            }
-
-            dataPointsListResultSet.setPredictDataPointsModelList(predictsDataPointsModelListXY);
-
-            //actuals = (dataPointList.get(1))
-            String actualsDataPointsArray[] = dataPointList.get(1).replace("[", "").replace("{", "").replace("}", "").replaceAll("\"\"", "").split(",");
-
-            List<DataPointsModel> actualDataPointsModelListXY = new ArrayList<>();
-
-            for (String value : actualsDataPointsArray) {
-
-                DataPointsModel dataPoints = new DataPointsModel();
-                dataPoints.setNomeConjunto("forecast");
-
-                dataPoints.setLocalDateTime(LocalDateTime.now());
-
-                if (value.substring(1, 2).equals("x")) {
-                    dataPoints.setX(Double.valueOf(value.replaceAll("\"", "").replace("x:", "").replace("]", "")));
-                } else if (value.substring(1, 2).equals("y")) {
-                    dataPoints.setY(Double.valueOf(value.replaceAll("\"", "").replace("y:", "").replace("]", "")));
-                }
-                dataPoints.setDataPointModelistType(DataPointModelistType.ACTUALDATAPOINTSMODELLIST);
-                actualDataPointsModelListXY.add(dataPoints);
-            }
-
-            dataPointsListResultSet.setActualDataPointsModelList(actualDataPointsModelListXY);
-
-            return dataPointsListResultSet;
-        } else {
-            log.info("Couldn't find any results...");
-            return null;
-        }
     }
 
     public DataPointsListResultSet prepareDataPointToBeSaved(List<String> dataPointList, String nomeDoConjunto, BaseTimeSeries customTimeSeries) {

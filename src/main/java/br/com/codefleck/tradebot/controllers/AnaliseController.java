@@ -1,10 +1,12 @@
 package br.com.codefleck.tradebot.controllers;
 
 import br.com.codefleck.tradebot.core.engine.TradingEngine;
+import br.com.codefleck.tradebot.core.util.CsvBarsLoader;
 import br.com.codefleck.tradebot.daos.StockDataDao;
 import br.com.codefleck.tradebot.models.DataPointsListResultSet;
 import br.com.codefleck.tradebot.models.StockData;
 import br.com.codefleck.tradebot.models.PriceCategory;
+import br.com.codefleck.tradebot.redesneurais.iterators.OneHourStockDataSetIterator;
 import br.com.codefleck.tradebot.services.impl.ForecastServiceImpl;
 import br.com.codefleck.tradebot.services.impl.PredictionServiceImpl;
 import br.com.codefleck.tradebot.tradingInterfaces.ExchangeNetworkException;
@@ -16,11 +18,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
+import org.ta4j.core.BaseTimeSeries;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -53,10 +57,15 @@ public class AnaliseController {
         final Ticker ticker = fleckBot.getExchangeAdapter().getTicker("BTCUSD");
         StockData stockData = predictionService.transformTickerInStockData(ticker);
         stockDataDao.save(stockData);
+//        List<StockData> stockDataList = stockDataDao.ListLatest(1440);
 
-        List<StockData> stockDataList = stockDataDao.ListLatest(1440);
 
-        DataPointsListResultSet results = forecastService.initializeForecasts(stockDataList, PriceCategory.CLOSE);
+//        <---- mock stockDataList for now --->
+        CsvBarsLoader barsLoader = new CsvBarsLoader();
+        BaseTimeSeries customBaseTimeSeriesMock = barsLoader.createCSVFileForNeuralNets(new Date(2018,01,01), new Date(2018, 01, 07), "CLOSE");
+        List<StockData> stockDataListMock = predictionService.transformBarInStockData(customBaseTimeSeriesMock);
+
+        DataPointsListResultSet results = forecastService.initializeForecasts(stockDataListMock, PriceCategory.CLOSE, customBaseTimeSeriesMock);
 
 
         Double errorPercentageAvg = predictionService.calculateErrorPercentageAverage(results);

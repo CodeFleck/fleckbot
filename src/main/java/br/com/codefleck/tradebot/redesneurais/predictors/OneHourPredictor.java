@@ -1,7 +1,6 @@
 package br.com.codefleck.tradebot.redesneurais.predictors;
 
 import br.com.codefleck.tradebot.models.PriceCategory;
-import br.com.codefleck.tradebot.models.StockData;
 import br.com.codefleck.tradebot.redesneurais.iterators.OneHourStockDataSetIterator;
 import br.com.codefleck.tradebot.redesneurais.recurrentnets.OneHourRecurrentNets;
 import br.com.codefleck.tradebot.services.impl.PredictionServiceImpl;
