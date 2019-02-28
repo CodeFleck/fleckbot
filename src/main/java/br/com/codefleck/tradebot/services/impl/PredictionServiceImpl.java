@@ -316,7 +316,7 @@ public class PredictionServiceImpl {
 
     public OneWeekStockDataSetIterator getOneWeekStockDataSetIterator(String simbolo, String filePath, int batchSize, double splitRatio, PriceCategory category) {
         OneWeekStockDataSetIterator oneWeekIterator = OneWeekStockDataSetIterator.getInstance();
-        List<StockData> stockDataList = oneWeekIterator.readStockDataFromFile(filePath, simbolo);
+        List<StockData> stockDataList = duplicate(oneWeekIterator.readStockDataFromFile(filePath, simbolo));
         oneWeekIterator.setMiniBatchSize(batchSize);
         oneWeekIterator.setExampleLength(30);
         oneWeekIterator.setCategory(category);
@@ -429,7 +429,7 @@ public class PredictionServiceImpl {
 
             int predictIndex = 0;
             for (int i = 0; i < predictsDataPointsArray.length; i++){
-                if (predictsDataPointsArray[i] != null && predictsDataPointsArray[i].substring(1, 2).equals("y")) {
+                if (predictsDataPointsArray[i] != null && predictsDataPointsArray[i].contains("y") && predictsDataPointsArray[i].substring(1, 2).equals("y")) {
                     DataPointsModel dataPoints = new DataPointsModel();
                     dataPoints.setNomeConjunto(nomeDoConjunto);
                     dataPoints.setX(Double.valueOf(predictIndex));
@@ -450,7 +450,7 @@ public class PredictionServiceImpl {
 
             int actualIndex = 0;
             for (int i = 0; i < actualsDataPointsArray.length; i++){
-                if (actualsDataPointsArray[i] != null && actualsDataPointsArray[i].substring(1, 2).equals("y")) {
+                if (actualsDataPointsArray[i] != null && predictsDataPointsArray[i].contains("y") && actualsDataPointsArray[i].substring(1, 2).equals("y")) {
                     DataPointsModel dataPoints = new DataPointsModel();
                     dataPoints.setNomeConjunto(nomeDoConjunto);
                     dataPoints.setX(Double.valueOf(actualIndex));
