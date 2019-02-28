@@ -3,6 +3,7 @@ package br.com.codefleck.tradebot.services.impl;
 import br.com.codefleck.tradebot.models.DataPointsListResultSet;
 import br.com.codefleck.tradebot.models.PriceCategory;
 import br.com.codefleck.tradebot.models.StockData;
+import br.com.codefleck.tradebot.redesneurais.iterators.OneDayStockDataSetIterator;
 import br.com.codefleck.tradebot.redesneurais.iterators.OneHourStockDataSetIterator;
 import javafx.util.Pair;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
@@ -41,12 +42,15 @@ public class ForecastServiceImpl {
 
         PriceCategory priceCategory = category;
         List<StockData> latestStockDataList = lastStockData;    //stock data initialization;
-        String nomeDoConjunto = "forecastMockName"; //todo: Decide if I want to save nomeDoConjunto along with forecast results and re-create prepareDataPointToBeSaved method. Maybe Save datapoints during Plot.
-
+        String nomeDoConjunto = "forecastMockName";
+        
         //TODO: create forecast for all time periods
-        List<String> oneHourResults = forecastOneHour(latestStockDataList, category);
+//        List<String> oneHourResults = forecastOneHour(latestStockDataList, category);
+        List<String> oneDayResults = forecastOneDay(latestStockDataList, category);
 
-        DataPointsListResultSet dataPointsList = predictionService.prepareDataPointToBeSaved(oneHourResults, nomeDoConjunto,customBaseTimeSeriesMock);
+//        DataPointsListResultSet dataPointsList = predictionService.prepareDataPointToBeSaved(oneHourResults, nomeDoConjunto,customBaseTimeSeriesMock);
+        DataPointsListResultSet oneDayDataPointsList = predictionService.prepareDataPointToBeSaved(oneDayResults, nomeDoConjunto,customBaseTimeSeriesMock);
+        Collections.reverse(oneDayDataPointsList.getPredictDataPointsModelList());
 
         NumberFormat formatter = new DecimalFormat("#0.00");
 
@@ -54,35 +58,60 @@ public class ForecastServiceImpl {
         predictions.put("oneMinute", 1.0);
         predictions.put("fifteenMinutes", 15.0);
         predictions.put("thirtyMinutes", 30.0);
-        predictions.put("oneHour", Double.valueOf(formatter.format(dataPointsList.getPredictDataPointsModelList().get(0).getY())));
+        predictions.put("oneHour", 1.0);
+//        predictions.put("oneHour", Double.valueOf(formatter.format(dataPointsList.getPredictDataPointsModelList().get(0).getY())));
         predictions.put("twoHours", 2.0);
         predictions.put("fourHours", 4.0);
-        predictions.put("twentyFourHours", 24.0);
+        predictions.put("twentyFourHours", Double.valueOf(formatter.format(oneDayDataPointsList.getPredictDataPointsModelList().get(0).getY())));
 
         return predictions;
     }
+
 
     private List<String> forecastOneHour(List<StockData> init, PriceCategory category) throws IOException {
 
         String period = "1 hora";
         log.info("Loading model...");
         File FileLocation = new File(System.getProperty("user.home") + "/projects/tcc/fleckbot-11-09-2017/fleckbot/src/main/resources/StockPriceLSTM_".concat(period.replace(" ", "")).concat("_").concat(String.valueOf(category)).concat(".zip"));
-        MultiLayerNetwork net = ModelSerializer.restoreMultiLayerNetwork(FileLocation);
+        MultiLayerNetwork oneHournet = ModelSerializer.restoreMultiLayerNetwork(FileLocation);
 
         Collections.reverse(init);
         OneHourStockDataSetIterator oneHourIterator = OneHourStockDataSetIterator.getInstance();
         List<Pair<INDArray, INDArray>> pairList = oneHourIterator.generateTestDataSet(init);
         oneHourIterator.setTest(pairList);
-        net.fit(oneHourIterator.next()) ;
+        oneHournet.fit(oneHourIterator.next()) ;
         oneHourIterator.reset();
-        net.rnnClearPreviousState();
+        oneHournet.rnnClearPreviousState();
         log.info("Forecasting one hour...");
         double max = oneHourIterator.getMaxNum(category);
         double min = oneHourIterator.getMinNum(category);
-        List<String> dataPointsList = predictionService.predictPriceOneAhead(net, oneHourIterator.getTest(), max, min, oneHourIterator.getExampleLength());
+        List<String> dataPointsList = predictionService.predictPriceOneAhead(oneHournet, oneHourIterator.getTest(), max, min, oneHourIterator.getExampleLength());
         log.info("Done forecasting one hour");
 
         return dataPointsList;
     }
+
+    private List<String> forecastOneDay(List<StockData> init, PriceCategory category) throws IOException {
+        String period = "1 dia";
+        log.info("Loading model...");
+        File FileLocation = new File(System.getProperty("user.home") + "/projects/tcc/fleckbot-11-09-2017/fleckbot/src/main/resources/StockPriceLSTM_".concat(period.replace(" ", "")).concat("_").concat(String.valueOf(category)).concat(".zip"));
+        MultiLayerNetwork oneDayNet = ModelSerializer.restoreMultiLayerNetwork(FileLocation);
+
+        Collections.reverse(init);
+        OneDayStockDataSetIterator oneDayIterator = OneDayStockDataSetIterator.getInstance();
+        List<Pair<INDArray, INDArray>> pairList = oneDayIterator.generateTestDataSet(init);
+        oneDayIterator.setTest(pairList);
+        oneDayNet.fit(oneDayIterator.next()) ;
+        oneDayIterator.reset();
+        oneDayNet.rnnClearPreviousState();
+        log.info("Forecasting one day...");
+        double max = oneDayIterator.getMaxNum(category);
+        double min = oneDayIterator.getMinNum(category);
+        List<String> dataPointsList = predictionService.predictPriceOneAhead(oneDayNet, oneDayIterator.getTest(), max, min, oneDayIterator.getExampleLength());
+        log.info("Done forecasting one day");
+
+        return dataPointsList;
+    }
+
 }
 

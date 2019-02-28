@@ -154,7 +154,7 @@ public class PredictionServiceImpl {
             return new ClassPathResource("TwoHoursDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
         }
         if (period.equals("3 horas")){
-             return new ClassPathResource("ThreeHoursDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
+            return new ClassPathResource("ThreeHoursDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
         }
         if (period.equals("4 horas")){
             return new ClassPathResource("FourHoursDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
@@ -411,25 +411,20 @@ public class PredictionServiceImpl {
 
             DataPointsListResultSet dataPointsListResultSet = new DataPointsListResultSet();
             dataPointsListResultSet.setNomeConjunto(nomeDoConjunto);
+
             List<DataPointsModel> predictsDataPointsModelListXY = new ArrayList<>();
 
             int predictIndex = 0;
-            for (String value : predictsDataPointsArray) {
-
-                DataPointsModel dataPoints = new DataPointsModel();
-                dataPoints.setNomeConjunto(nomeDoConjunto);
-                dataPoints.setLocalDateTime(customTimeSeries.getBar(predictIndex).getEndTime().toLocalDateTime());
-                predictIndex++;
-                if (value != null) {
-                    if (value.substring(1, 2).equals("x")) {
-                        dataPoints.setX(Double.valueOf(value.replaceAll("\"", "").replace("x:", "").replace("]", "")));
-                    } else if (value.substring(1, 2).equals("y")) {
-                        dataPoints.setY(Double.valueOf(value.replaceAll("\"", "").replace("y:", "").replace("]", "")));
-                    }
+            for (int i = 0; i < predictsDataPointsArray.length; i++){
+                if (predictsDataPointsArray[i] != null && predictsDataPointsArray[i].substring(1, 2).equals("y")) {
+                    DataPointsModel dataPoints = new DataPointsModel();
+                    dataPoints.setNomeConjunto(nomeDoConjunto);
+                    dataPoints.setX(Double.valueOf(predictIndex));
+                    dataPoints.setLocalDateTime(customTimeSeries.getBar(predictIndex).getEndTime().toLocalDateTime());
+                    dataPoints.setY(Double.valueOf(predictsDataPointsArray[i].replaceAll("\"", "").replace("y:", "").replace("]", "")));
                     dataPoints.setDataPointModelistType(DataPointModelistType.PREDICTDATAPOINTSMODELLIST);
-                    predictsDataPointsModelListXY.add(dataPoints); //verificar se dataPoints tem id!!!!
-                } else {
-                    log.info("Couldn't get any results, probably need more data");
+                    predictsDataPointsModelListXY.add(dataPoints);
+                    predictIndex++;
                 }
             }
 
@@ -441,19 +436,17 @@ public class PredictionServiceImpl {
             List<DataPointsModel> actualDataPointsModelListXY = new ArrayList<>();
 
             int actualIndex = 0;
-            for (String value : actualsDataPointsArray) {
-                DataPointsModel dataPoints = new DataPointsModel();
-                dataPoints.setNomeConjunto(nomeDoConjunto);
-                dataPoints.setLocalDateTime(customTimeSeries.getBar(actualIndex).getEndTime().toLocalDateTime());
-                actualIndex++;
-
-                if (value.substring(1, 2).equals("x")) {
-                    dataPoints.setX(Double.valueOf(value.replaceAll("\"", "").replace("x:", "").replace("]", "")));
-                } else if (value.substring(1, 2).equals("y")) {
-                    dataPoints.setY(Double.valueOf(value.replaceAll("\"", "").replace("y:", "").replace("]", "")));
+            for (int i = 0; i < actualsDataPointsArray.length; i++){
+                if (actualsDataPointsArray[i] != null && actualsDataPointsArray[i].substring(1, 2).equals("y")) {
+                    DataPointsModel dataPoints = new DataPointsModel();
+                    dataPoints.setNomeConjunto(nomeDoConjunto);
+                    dataPoints.setX(Double.valueOf(actualIndex));
+                    dataPoints.setLocalDateTime(customTimeSeries.getBar(actualIndex).getEndTime().toLocalDateTime());
+                    dataPoints.setY(Double.valueOf(actualsDataPointsArray[i].replaceAll("\"", "").replace("y:", "").replace("]", "")));
+                    dataPoints.setDataPointModelistType(DataPointModelistType.ACTUALDATAPOINTSMODELLIST);
+                    predictsDataPointsModelListXY.add(dataPoints);
+                    actualIndex++;
                 }
-                dataPoints.setDataPointModelistType(DataPointModelistType.ACTUALDATAPOINTSMODELLIST);
-                actualDataPointsModelListXY.add(dataPoints);
             }
 
             dataPointsListResultSet.setActualDataPointsModelList(actualDataPointsModelListXY);
