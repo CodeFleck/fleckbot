@@ -77,7 +77,7 @@ public class PredictionServiceImpl {
 
     public List<String> initTraining(int epocas, String simbolo, String categoria, String period) throws IOException {
 
-        double learningRate = 0.01;
+        double learningRate = 0.001;
         int batchSize = 32; // mini-batch size
         double splitRatio = 0.8; // 80% for training, 10% for testing
         String chosenCategory = categoria;

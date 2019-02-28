@@ -53,7 +53,8 @@
                     <th>1 hora</th>
                     <th>2 horas</th>
                     <th>4 horas</th>
-                    <th>24 horas</th>
+                    <th>1 dia</th>
+                    <th>1 semana</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -67,10 +68,11 @@
                     <td>$${twoHours}</td>
                     <td>$${fourHours}</td>
                     <td>$${twentyFourHours}</td>
+                    <td>$${oneWeek}</td>
                 </tr>
                 </tbody>
             </table>
-        </div>>
+        </div>
         <br><br>
         <p>Categoria: ${categoria}</p>
         <p>Porcentagem média de erro: ${errorPercentageAvg}%</p>

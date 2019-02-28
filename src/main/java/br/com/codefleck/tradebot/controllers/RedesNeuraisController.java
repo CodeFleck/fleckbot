@@ -111,18 +111,18 @@ public class RedesNeuraisController {
         String cat = categoria;
         model.addObject("categoria", cat);
 
-//        DataPointsListResultSet dataPointsListResultSet = predictionService.prepareDataPointToBeSaved(dataPointList, nomeDoConjunto, customTimeSeries);
-//        Double errorPercentageAvg = predictionService.calculateErrorPercentageAverage(dataPointsListResultSet);
-//        Double errorPercentageLastDay = predictionService.calculateErrorPercentageLastDay(dataPointsListResultSet);
-//        Double majorError = predictionService.calculateMajorError(dataPointsListResultSet);
-//        Double minorError = predictionService.calculateMinorError(dataPointsListResultSet);
-//
-//        NumberFormat formatter = new DecimalFormat("#0.00");
-//
-//        model.addObject("errorPercentageAvg", formatter.format(errorPercentageAvg));
-//        model.addObject("errorPercentageLastDay", formatter.format(errorPercentageLastDay));
-//        model.addObject("majorError", formatter.format(majorError));
-//        model.addObject("minorError", formatter.format(minorError));
+        DataPointsListResultSet dataPointsListResultSet = predictionService.prepareDataPointToBeSaved(dataPointList, nomeDoConjunto, customTimeSeries);
+        Double errorPercentageAvg = predictionService.calculateErrorPercentageAverage(dataPointsListResultSet);
+        Double errorPercentageLastDay = predictionService.calculateErrorPercentageLastDay(dataPointsListResultSet);
+        Double majorError = predictionService.calculateMajorError(dataPointsListResultSet);
+        Double minorError = predictionService.calculateMinorError(dataPointsListResultSet);
+
+        NumberFormat formatter = new DecimalFormat("#0.00");
+
+        model.addObject("errorPercentageAvg", formatter.format(errorPercentageAvg));
+        model.addObject("errorPercentageLastDay", formatter.format(errorPercentageLastDay));
+        model.addObject("majorError", formatter.format(majorError));
+        model.addObject("minorError", formatter.format(minorError));
 
 
         return model;

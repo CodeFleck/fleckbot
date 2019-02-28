@@ -19,6 +19,7 @@ import org.ta4j.core.BaseTimeSeries;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -47,20 +48,21 @@ public class AnaliseController {
 
         fleckBot.initConfig();
 
-//        <---- gather market current ticker --->
-        final Ticker ticker = fleckBot.getExchangeAdapter().getTicker("BTCUSD");
-        StockData stockData = predictionService.transformTickerInStockData(ticker);
-        stockDataDao.save(stockData);
-//        List<StockData> stockDataList = stockDataDao.ListLatest(1440);
-
+        //gather market current bitcoin price
+//        List<StockData> stockDataList = new ArrayList<>();
+//        do {
+//            final Ticker ticker = fleckBot.getExchangeAdapter().getTicker("BTCUSD");
+//            StockData stockData = predictionService.transformTickerInStockData(ticker);
+//            stockDataDao.save(stockData);
+//            stockDataList.addAll(stockDataDao.ListLatest(1440));
+//        } while (stockDataList.size() < 1440);
 
 //        <---- start mock stockDataList --->
         CsvBarsLoader barsLoader = new CsvBarsLoader();
         BaseTimeSeries customBaseTimeSeriesMock = barsLoader.createMockDataForForecast();
-        List<StockData> stockDataListMock = predictionService.transformBarInStockData(customBaseTimeSeriesMock);
-//         <---- end mock stockDataList  --->
+        List<StockData> stockDataList = predictionService.transformBarInStockData(customBaseTimeSeriesMock);
 
-        HashMap<String, Double> predictions = forecastService.initializeForecasts(stockDataListMock, PriceCategory.CLOSE, customBaseTimeSeriesMock);
+        HashMap<String, Double> predictions = forecastService.initializeForecasts(stockDataList, PriceCategory.CLOSE, customBaseTimeSeriesMock);
 
         model.addObject("oneMinute", predictions.get("oneMinute"));
         model.addObject("fifteenMinutes", predictions.get("fifteenMinutes"));
@@ -69,6 +71,7 @@ public class AnaliseController {
         model.addObject("twoHours", predictions.get("twoHours"));
         model.addObject("fourHours", predictions.get("fourHours"));
         model.addObject("twentyFourHours", predictions.get("twentyFourHours"));
+        model.addObject("oneWeek", predictions.get("oneWeek"));
 
         return model;
     }
