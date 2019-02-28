@@ -40,7 +40,7 @@
                                     <option>Volume</option>
                                 </select>
                             </td>
-                            <td><input type="number" class="form-control" name="epocas" min="0" step="1" value="1"></td>
+                            <td><input type="number" class="form-control" name="epocas" min="0" step="1" value="5"></td>
                             <td> <input type="date" class="form-control" name="beginDate" min="2015-01-01" max="2018-01-08" value="2015-01-01"></td>
                             <td><input type="date" class="form-control" name="endDate" min="2015-01-01" max="2018-01-08" value="2018-01-01"></td>
                             <td><select class="form-control selectpicker" name="period">
@@ -54,7 +54,7 @@
                                 <option>1 semana</option>
                             </select>
                             </td>
-                            <td><input type="text" class="form-control" name="nomeDoConjunto" value="nome-teste"></td>
+                            <td><input type="text" class="form-control" name="nomeDoConjunto" value="1sem-5ep-LR0.001-jan15jan18"></td>
                         </tr>
                         </tbody>
                     </table>

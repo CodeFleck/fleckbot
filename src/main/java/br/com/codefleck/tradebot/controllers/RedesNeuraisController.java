@@ -94,7 +94,11 @@ public class RedesNeuraisController {
 
         List<String> dataPointList = null;
         try {
-            dataPointList = predictionService.initTraining(epocas, simbolo, categoria, period);
+            try {
+                dataPointList = predictionService.initTraining(epocas, simbolo, categoria, period);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

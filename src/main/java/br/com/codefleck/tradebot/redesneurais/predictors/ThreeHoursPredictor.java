@@ -27,7 +27,7 @@ public class ThreeHoursPredictor {
     @Autowired
     PredictionServiceImpl predictionService;
 
-    public List<String> predictThreeHours(String simbolo, String period, int batchSize, double splitRatio, PriceCategory category, int epochs, double learningRate) throws IOException {
+    public List<String> predictThreeHours(String simbolo, String period, int batchSize, double splitRatio, PriceCategory category, int epochs, double learningRate) throws IOException, InterruptedException {
 
         List<String> dataPointsList;
 

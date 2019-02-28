@@ -27,7 +27,7 @@ public class OneWeekPredictor {
     @Autowired
     PredictionServiceImpl predictionService;
 
-    public List<String> predictOneWeek(String simbolo, String period, int batchSize, double splitRatio, PriceCategory category, int epochs, double learningRate) throws IOException {
+    public List<String> predictOneWeek(String simbolo, String period, int batchSize, double splitRatio, PriceCategory category, int epochs, double learningRate) throws IOException, InterruptedException {
 
         List<String> dataPointsList;
 

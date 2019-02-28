@@ -27,6 +27,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Service("predictionService")
 @ComponentScan(basePackages = {"br.com.codefleck.tradebot.repository"})
@@ -75,7 +76,7 @@ public class PredictionServiceImpl {
     //private static int exampleLength = 80; //15min 2017-04-18 to 2017-05-29 - media erro: 15.22%!!!!!
     //private static int exampleLength = 180; //1D gerou 36
 
-    public List<String> initTraining(int epocas, String simbolo, String categoria, String period) throws IOException {
+    public List<String> initTraining(int epocas, String simbolo, String categoria, String period) throws IOException, InterruptedException {
 
         double learningRate = 0.001;
         int batchSize = 32; // mini-batch size
@@ -130,42 +131,54 @@ public class PredictionServiceImpl {
         return dataPointsList;
     }
 
-    public String getCSVFilePathForTrainingNeuralNets(String period) throws IOException {
+    public String getCSVFilePathForTrainingNeuralNets(String period) throws IOException, InterruptedException {
 
         if (period.equals("1 minuto")) {
+            TimeUnit.SECONDS.sleep(5);
             return new ClassPathResource("OneMinuteDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
         }
         if (period.equals("5 minutos")) {
+            TimeUnit.SECONDS.sleep(5);
             return new ClassPathResource("FiveMinutesDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
         }
         if (period.equals("10 minutos")){
+            TimeUnit.SECONDS.sleep(5);
             return new ClassPathResource("TenMinutesDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
         }
         if (period.equals("15 minutos")){
+            TimeUnit.SECONDS.sleep(5);
             return new ClassPathResource("FifteenMinutesDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
         }
         if (period.equals("30 minutos")){
+            TimeUnit.SECONDS.sleep(5);
             return new ClassPathResource("ThirtyMinutesDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
         }
         if (period.equals("1 hora")){
+            TimeUnit.SECONDS.sleep(5);
             return new ClassPathResource("OneHourDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
         }
         if (period.equals("2 horas")){
+            TimeUnit.SECONDS.sleep(5);
             return new ClassPathResource("TwoHoursDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
         }
         if (period.equals("3 horas")){
+            TimeUnit.SECONDS.sleep(5);
             return new ClassPathResource("ThreeHoursDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
         }
         if (period.equals("4 horas")){
+            TimeUnit.SECONDS.sleep(5);
             return new ClassPathResource("FourHoursDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
         }
         if (period.equals("1 dia")){
+            TimeUnit.SECONDS.sleep(5);
             return new ClassPathResource("OneDayDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
         }
         if (period.equals("1 semana")){
+            TimeUnit.SECONDS.sleep(5);
             return new ClassPathResource("OneWeekDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
         }
         if (period.equals("1 mês")){
+            TimeUnit.SECONDS.sleep(5);
             return new ClassPathResource("OneMonthDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
         }
         return null;
