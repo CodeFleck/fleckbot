@@ -3,16 +3,13 @@ package br.com.codefleck.tradebot.controllers;
 import br.com.codefleck.tradebot.core.engine.TradingEngine;
 import br.com.codefleck.tradebot.core.util.CsvBarsLoader;
 import br.com.codefleck.tradebot.daos.StockDataDao;
-import br.com.codefleck.tradebot.models.DataPointsListResultSet;
-import br.com.codefleck.tradebot.models.StockData;
 import br.com.codefleck.tradebot.models.PriceCategory;
-import br.com.codefleck.tradebot.redesneurais.iterators.OneHourStockDataSetIterator;
+import br.com.codefleck.tradebot.models.StockData;
 import br.com.codefleck.tradebot.services.impl.ForecastServiceImpl;
 import br.com.codefleck.tradebot.services.impl.PredictionServiceImpl;
 import br.com.codefleck.tradebot.tradingInterfaces.ExchangeNetworkException;
 import br.com.codefleck.tradebot.tradingInterfaces.Ticker;
 import br.com.codefleck.tradebot.tradingInterfaces.TradingApiException;
-import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,9 +19,6 @@ import org.ta4j.core.BaseTimeSeries;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -46,41 +40,27 @@ public class AnaliseController {
     PredictionServiceImpl predictionService;
 
     @GetMapping
-    public ModelAndView analiseLandingDataProvider(ModelAndView model) throws ExchangeNetworkException, TradingApiException, IOException {
+    public ModelAndView analiseLandingPage(ModelAndView model) throws ExchangeNetworkException, TradingApiException, IOException {
 
         model.addObject("botStatus", fleckBot.isRunning());
         model.setViewName("analise");
 
         fleckBot.initConfig();
 
-        //gather market current ticker
+//        <---- gather market current ticker --->
         final Ticker ticker = fleckBot.getExchangeAdapter().getTicker("BTCUSD");
         StockData stockData = predictionService.transformTickerInStockData(ticker);
         stockDataDao.save(stockData);
 //        List<StockData> stockDataList = stockDataDao.ListLatest(1440);
 
 
-//        <---- mock stockDataList for now --->
+//        <---- start mock stockDataList --->
         CsvBarsLoader barsLoader = new CsvBarsLoader();
-        BaseTimeSeries customBaseTimeSeriesMock = barsLoader.createCSVFileForNeuralNets(new Date(2018,01,01), new Date(2018, 01, 07), "CLOSE");
+        BaseTimeSeries customBaseTimeSeriesMock = barsLoader.createMockDataForForecast();
         List<StockData> stockDataListMock = predictionService.transformBarInStockData(customBaseTimeSeriesMock);
+//         <---- end mock stockDataList  --->
 
-        DataPointsListResultSet results = forecastService.initializeForecasts(stockDataListMock, PriceCategory.CLOSE, customBaseTimeSeriesMock);
-
-
-        Double errorPercentageAvg = predictionService.calculateErrorPercentageAverage(results);
-        NumberFormat formatter = new DecimalFormat("#0.00");
-        model.addObject("errorPercentageAvg", formatter.format(errorPercentageAvg));
-
-        HashMap<String, Double> predictions = new HashMap<>();
-        Lists.reverse(results.getPredictDataPointsModelList());
-        predictions.put("oneMinute", 1.0);
-        predictions.put("fifteenMinutes", 15.0);
-        predictions.put("thirtyMinutes", 30.0);
-        predictions.put("oneHour", Double.valueOf(formatter.format(results.getPredictDataPointsModelList().get(0).getY())));
-        predictions.put("twoHours", 2.0);
-        predictions.put("fourHours", 4.0);
-        predictions.put("twentyFourHours", 24.0);
+        HashMap<String, Double> predictions = forecastService.initializeForecasts(stockDataListMock, PriceCategory.CLOSE, customBaseTimeSeriesMock);
 
         model.addObject("oneMinute", predictions.get("oneMinute"));
         model.addObject("fifteenMinutes", predictions.get("fifteenMinutes"));

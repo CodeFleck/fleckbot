@@ -16,9 +16,8 @@ import org.springframework.stereotype.Component;
 
 import java.io.FileReader;
 import java.io.IOException;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Component
@@ -220,9 +219,12 @@ public class GeneralStockDataSetIterator implements DataSetIterator {
                     if (nums[i] > maxArray[i]) maxArray[i] = nums[i];
                     if (nums[i] < minArray[i]) minArray[i] = nums[i];
                 }
-                ZonedDateTime beginTime = ZonedDateTime.ofInstant(Instant.ofEpochMilli(Long.parseLong(arr[0]) * 1000), ZoneId.systemDefault());;
+                LocalDate localDate = LocalDate.from(DateTimeFormatter.ISO_LOCAL_DATE.parse(arr[0]));
+                LocalDateTime localDateTime = localDate.atStartOfDay();
 
-                stockDataList.add(new StockData(beginTime, arr[1], nums[0], nums[1], nums[2], nums[3], nums[4]));
+                ZonedDateTime zonedDateTime = ZonedDateTime.of(localDate, LocalTime.from(localDateTime), ZoneId.systemDefault());
+
+                stockDataList.add(new StockData(zonedDateTime, arr[1], nums[0], nums[1], nums[2], nums[3], nums[4]));
             }
         } catch (IOException e) {
             e.printStackTrace();

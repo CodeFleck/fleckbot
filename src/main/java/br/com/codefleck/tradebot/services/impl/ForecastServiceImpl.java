@@ -4,7 +4,6 @@ import br.com.codefleck.tradebot.models.DataPointsListResultSet;
 import br.com.codefleck.tradebot.models.PriceCategory;
 import br.com.codefleck.tradebot.models.StockData;
 import br.com.codefleck.tradebot.redesneurais.iterators.OneHourStockDataSetIterator;
-import com.google.common.collect.Lists;
 import javafx.util.Pair;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.deeplearning4j.util.ModelSerializer;
@@ -19,12 +18,17 @@ import org.ta4j.core.BaseTimeSeries;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 /**
  * @author Daniel Fleck
  */
 @Service("forecastService")
+@Transactional
 @ComponentScan(basePackages = {"br.com.codefleck.tradebot"})
 public class ForecastServiceImpl {
 
@@ -33,33 +37,45 @@ public class ForecastServiceImpl {
 
     final Logger log = LoggerFactory.getLogger(ForecastServiceImpl.class);
 
-    public DataPointsListResultSet initializeForecasts(List<StockData> lastStockData, PriceCategory category, BaseTimeSeries customBaseTimeSeriesMock) throws IOException {
+    public HashMap<String, Double> initializeForecasts(List<StockData> lastStockData, PriceCategory category, BaseTimeSeries customBaseTimeSeriesMock) throws IOException {
 
         PriceCategory priceCategory = category;
         List<StockData> latestStockDataList = lastStockData;    //stock data initialization;
+        String nomeDoConjunto = "forecastMockName"; //todo: Decide if I want to save nomeDoConjunto along with forecast results and re-create prepareDataPointToBeSaved method. Maybe Save datapoints during Plot.
 
-        List<String> results = forecastOneHour(latestStockDataList, category);
         //TODO: create forecast for all time periods
+        List<String> oneHourResults = forecastOneHour(latestStockDataList, category);
 
-        String nomeDoConjunto = "forecastMockName";
-        DataPointsListResultSet dataPointsList = predictionService.prepareDataPointToBeSaved(results, nomeDoConjunto,customBaseTimeSeriesMock);
+        DataPointsListResultSet dataPointsList = predictionService.prepareDataPointToBeSaved(oneHourResults, nomeDoConjunto,customBaseTimeSeriesMock);
 
-        return dataPointsList;
+        NumberFormat formatter = new DecimalFormat("#0.00");
+
+        HashMap<String, Double> predictions = new HashMap<>();
+        predictions.put("oneMinute", 1.0);
+        predictions.put("fifteenMinutes", 15.0);
+        predictions.put("thirtyMinutes", 30.0);
+        predictions.put("oneHour", Double.valueOf(formatter.format(dataPointsList.getPredictDataPointsModelList().get(0).getY())));
+        predictions.put("twoHours", 2.0);
+        predictions.put("fourHours", 4.0);
+        predictions.put("twentyFourHours", 24.0);
+
+        return predictions;
     }
 
     private List<String> forecastOneHour(List<StockData> init, PriceCategory category) throws IOException {
 
+        String period = "1 hora";
         log.info("Loading model...");
-        File FileLocation = new File("/Users/dfleck/projects/tcc/fleckbot-11-09-2017/fleckbot/src/main/resources/StockPriceLSTM_1hora_CLOSE.zip");
+        File FileLocation = new File(System.getProperty("user.home") + "/projects/tcc/fleckbot-11-09-2017/fleckbot/src/main/resources/StockPriceLSTM_".concat(period.replace(" ", "")).concat("_").concat(String.valueOf(category)).concat(".zip"));
         MultiLayerNetwork net = ModelSerializer.restoreMultiLayerNetwork(FileLocation);
 
-        Lists.reverse(init); //PROVAVELMENTE ESSE LISTS REVERSE NÃO ESTA FUNCIONANDO TODO: CHECK IT
+        Collections.reverse(init);
         OneHourStockDataSetIterator oneHourIterator = OneHourStockDataSetIterator.getInstance();
         List<Pair<INDArray, INDArray>> pairList = oneHourIterator.generateTestDataSet(init);
         oneHourIterator.setTest(pairList);
-        net.fit(oneHourIterator.next()) ; // fit model using mini-batch data
-        oneHourIterator.reset(); // reset iterator
-        net.rnnClearPreviousState(); // clear previous state
+        net.fit(oneHourIterator.next()) ;
+        oneHourIterator.reset();
+        net.rnnClearPreviousState();
         log.info("Forecasting one hour...");
         double max = oneHourIterator.getMaxNum(category);
         double min = oneHourIterator.getMinNum(category);
@@ -67,7 +83,6 @@ public class ForecastServiceImpl {
         log.info("Done forecasting one hour");
 
         return dataPointsList;
-
     }
 }
 

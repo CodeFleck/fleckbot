@@ -1,13 +1,12 @@
 package br.com.codefleck.tradebot.core.util;
 
-import java.io.File;
+import org.ta4j.core.Bar;
+import org.ta4j.core.BaseTimeSeries;
+
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.ta4j.core.Bar;
-import org.ta4j.core.BaseTimeSeries;
 
 public class CsvFileWriter {
 

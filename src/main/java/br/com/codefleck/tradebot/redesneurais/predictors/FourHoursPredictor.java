@@ -37,36 +37,36 @@ public class FourHoursPredictor {
 
         log.info("Build lstm networks...");
         FourHoursRecurrentNets fourHours = FourHoursRecurrentNets.getInstance();
-        MultiLayerNetwork threeHoursNet = fourHours.buildFourHoursLstmNetworks(fourHoursIterator.inputColumns(), fourHoursIterator.totalOutcomes(), learningRate);
+        MultiLayerNetwork fourHoursNet = fourHours.buildFourHoursLstmNetworks(fourHoursIterator.inputColumns(), fourHoursIterator.totalOutcomes(), learningRate);
 
         log.info("Training...");
         watch.start();
         for (int i = 0; i < epochs; i++) {
             System.out.println("Epoch: " + i);
-            while (fourHoursIterator.hasNext()) threeHoursNet.fit(fourHoursIterator.next());
+            while (fourHoursIterator.hasNext()) fourHoursNet.fit(fourHoursIterator.next());
             fourHoursIterator.reset();
-            threeHoursNet.rnnClearPreviousState();
+            fourHoursNet.rnnClearPreviousState();
         }
         watch.stop();
         log.info("Saving model...");
-        File locationToSave = new File("src/main/resources/StockPriceLSTM_".concat(period).concat(String.valueOf(category)).concat(".zip"));
-        ModelSerializer.writeModel(threeHoursNet, locationToSave, true); // saveUpdater: i.e., the state for Momentum, RMSProp, Adagrad etc. Save this to train your network more in the future
+        File locationToSave = new File(System.getProperty("user.home") + "/projects/tcc/fleckbot-11-09-2017/fleckbot/src/main/resources/StockPriceLSTM_".concat(period.replace(" ", "")).concat("_").concat(String.valueOf(category)).concat(".zip"));
+        ModelSerializer.writeModel(fourHoursNet, locationToSave, true); // saveUpdater: i.e., the state for Momentum, RMSProp, Adagrad etc. Save this to train your network more in the future
 
         log.info("Loading model...");
-        threeHoursNet = ModelSerializer.restoreMultiLayerNetwork(locationToSave);
+        fourHoursNet = ModelSerializer.restoreMultiLayerNetwork(locationToSave);
 
         log.info("Performing tests...");
         if (category.equals(PriceCategory.ALL)) {
             INDArray max = Nd4j.create(fourHoursIterator.getMaxArray());
             INDArray min = Nd4j.create(fourHoursIterator.getMinArray());
-            predictionService.predictAllCategories(threeHoursNet, test, max, min, fourHoursIterator.getExampleLength());
+            predictionService.predictAllCategories(fourHoursNet, test, max, min, fourHoursIterator.getExampleLength());
             log.info(period + " done testing...");
             System.out.println("Time Elapsed: " + watch.getTime());
             return null;
         } else {
             double max = fourHoursIterator.getMaxNum(category);
             double min = fourHoursIterator.getMinNum(category);
-            dataPointsList = predictionService.predictPriceOneAhead(threeHoursNet, test, max, min, fourHoursIterator.getExampleLength());
+            dataPointsList = predictionService.predictPriceOneAhead(fourHoursNet, test, max, min, fourHoursIterator.getExampleLength());
             log.info(period + " done testing...");
             System.out.println("Time Elapsed: " + watch.getTime());
         }

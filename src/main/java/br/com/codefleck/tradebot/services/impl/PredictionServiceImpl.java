@@ -133,40 +133,40 @@ public class PredictionServiceImpl {
     public String getCSVFilePathForTrainingNeuralNets(String period) throws IOException {
 
         if (period.equals("1 minuto")) {
-//            return new ClassPathResource("OneMinuteDataForTrainingNeuralNets.csv").getFile();
+            return new ClassPathResource("OneMinuteDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
         }
         if (period.equals("5 minutos")) {
-//            return new ClassPathResource("FiveMinutesDataForTrainingNeuralNets.csv").getFile();
+            return new ClassPathResource("FiveMinutesDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
         }
         if (period.equals("10 minutos")){
-//            return new ClassPathResource("TenMinutesDataForTrainingNeuralNets.csv").getFile();
+            return new ClassPathResource("TenMinutesDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
         }
         if (period.equals("15 minutos")){
-//            return new ClassPathResource("FifteenMinutesDataForTrainingNeuralNets.csv").getFile();
+            return new ClassPathResource("FifteenMinutesDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
         }
         if (period.equals("30 minutos")){
-//            return new ClassPathResource("ThirtyMinutesDataForTrainingNeuralNets.csv").getFile();
+            return new ClassPathResource("ThirtyMinutesDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
         }
         if (period.equals("1 hora")){
             return new ClassPathResource("OneHourDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
         }
         if (period.equals("2 horas")){
-//            return new ClassPathResource("TwoHoursDataForTrainingNeuralNets.csv").getFile();
+            return new ClassPathResource("TwoHoursDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
         }
         if (period.equals("3 horas")){
-//            return new ClassPathResource("ThreeHoursDataForTrainingNeuralNets.csv").getFile();
+             return new ClassPathResource("ThreeHoursDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
         }
         if (period.equals("4 horas")){
-//            return new ClassPathResource("FourHoursDataForTrainingNeuralNets.csv").getFile();
+            return new ClassPathResource("FourHoursDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
         }
         if (period.equals("1 dia")){
-//            return new ClassPathResource("OneDayDataForTrainingNeuralNets.csv").getFile();
+            return new ClassPathResource("OneDayDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
         }
         if (period.equals("1 semana")){
-//            return new ClassPathResource("OneWeekDataForTrainingNeuralNets.csv").getFile();
+            return new ClassPathResource("OneWeekDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
         }
         if (period.equals("1 mês")){
-//            return new ClassPathResource("OneMonthDataForTrainingNeuralNets.csv").getFile();
+            return new ClassPathResource("OneMonthDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
         }
         return null;
     }
@@ -418,11 +418,7 @@ public class PredictionServiceImpl {
 
                 DataPointsModel dataPoints = new DataPointsModel();
                 dataPoints.setNomeConjunto(nomeDoConjunto);
-
-                String simpleDateName = customTimeSeries.getBar(predictIndex).getSimpleDateName();
-                        simpleDateName.replaceAll("39", "20");
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"); //Verificar se a data está sendo formatada corretamente no banco
-                dataPoints.setLocalDateTime(LocalDateTime.parse(simpleDateName, formatter));
+                dataPoints.setLocalDateTime(customTimeSeries.getBar(predictIndex).getEndTime().toLocalDateTime());
                 predictIndex++;
                 if (value != null) {
                     if (value.substring(1, 2).equals("x")) {
@@ -446,14 +442,9 @@ public class PredictionServiceImpl {
 
             int actualIndex = 0;
             for (String value : actualsDataPointsArray) {
-
                 DataPointsModel dataPoints = new DataPointsModel();
                 dataPoints.setNomeConjunto(nomeDoConjunto);
-
-                String simpleDateName = customTimeSeries.getBar(actualIndex).getSimpleDateName();
-                simpleDateName.replaceAll("39", "20");
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"); //Verificar se a data está sendo formatada corretamente no banco
-                dataPoints.setLocalDateTime(LocalDateTime.parse(simpleDateName, formatter));
+                dataPoints.setLocalDateTime(customTimeSeries.getBar(actualIndex).getEndTime().toLocalDateTime());
                 actualIndex++;
 
                 if (value.substring(1, 2).equals("x")) {
@@ -480,11 +471,8 @@ public class PredictionServiceImpl {
         Double result;
 
         for (int i=0;i<dataPointsList.getActualDataPointsModelList().size();i++){
-
             result = ((dataPointsList.getActualDataPointsModelList().get(i).getY()-dataPointsList.getPredictDataPointsModelList().get(i).getY())*100)/dataPointsList.getActualDataPointsModelList().get(i).getY();
-
             errorPercentage.add(result);
-
         }
 
         double errorPercentageAverage = 0.00;
