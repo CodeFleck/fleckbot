@@ -69,7 +69,7 @@ public class DownSamplingTimeSeries {
             if (this.period.equals("1 semana")){
                 return aggregateTimeSeriesToWeek(series);
             }
-            if (this.period.equals("1 mês")){
+            if (this.period.equals("1 mes")){
                 return aggregateTimeSeriesToMonth(series);
             }
         }else {

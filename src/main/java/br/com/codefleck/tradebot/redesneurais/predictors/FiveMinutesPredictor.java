@@ -1,5 +1,6 @@
 package br.com.codefleck.tradebot.redesneurais.predictors;
 
+import br.com.codefleck.tradebot.models.DataPointsListResultSet;
 import br.com.codefleck.tradebot.models.PriceCategory;
 import br.com.codefleck.tradebot.redesneurais.iterators.FiveMinutesStockDataSetIterator;
 import br.com.codefleck.tradebot.redesneurais.recurrentnets.FiveMinutesRecurrentNets;
@@ -27,9 +28,9 @@ public class FiveMinutesPredictor {
     @Autowired
     PredictionServiceImpl predictionService;
 
-    public List<String> predictFiveMinutes(String simbolo, String period, int batchSize, double splitRatio, PriceCategory category, int epochs, double learningRate) throws IOException, InterruptedException {
+    public DataPointsListResultSet predictFiveMinutes(String simbolo, String period, int batchSize, double splitRatio, PriceCategory category, int epochs, double learningRate, String nomeDoConjunto) throws IOException, InterruptedException {
 
-        List<String> dataPointsList;
+        DataPointsListResultSet resultSet;
 
         StopWatch watch = new StopWatch();
         FiveMinutesStockDataSetIterator fiveMinutesStockDataSetIterator = predictionService.getFiveMinutesStockDataSetIterator(simbolo, predictionService.getCSVFilePathForTrainingNeuralNets(period), batchSize, splitRatio, category);
@@ -66,10 +67,10 @@ public class FiveMinutesPredictor {
         } else {
             double max = fiveMinutesStockDataSetIterator.getMaxNum(category);
             double min = fiveMinutesStockDataSetIterator.getMinNum(category);
-            dataPointsList = predictionService.predictPriceOneAhead(fiveMinutesNet, test, max, min, fiveMinutesStockDataSetIterator.getExampleLength());
+            resultSet = predictionService.predictPriceOneAhead(fiveMinutesNet, test, max, min, fiveMinutesStockDataSetIterator.getExampleLength(), nomeDoConjunto, fiveMinutesStockDataSetIterator);
             log.info(period + " done testing...");
             System.out.println("Time Elapsed: " + watch.getTime());
         }
-        return dataPointsList;
+        return resultSet;
     }
 }

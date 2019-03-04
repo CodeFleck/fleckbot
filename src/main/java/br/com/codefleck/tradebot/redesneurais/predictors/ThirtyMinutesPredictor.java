@@ -1,5 +1,6 @@
 package br.com.codefleck.tradebot.redesneurais.predictors;
 
+import br.com.codefleck.tradebot.models.DataPointsListResultSet;
 import br.com.codefleck.tradebot.models.PriceCategory;
 import br.com.codefleck.tradebot.redesneurais.iterators.ThirtyMinutesStockDataSetIterator;
 import br.com.codefleck.tradebot.redesneurais.recurrentnets.ThirtyMinutesRecurrentNets;
@@ -27,9 +28,9 @@ public class ThirtyMinutesPredictor {
     @Autowired
     PredictionServiceImpl predictionService;
 
-    public List<String> predictThirtyMinutes(String simbolo, String period, int batchSize, double splitRatio, PriceCategory category, int epochs, double learningRate) throws IOException, InterruptedException {
+    public DataPointsListResultSet predictThirtyMinutes(String simbolo, String period, int batchSize, double splitRatio, PriceCategory category, int epochs, double learningRate, String nomeDoConjunto) throws IOException, InterruptedException {
 
-        List<String> dataPointsList;
+        DataPointsListResultSet resultSet;
 
         StopWatch watch = new StopWatch();
         ThirtyMinutesStockDataSetIterator thirtyMinutesStockDataSetIterator = predictionService.getThirtyMinutesStockDataSetIterator(simbolo, predictionService.getCSVFilePathForTrainingNeuralNets(period), batchSize, splitRatio, category);
@@ -66,10 +67,10 @@ public class ThirtyMinutesPredictor {
         } else {
             double max = thirtyMinutesStockDataSetIterator.getMaxNum(category);
             double min = thirtyMinutesStockDataSetIterator.getMinNum(category);
-            dataPointsList = predictionService.predictPriceOneAhead(thirtyMinutesNet, test, max, min, thirtyMinutesStockDataSetIterator.getExampleLength());
+            resultSet = predictionService.predictPriceOneAhead(thirtyMinutesNet, test, max, min, thirtyMinutesStockDataSetIterator.getExampleLength(), nomeDoConjunto, thirtyMinutesStockDataSetIterator);
             log.info(period + " done testing...");
             System.out.println("Time Elapsed: " + watch.getTime());
         }
-        return dataPointsList;
+        return resultSet;
     }
 }

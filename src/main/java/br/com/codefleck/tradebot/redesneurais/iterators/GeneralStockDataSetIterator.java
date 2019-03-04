@@ -46,6 +46,8 @@ public class GeneralStockDataSetIterator implements DataSetIterator {
     /** mini-batch offset */
     public LinkedList<Integer> exampleStartOffsets = new LinkedList<>();
 
+    List<StockData> fullStockDataList;
+
     /** stock dataset for training */
     public List<StockData> train;
     /** adjusted stock dataset for testing */
@@ -56,6 +58,7 @@ public class GeneralStockDataSetIterator implements DataSetIterator {
 
     public GeneralStockDataSetIterator(String filename, String symbol, int miniBatchSize, int exampleLength, double splitRatio, PriceCategory category) {
         List<StockData> stockDataList = readStockDataFromFile(filename, symbol);
+        this.fullStockDataList = stockDataList;
         this.miniBatchSize = miniBatchSize;
         this.exampleLength = exampleLength;
         this.category = category;
@@ -240,6 +243,77 @@ public class GeneralStockDataSetIterator implements DataSetIterator {
         this.test = test;
     }
 
+    public Map<PriceCategory, Integer> getFeatureMapIndex() {
+        return featureMapIndex;
+    }
+
+    public int getVECTOR_SIZE() {
+        return VECTOR_SIZE;
+    }
+
+    public int getMiniBatchSize() {
+        return miniBatchSize;
+    }
+
+    public void setMiniBatchSize(int miniBatchSize) {
+        this.miniBatchSize = miniBatchSize;
+    }
+
+    public int getExampleLength() {
+        return exampleLength;
+    }
+
+    public void setExampleLength(int exampleLength) {
+        this.exampleLength = exampleLength;
+    }
+
+    public int getPredictLength() {
+        return predictLength;
+    }
+
+    public void setPredictLength(int predictLength) {
+        this.predictLength = predictLength;
+    }
+
+    public void setMinArray(double[] minArray) {
+        this.minArray = minArray;
+    }
+
+    public void setMaxArray(double[] maxArray) {
+        this.maxArray = maxArray;
+    }
+
+    public PriceCategory getCategory() {
+        return category;
+    }
+
+    public void setCategory(PriceCategory category) {
+        this.category = category;
+    }
+
+    public LinkedList<Integer> getExampleStartOffsets() {
+        return exampleStartOffsets;
+    }
+
+    public void setExampleStartOffsets(LinkedList<Integer> exampleStartOffsets) {
+        this.exampleStartOffsets = exampleStartOffsets;
+    }
+
+    public List<StockData> getTrain() {
+        return train;
+    }
+
+    public void setTrain(List<StockData> train) {
+        this.train = train;
+    }
+
+    public List<StockData> getFullStockDataList() {
+        return fullStockDataList;
+    }
+
+    public void setFullStockDataList(List<StockData> fullStockDataList) {
+        this.fullStockDataList = fullStockDataList;
+    }
 }
 
 

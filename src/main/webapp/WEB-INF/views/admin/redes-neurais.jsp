@@ -52,6 +52,7 @@
                                 <option>4 horas</option>
                                 <option>1 dia</option>
                                 <option>1 semana</option>
+                                <option>1 mes</option>
                             </select>
                             </td>
                             <td><input type="text" class="form-control" name="nomeDoConjunto" value="1sem-5ep-LR0.001-jan15jan18"></td>

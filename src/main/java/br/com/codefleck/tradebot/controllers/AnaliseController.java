@@ -72,6 +72,7 @@ public class AnaliseController {
         model.addObject("fourHours", predictions.get("fourHours"));
         model.addObject("twentyFourHours", predictions.get("twentyFourHours"));
         model.addObject("oneWeek", predictions.get("oneWeek"));
+        model.addObject("oneMonth", predictions.get("oneMonth"));
 
         return model;
     }

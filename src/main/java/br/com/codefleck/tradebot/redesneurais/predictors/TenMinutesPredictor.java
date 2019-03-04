@@ -1,5 +1,6 @@
 package br.com.codefleck.tradebot.redesneurais.predictors;
 
+import br.com.codefleck.tradebot.models.DataPointsListResultSet;
 import br.com.codefleck.tradebot.models.PriceCategory;
 import br.com.codefleck.tradebot.redesneurais.iterators.TenMinutesStockDataSetIterator;
 import br.com.codefleck.tradebot.redesneurais.recurrentnets.TenMinutesRecurrentNets;
@@ -27,9 +28,9 @@ public class TenMinutesPredictor {
     @Autowired
     PredictionServiceImpl predictionService;
 
-    public List<String> predictTenMinutes(String simbolo, String period, int batchSize, double splitRatio, PriceCategory category, int epochs, double learningRate) throws IOException, InterruptedException {
+    public DataPointsListResultSet predictTenMinutes(String simbolo, String period, int batchSize, double splitRatio, PriceCategory category, int epochs, double learningRate, String nomeDoConjunto) throws IOException, InterruptedException {
 
-        List<String> dataPointsList;
+        DataPointsListResultSet resultSet;
 
         StopWatch watch = new StopWatch();
         TenMinutesStockDataSetIterator tenMinutesStockDataSetIterator = predictionService.getTenMinutesStockDataSetIterator(simbolo, predictionService.getCSVFilePathForTrainingNeuralNets(period), batchSize, splitRatio, category);
@@ -66,10 +67,10 @@ public class TenMinutesPredictor {
         } else {
             double max = tenMinutesStockDataSetIterator.getMaxNum(category);
             double min = tenMinutesStockDataSetIterator.getMinNum(category);
-            dataPointsList = predictionService.predictPriceOneAhead(fiveMinutesNet, test, max, min, tenMinutesStockDataSetIterator.getExampleLength());
+            resultSet = predictionService.predictPriceOneAhead(fiveMinutesNet, test, max, min, tenMinutesStockDataSetIterator.getExampleLength(), nomeDoConjunto, tenMinutesStockDataSetIterator);
             log.info(period + " done testing...");
             System.out.println("Time Elapsed: " + watch.getTime());
         }
-        return dataPointsList;
+        return resultSet;
     }
 }

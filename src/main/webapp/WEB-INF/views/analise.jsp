@@ -55,6 +55,7 @@
                     <th>4 horas</th>
                     <th>1 dia</th>
                     <th>1 semana</th>
+                    <th>1 mês</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -69,6 +70,7 @@
                     <td>$${fourHours}</td>
                     <td>$${twentyFourHours}</td>
                     <td>$${oneWeek}</td>
+                    <td>$${oneMonth}</td>
                 </tr>
                 </tbody>
             </table>

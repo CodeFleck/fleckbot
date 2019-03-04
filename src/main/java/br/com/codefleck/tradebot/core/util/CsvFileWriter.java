@@ -111,7 +111,7 @@ public class CsvFileWriter {
             String filePathName = System.getProperty("user.home") + "/projects/tcc/fleckbot-11-09-2017/fleckbot/src/main/resources/OneWeekDataForTrainingNeuralNets.csv";
             return filePathName;
         }
-        if (period.equals("1 mês")) {
+        if (period.equals("1 mes")) {
             String filePathName = System.getProperty("user.home") + "/projects/tcc/fleckbot-11-09-2017/fleckbot/src/main/resources/OneMonthDataForTrainingNeuralNets.csv";
             return filePathName;
         }

@@ -1,8 +1,8 @@
 package br.com.codefleck.tradebot.services.impl;
 
 import br.com.codefleck.tradebot.core.util.CsvBarsLoader;
+import br.com.codefleck.tradebot.daos.DataPointsDao;
 import br.com.codefleck.tradebot.models.*;
-import br.com.codefleck.tradebot.redesneurais.PlotUtil;
 import br.com.codefleck.tradebot.redesneurais.iterators.*;
 import br.com.codefleck.tradebot.redesneurais.predictors.*;
 import br.com.codefleck.tradebot.tradingInterfaces.Ticker;
@@ -23,7 +23,6 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -59,6 +58,8 @@ public class PredictionServiceImpl {
     OneWeekPredictor oneWeekPredictor;
     @Autowired
     OneMonthPredictor oneMonthPredictor;
+    @Autowired
+    DataPointsDao dataPointsDao;
 
     //private static int exampleLength = 30; //1D - gerou 66 resultados
     //private static int exampleLength = 40; //4h - gerou 396 ( 2017-04-18 a 2017-06-23)
@@ -76,7 +77,7 @@ public class PredictionServiceImpl {
     //private static int exampleLength = 80; //15min 2017-04-18 to 2017-05-29 - media erro: 15.22%!!!!!
     //private static int exampleLength = 180; //1D gerou 36
 
-    public List<String> initTraining(int epocas, String simbolo, String categoria, String period) throws IOException, InterruptedException {
+    public DataPointsListResultSet initTraining(int epocas, String simbolo, String categoria, String period, String nomeDoConjunto) throws IOException, InterruptedException {
 
         double learningRate = 0.001;
         int batchSize = 32; // mini-batch size
@@ -87,48 +88,48 @@ public class PredictionServiceImpl {
         PriceCategory category = verifyCategory(chosenCategory);
 
         log.info("Loading test datasets...");
-        List<String> dataPointsList = new ArrayList<>();
+        DataPointsListResultSet resultSet = new DataPointsListResultSet();
 
         switch (period) {
             case "1 minuto":
-                dataPointsList = oneMinutePredictor.predictOneMinute(simbolo, period, batchSize, splitRatio, category, epocas, learningRate);
+                resultSet = oneMinutePredictor.predictOneMinute(simbolo, period, batchSize, splitRatio, category, epocas, learningRate, nomeDoConjunto);
                 break;
             case "5 minutos":
-                dataPointsList = fiveMinutesPredictor.predictFiveMinutes(simbolo, period, batchSize, splitRatio, category, epocas, learningRate);
+                resultSet = fiveMinutesPredictor.predictFiveMinutes(simbolo, period, batchSize, splitRatio, category, epocas, learningRate, nomeDoConjunto);
                 break;
             case "10 minutos":
-                dataPointsList = tenMinutesPredictor.predictTenMinutes(simbolo, period, batchSize, splitRatio, category, epocas, learningRate);
+                resultSet = tenMinutesPredictor.predictTenMinutes(simbolo, period, batchSize, splitRatio, category, epocas, learningRate, nomeDoConjunto);
                 break;
             case "15 minutos":
-                dataPointsList = fifteenMinutesPredictor.predictFifteenMinutes(simbolo, period, batchSize, splitRatio, category, epocas, learningRate);
+                resultSet = fifteenMinutesPredictor.predictFifteenMinutes(simbolo, period, batchSize, splitRatio, category, epocas, learningRate, nomeDoConjunto);
                 break;
             case "30 minutos":
-                dataPointsList = thirtyMinutesPredictor.predictThirtyMinutes(simbolo, period, batchSize, splitRatio, category, epocas, learningRate);
+                resultSet = thirtyMinutesPredictor.predictThirtyMinutes(simbolo, period, batchSize, splitRatio, category, epocas, learningRate, nomeDoConjunto);
                 break;
             case "1 hora":
-                dataPointsList = oneHourPredictor.predictOneHour(simbolo, period, batchSize, splitRatio, category, epocas, learningRate);
+                resultSet = oneHourPredictor.predictOneHour(simbolo, period, batchSize, splitRatio, category, epocas, learningRate, nomeDoConjunto);
                 break;
             case "2 horas":
-                dataPointsList = twoHoursPredictor.predictTwoHours(simbolo, period, batchSize, splitRatio, category, epocas, learningRate);
+                resultSet = twoHoursPredictor.predictTwoHours(simbolo, period, batchSize, splitRatio, category, epocas, learningRate, nomeDoConjunto);
                 break;
             case "3 horas":
-                dataPointsList = threeHoursPredictor.predictThreeHours(simbolo, period, batchSize, splitRatio, category, epocas, learningRate);
+                resultSet = threeHoursPredictor.predictThreeHours(simbolo, period, batchSize, splitRatio, category, epocas, learningRate, nomeDoConjunto);
                 break;
             case "4 horas":
-                dataPointsList = fourHoursPredictor.predictFourHours(simbolo, period, batchSize, splitRatio, category, epocas, learningRate);
+                resultSet = fourHoursPredictor.predictFourHours(simbolo, period, batchSize, splitRatio, category, epocas, learningRate, nomeDoConjunto);
                 break;
             case "1 dia":
-                dataPointsList = oneDayPredictor.predictOneDay(simbolo, period, batchSize, splitRatio, category, epocas, learningRate);
+                resultSet = oneDayPredictor.predictOneDay(simbolo, period, batchSize, splitRatio, category, epocas, learningRate, nomeDoConjunto);
                 break;
             case "1 semana":
-                dataPointsList = oneWeekPredictor.predictOneWeek(simbolo, period, batchSize, splitRatio, category, epocas, learningRate);
+                resultSet = oneWeekPredictor.predictOneWeek(simbolo, period, batchSize, splitRatio, category, epocas, learningRate, nomeDoConjunto);
                 break;
-            case "1 mês":
-                dataPointsList = oneMonthPredictor.predictOneMonth(simbolo, period, batchSize, splitRatio, category, epocas, learningRate);
+            case "1 mes":
+                resultSet = oneMonthPredictor.predictOneMonth(simbolo, period, batchSize, splitRatio, category, epocas, learningRate, nomeDoConjunto);
                 break;
         }
 
-        return dataPointsList;
+        return resultSet;
     }
 
     public String getCSVFilePathForTrainingNeuralNets(String period) throws IOException, InterruptedException {
@@ -177,7 +178,7 @@ public class PredictionServiceImpl {
             TimeUnit.SECONDS.sleep(5);
             return new ClassPathResource("OneWeekDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
         }
-        if (period.equals("1 mês")){
+        if (period.equals("1 mes")){
             TimeUnit.SECONDS.sleep(5);
             return new ClassPathResource("OneMonthDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
         }
@@ -187,6 +188,7 @@ public class PredictionServiceImpl {
     public OneMinuteStockDataSetIterator getOneMinuteStockDataSetIterator(String simbolo, String filePath, int batchSize, double splitRatio, PriceCategory category) {
         OneMinuteStockDataSetIterator oneMinuteStockDataSetIterator = OneMinuteStockDataSetIterator.getInstance();
         List<StockData> stockDataList = oneMinuteStockDataSetIterator.readStockDataFromFile(filePath, simbolo);
+        oneMinuteStockDataSetIterator.setFullStockDataList(stockDataList);
         oneMinuteStockDataSetIterator.setMiniBatchSize(batchSize);
         oneMinuteStockDataSetIterator.setExampleLength(180);
         oneMinuteStockDataSetIterator.setCategory(category);
@@ -200,6 +202,7 @@ public class PredictionServiceImpl {
     public FiveMinutesStockDataSetIterator getFiveMinutesStockDataSetIterator(String simbolo, String filePath, int batchSize, double splitRatio, PriceCategory category) {
         FiveMinutesStockDataSetIterator fiveMinutesStockDataSetIterator = FiveMinutesStockDataSetIterator.getInstance();
         List<StockData> stockDataList = fiveMinutesStockDataSetIterator.readStockDataFromFile(filePath, simbolo);
+        fiveMinutesStockDataSetIterator.setFullStockDataList(stockDataList);
         fiveMinutesStockDataSetIterator.setMiniBatchSize(batchSize);
         fiveMinutesStockDataSetIterator.setExampleLength(80);
         fiveMinutesStockDataSetIterator.setCategory(category);
@@ -213,6 +216,7 @@ public class PredictionServiceImpl {
     public TenMinutesStockDataSetIterator getTenMinutesStockDataSetIterator(String simbolo, String filePath, int batchSize, double splitRatio, PriceCategory category) {
         TenMinutesStockDataSetIterator tenMinutesStockDataSetIterator = TenMinutesStockDataSetIterator.getInstance();
         List<StockData> stockDataList = tenMinutesStockDataSetIterator.readStockDataFromFile(filePath, simbolo);
+        tenMinutesStockDataSetIterator.setFullStockDataList(stockDataList);
         tenMinutesStockDataSetIterator.setMiniBatchSize(batchSize);
         tenMinutesStockDataSetIterator.setExampleLength(80);
         tenMinutesStockDataSetIterator.setCategory(category);
@@ -226,6 +230,7 @@ public class PredictionServiceImpl {
     public FifteenMinutesStockDataSetIterator getFifteenMinutesStockDataSetIterator(String simbolo, String filePath, int batchSize, double splitRatio, PriceCategory category) {
         FifteenMinutesStockDataSetIterator fifteenMinutesStockDataSetIterator = FifteenMinutesStockDataSetIterator.getInstance();
         List<StockData> stockDataList = fifteenMinutesStockDataSetIterator.readStockDataFromFile(filePath, simbolo);
+        fifteenMinutesStockDataSetIterator.setFullStockDataList(stockDataList);
         fifteenMinutesStockDataSetIterator.setMiniBatchSize(batchSize);
         fifteenMinutesStockDataSetIterator.setExampleLength(180);
         fifteenMinutesStockDataSetIterator.setCategory(category);
@@ -239,6 +244,7 @@ public class PredictionServiceImpl {
     public ThirtyMinutesStockDataSetIterator getThirtyMinutesStockDataSetIterator(String simbolo, String filePath, int batchSize, double splitRatio, PriceCategory category) {
         ThirtyMinutesStockDataSetIterator thirtyMinutesIterator = ThirtyMinutesStockDataSetIterator.getInstance();
         List<StockData> stockDataList = thirtyMinutesIterator.readStockDataFromFile(filePath, simbolo);
+        thirtyMinutesIterator.setFullStockDataList(stockDataList);
         thirtyMinutesIterator.setMiniBatchSize(batchSize);
         thirtyMinutesIterator.setExampleLength(280);
         thirtyMinutesIterator.setCategory(category);
@@ -252,6 +258,7 @@ public class PredictionServiceImpl {
     public OneHourStockDataSetIterator getOneHourStockDataSetIterator(String simbolo, String filePath, int batchSize, double splitRatio, PriceCategory category) {
         OneHourStockDataSetIterator oneHourIterator = OneHourStockDataSetIterator.getInstance();
         List<StockData> stockDataList = oneHourIterator.readStockDataFromFile(filePath, simbolo);
+        oneHourIterator.setFullStockDataList(stockDataList);
         oneHourIterator.setMiniBatchSize(batchSize);
         oneHourIterator.setExampleLength(50);
         oneHourIterator.setCategory(category);
@@ -265,6 +272,7 @@ public class PredictionServiceImpl {
     public TwoHoursStockDataSetIterator getTwoHoursStockDataSetIterator(String simbolo, String filePath, int batchSize, double splitRatio, PriceCategory category) {
         TwoHoursStockDataSetIterator twoHoursIterator = TwoHoursStockDataSetIterator.getInstance();
         List<StockData> stockDataList = twoHoursIterator.readStockDataFromFile(filePath, simbolo);
+        twoHoursIterator.setFullStockDataList(stockDataList);
         twoHoursIterator.setMiniBatchSize(batchSize);
         twoHoursIterator.setExampleLength(80);
         twoHoursIterator.setCategory(category);
@@ -278,6 +286,7 @@ public class PredictionServiceImpl {
     public ThreeHoursStockDataSetIterator getThreeHoursStockDataSetIterator(String simbolo, String filePath, int batchSize, double splitRatio, PriceCategory category) {
         ThreeHoursStockDataSetIterator threeHoursStockDataSetIterator = ThreeHoursStockDataSetIterator.getInstance();
         List<StockData> stockDataList = threeHoursStockDataSetIterator.readStockDataFromFile(filePath, simbolo);
+        threeHoursStockDataSetIterator.setFullStockDataList(stockDataList);
         threeHoursStockDataSetIterator.setMiniBatchSize(batchSize);
         threeHoursStockDataSetIterator.setExampleLength(50);
         threeHoursStockDataSetIterator.setCategory(category);
@@ -291,6 +300,7 @@ public class PredictionServiceImpl {
     public FourHoursStockDataSetIterator getFourHoursStockDataSetIterator(String simbolo, String filePath, int batchSize, double splitRatio, PriceCategory category) {
         FourHoursStockDataSetIterator fourHoursStockDataSetIterator = FourHoursStockDataSetIterator.getInstance();
         List<StockData> stockDataList = fourHoursStockDataSetIterator.readStockDataFromFile(filePath, simbolo);
+        fourHoursStockDataSetIterator.setFullStockDataList(stockDataList);
         fourHoursStockDataSetIterator.setMiniBatchSize(batchSize);
         fourHoursStockDataSetIterator.setExampleLength(40);
         fourHoursStockDataSetIterator.setCategory(category);
@@ -304,6 +314,7 @@ public class PredictionServiceImpl {
     public OneDayStockDataSetIterator getOneDayStockDataSetIterator(String simbolo, String filePath, int batchSize, double splitRatio, PriceCategory category) {
         OneDayStockDataSetIterator oneDayIterator = OneDayStockDataSetIterator.getInstance();
         List<StockData> stockDataList = oneDayIterator.readStockDataFromFile(filePath, simbolo);
+        oneDayIterator.setFullStockDataList(stockDataList);
         oneDayIterator.setMiniBatchSize(batchSize);
         oneDayIterator.setExampleLength(40);
         oneDayIterator.setCategory(category);
@@ -317,6 +328,7 @@ public class PredictionServiceImpl {
     public OneWeekStockDataSetIterator getOneWeekStockDataSetIterator(String simbolo, String filePath, int batchSize, double splitRatio, PriceCategory category) {
         OneWeekStockDataSetIterator oneWeekIterator = OneWeekStockDataSetIterator.getInstance();
         List<StockData> stockDataList = duplicate(oneWeekIterator.readStockDataFromFile(filePath, simbolo));
+        oneWeekIterator.setFullStockDataList(stockDataList);
         oneWeekIterator.setMiniBatchSize(batchSize);
         oneWeekIterator.setExampleLength(30);
         oneWeekIterator.setCategory(category);
@@ -330,7 +342,8 @@ public class PredictionServiceImpl {
     public OneMonthStockDataSetIterator getOneMonthStockDataSetIterator(String simbolo, String filePath, int batchSize, double splitRatio, PriceCategory category) {
         OneMonthStockDataSetIterator oneMonthIterator = OneMonthStockDataSetIterator.getInstance();
         List<StockData> stockDataList = duplicate(oneMonthIterator.readStockDataFromFile(filePath, simbolo));
-        oneMonthIterator.setMiniBatchSize(8);
+        oneMonthIterator.setFullStockDataList(stockDataList);
+        oneMonthIterator.setMiniBatchSize(batchSize);
         oneMonthIterator.setExampleLength(30);
         oneMonthIterator.setCategory(category);
         oneMonthIterator.setTrain(stockDataList);
@@ -341,18 +354,11 @@ public class PredictionServiceImpl {
 
     private List<StockData> duplicate(List<StockData> stockDataList) {
         List<StockData> duplicatedStockDataList = new ArrayList<>();
-        for (StockData stock : stockDataList) {
-            duplicatedStockDataList.add(stock);
-        }
-        for (StockData stock : stockDataList) {
-            duplicatedStockDataList.add(stock);
-        }
-        for (StockData stock : stockDataList) {
-            duplicatedStockDataList.add(stock);
-        }
-        for (StockData stock : stockDataList) {
-            duplicatedStockDataList.add(stock);
-        }
+        duplicatedStockDataList.addAll(stockDataList);
+        duplicatedStockDataList.addAll(stockDataList);
+        duplicatedStockDataList.addAll(stockDataList);
+        duplicatedStockDataList.addAll(stockDataList);
+        duplicatedStockDataList.addAll(stockDataList);
         return duplicatedStockDataList;
     }
 
@@ -373,18 +379,88 @@ public class PredictionServiceImpl {
     }
 
     /** Predict one feature of a stock one-day ahead */
-    public List<String> predictPriceOneAhead (MultiLayerNetwork net, List<Pair<INDArray, INDArray>> testData, double max, double min, int exampleLength) {
+    public DataPointsListResultSet predictPriceOneAhead (MultiLayerNetwork net, List<Pair<INDArray, INDArray>> testData, double max, double min, int exampleLength, String nomeDoConjunto, GeneralStockDataSetIterator iterator) {
         double[] predicts = new double[testData.size()];
         double[] actuals = new double[testData.size()];
+
+        DataPointsListResultSet resultSet = new DataPointsListResultSet();
+        List<DataPoints> predictDataPointsList = new ArrayList<>();
+        List<DataPoints> actualDataPointsList = new ArrayList<>();
+        resultSet.setPredictDataPointsList(predictDataPointsList);
+        resultSet.setActualDataPointsList(actualDataPointsList);
+        resultSet.setNomeConjunto(nomeDoConjunto);
+
+
+
         for (int i = 0; i < testData.size(); i++) {
             predicts[i] = net.rnnTimeStep(testData.get(i).getKey()).getDouble(exampleLength - 1) * (max - min) + min;
             actuals[i] = testData.get(i).getValue().getDouble(0);
+
+            DataPoints predictDataPoint = new DataPoints();
+            predictDataPoint.setNomeConjunto(nomeDoConjunto);
+            predictDataPoint.setDataPointsListType(DataPointsListType.PREDICTDATAPOINTSLIST);
+            predictDataPoint.setLocalDateTime(iterator.getFullStockDataList().get(i).getDate().toLocalDateTime());
+            predictDataPoint.setY(predicts[i]);
+            predictDataPoint.setX(i);
+            dataPointsDao.save(predictDataPoint);
+            predictDataPointsList.add(predictDataPoint);
+
+            DataPoints actuaDataPoint = new DataPoints();
+            actuaDataPoint.setNomeConjunto(nomeDoConjunto);
+            actuaDataPoint.setDataPointsListType(DataPointsListType.ACTUALDATAPOINTSLIST);
+            actuaDataPoint.setLocalDateTime(iterator.getFullStockDataList().get(i).getDate().toLocalDateTime());
+            actuaDataPoint.setY(actuals[i]);
+            actuaDataPoint.setX(i);
+            dataPointsDao.save(actuaDataPoint);
+            actualDataPointsList.add(actuaDataPoint);
+        }
+
+        log.info("Print out Predictions and Actual Values...");
+        log.info("Predict,Actual");
+        for (int i = 0; i < predicts.length; i++) log.info(predicts[i] + "," + actuals[i]);
+
+        return resultSet;
+    }
+
+    public DataPointsListResultSet forecastPriceOneAhead (MultiLayerNetwork net, List<Pair<INDArray, INDArray>> testData, double max, double min, int exampleLength) {
+        double[] predicts = new double[testData.size()];
+        double[] actuals = new double[testData.size()];
+        String nomeDoConjunto = "forecast";
+
+        DataPointsListResultSet resultSet = new DataPointsListResultSet();
+        resultSet.setNomeConjunto(nomeDoConjunto);
+
+        List<DataPoints> predictDataPointsList = new ArrayList<>();
+        List<DataPoints> actualDataPointsList = new ArrayList<>();
+
+        for (int i = 0; i < testData.size(); i++) {
+            predicts[i] = net.rnnTimeStep(testData.get(i).getKey()).getDouble(exampleLength - 1) * (max - min) + min;
+            actuals[i] = testData.get(i).getValue().getDouble(0);
+
+            DataPoints predictDataPoint = new DataPoints();
+            predictDataPoint.setNomeConjunto(nomeDoConjunto);
+            predictDataPoint.setDataPointsListType(DataPointsListType.PREDICTDATAPOINTSLIST);
+            predictDataPoint.setLocalDateTime(LocalDateTime.now());
+            predictDataPoint.setY(predicts[i]);
+            predictDataPoint.setX(i);
+            predictDataPointsList.add(predictDataPoint);
+
+            DataPoints actualDataPoint = new DataPoints();
+            actualDataPoint.setNomeConjunto(nomeDoConjunto);
+            actualDataPoint.setDataPointsListType(DataPointsListType.ACTUALDATAPOINTSLIST);
+            actualDataPoint.setLocalDateTime(LocalDateTime.now());
+            actualDataPoint.setY(actuals[i]);
+            actualDataPoint.setX(i);
+            actualDataPointsList.add(actualDataPoint);
         }
         log.info("Print out Predictions and Actual Values...");
         log.info("Predict,Actual");
         for (int i = 0; i < predicts.length; i++) log.info(predicts[i] + "," + actuals[i]);
-        log.info("Plot...");
-        return PlotUtil.plot(predicts, actuals);
+
+        resultSet.setPredictDataPointsList(predictDataPointsList);
+        resultSet.setActualDataPointsList(actualDataPointsList);
+
+        return resultSet;
     }
 
     /** Predict all the features (open, close, low, high prices and volume) of a stock one-day ahead */
@@ -416,68 +492,13 @@ public class PredictionServiceImpl {
         return csvBarsLoader.createCSVFileForNeuralNets(beginDate, endDate, period);
     }
 
-    public DataPointsListResultSet prepareDataPointToBeSaved(List<String> dataPointList, String nomeDoConjunto, BaseTimeSeries customTimeSeries) {
-
-        if (dataPointList.size() > 0 && dataPointList.get(0) != null) {
-            //predicts
-            String predictsDataPointsArray[] = dataPointList.get(0).replace("[", "").replace("{", "").replace("}", "").replaceAll("\"\"", "").split(",");
-
-            DataPointsListResultSet dataPointsListResultSet = new DataPointsListResultSet();
-            dataPointsListResultSet.setNomeConjunto(nomeDoConjunto);
-
-            List<DataPointsModel> predictsDataPointsModelListXY = new ArrayList<>();
-
-            int predictIndex = 0;
-            for (int i = 0; i < predictsDataPointsArray.length; i++){
-                if (predictsDataPointsArray[i] != null && predictsDataPointsArray[i].contains("y") && predictsDataPointsArray[i].substring(1, 2).equals("y")) {
-                    DataPointsModel dataPoints = new DataPointsModel();
-                    dataPoints.setNomeConjunto(nomeDoConjunto);
-                    dataPoints.setX(Double.valueOf(predictIndex));
-                    dataPoints.setLocalDateTime(customTimeSeries.getBar(predictIndex).getEndTime().toLocalDateTime());
-                    dataPoints.setY(Double.valueOf(predictsDataPointsArray[i].replaceAll("\"", "").replace("y:", "").replace("]", "")));
-                    dataPoints.setDataPointModelistType(DataPointModelistType.PREDICTDATAPOINTSMODELLIST);
-                    predictsDataPointsModelListXY.add(dataPoints);
-                    predictIndex++;
-                }
-            }
-
-            dataPointsListResultSet.setPredictDataPointsModelList(predictsDataPointsModelListXY);
-
-            //actuals
-            String actualsDataPointsArray[] = dataPointList.get(1).replace("[", "").replace("{", "").replace("}", "").replaceAll("\"\"", "").split(",");
-
-            List<DataPointsModel> actualDataPointsModelListXY = new ArrayList<>();
-
-            int actualIndex = 0;
-            for (int i = 0; i < actualsDataPointsArray.length; i++){
-                if (actualsDataPointsArray[i] != null && predictsDataPointsArray[i].contains("y") && actualsDataPointsArray[i].substring(1, 2).equals("y")) {
-                    DataPointsModel dataPoints = new DataPointsModel();
-                    dataPoints.setNomeConjunto(nomeDoConjunto);
-                    dataPoints.setX(Double.valueOf(actualIndex));
-                    dataPoints.setLocalDateTime(customTimeSeries.getBar(actualIndex).getEndTime().toLocalDateTime());
-                    dataPoints.setY(Double.valueOf(actualsDataPointsArray[i].replaceAll("\"", "").replace("y:", "").replace("]", "")));
-                    dataPoints.setDataPointModelistType(DataPointModelistType.ACTUALDATAPOINTSMODELLIST);
-                    predictsDataPointsModelListXY.add(dataPoints);
-                    actualIndex++;
-                }
-            }
-
-            dataPointsListResultSet.setActualDataPointsModelList(actualDataPointsModelListXY);
-
-            return dataPointsListResultSet;
-        } else {
-            log.info("Couldn't find any results...");
-            return null;
-        }
-    }
-
     public Double calculateErrorPercentageAverage(DataPointsListResultSet dataPointsList) {
 
         List<Double> errorPercentage = new ArrayList<>();
         Double result;
 
-        for (int i=0;i<dataPointsList.getActualDataPointsModelList().size();i++){
-            result = ((dataPointsList.getActualDataPointsModelList().get(i).getY()-dataPointsList.getPredictDataPointsModelList().get(i).getY())*100)/dataPointsList.getActualDataPointsModelList().get(i).getY();
+        for (int i = 0; i<dataPointsList.getActualDataPointsList().size(); i++){
+            result = ((dataPointsList.getActualDataPointsList().get(i).getY()-dataPointsList.getPredictDataPointsList().get(i).getY())*100)/dataPointsList.getActualDataPointsList().get(i).getY();
             errorPercentage.add(result);
         }
 
@@ -496,10 +517,10 @@ public class PredictionServiceImpl {
         List<Double> errorPercentage = new ArrayList<>();
         Double result;
 
-        int lastResult = dataPointsListResultSet.getActualDataPointsModelList().size();
+        int lastResult = dataPointsListResultSet.getActualDataPointsList().size();
         lastResult--;
 
-        result = ((dataPointsListResultSet.getActualDataPointsModelList().get(lastResult).getY()-dataPointsListResultSet.getPredictDataPointsModelList().get(lastResult).getY())*100)/dataPointsListResultSet.getActualDataPointsModelList().get(lastResult).getY();
+        result = ((dataPointsListResultSet.getActualDataPointsList().get(lastResult).getY()-dataPointsListResultSet.getPredictDataPointsList().get(lastResult).getY())*100)/dataPointsListResultSet.getActualDataPointsList().get(lastResult).getY();
 
         errorPercentage.add(result);
 
@@ -508,11 +529,11 @@ public class PredictionServiceImpl {
 
     public Double calculateMajorError(DataPointsListResultSet dataPointsListResultSet) {
 
-        Double majorError = ((dataPointsListResultSet.getActualDataPointsModelList().get(0).getY() - dataPointsListResultSet.getPredictDataPointsModelList().get(0).getY()) * 100) / dataPointsListResultSet.getActualDataPointsModelList().get(0).getY();
+        Double majorError = ((dataPointsListResultSet.getActualDataPointsList().get(0).getY() - dataPointsListResultSet.getPredictDataPointsList().get(0).getY()) * 100) / dataPointsListResultSet.getActualDataPointsList().get(0).getY();
         Double result;
-        for (int i=0;i<dataPointsListResultSet.getActualDataPointsModelList().size();i++) {
+        for (int i = 0; i<dataPointsListResultSet.getActualDataPointsList().size(); i++) {
 
-            result = ((dataPointsListResultSet.getActualDataPointsModelList().get(i).getY() - dataPointsListResultSet.getPredictDataPointsModelList().get(i).getY()) * 100) / dataPointsListResultSet.getActualDataPointsModelList().get(i).getY();
+            result = ((dataPointsListResultSet.getActualDataPointsList().get(i).getY() - dataPointsListResultSet.getPredictDataPointsList().get(i).getY()) * 100) / dataPointsListResultSet.getActualDataPointsList().get(i).getY();
 
             if (result > majorError) {
                 majorError = result;
@@ -523,13 +544,13 @@ public class PredictionServiceImpl {
 
     public Double calculateMinorError(DataPointsListResultSet dataPointsListResultSet) {
 
-        Double minorError = ((dataPointsListResultSet.getActualDataPointsModelList().get(0).getY() - dataPointsListResultSet.getPredictDataPointsModelList().get(0).getY()) * 100) / dataPointsListResultSet.getActualDataPointsModelList().get(0).getY();
+        Double minorError = ((dataPointsListResultSet.getActualDataPointsList().get(0).getY() - dataPointsListResultSet.getPredictDataPointsList().get(0).getY()) * 100) / dataPointsListResultSet.getActualDataPointsList().get(0).getY();
 
         Double result;
 
-        for (int i=0;i<dataPointsListResultSet.getActualDataPointsModelList().size();i++) {
+        for (int i = 0; i<dataPointsListResultSet.getActualDataPointsList().size(); i++) {
 
-            result = ((dataPointsListResultSet.getActualDataPointsModelList().get(i).getY() - dataPointsListResultSet.getPredictDataPointsModelList().get(i).getY()) * 100) / dataPointsListResultSet.getActualDataPointsModelList().get(i).getY();
+            result = ((dataPointsListResultSet.getActualDataPointsList().get(i).getY() - dataPointsListResultSet.getPredictDataPointsList().get(i).getY()) * 100) / dataPointsListResultSet.getActualDataPointsList().get(i).getY();
 
             if (result < minorError) {
                 minorError = result;

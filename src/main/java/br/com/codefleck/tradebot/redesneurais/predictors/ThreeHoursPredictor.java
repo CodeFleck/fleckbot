@@ -1,5 +1,6 @@
 package br.com.codefleck.tradebot.redesneurais.predictors;
 
+import br.com.codefleck.tradebot.models.DataPointsListResultSet;
 import br.com.codefleck.tradebot.models.PriceCategory;
 import br.com.codefleck.tradebot.redesneurais.iterators.ThreeHoursStockDataSetIterator;
 import br.com.codefleck.tradebot.redesneurais.recurrentnets.ThreeHoursRecurrentNets;
@@ -27,9 +28,9 @@ public class ThreeHoursPredictor {
     @Autowired
     PredictionServiceImpl predictionService;
 
-    public List<String> predictThreeHours(String simbolo, String period, int batchSize, double splitRatio, PriceCategory category, int epochs, double learningRate) throws IOException, InterruptedException {
+    public DataPointsListResultSet predictThreeHours(String simbolo, String period, int batchSize, double splitRatio, PriceCategory category, int epochs, double learningRate, String nomeDoConjunto) throws IOException, InterruptedException {
 
-        List<String> dataPointsList;
+        DataPointsListResultSet resultSet;
 
         StopWatch watch = new StopWatch();
         ThreeHoursStockDataSetIterator threeHoursIterator = predictionService.getThreeHoursStockDataSetIterator(simbolo, predictionService.getCSVFilePathForTrainingNeuralNets(period), batchSize, splitRatio, category);
@@ -66,10 +67,10 @@ public class ThreeHoursPredictor {
         } else {
             double max = threeHoursIterator.getMaxNum(category);
             double min = threeHoursIterator.getMinNum(category);
-            dataPointsList = predictionService.predictPriceOneAhead(threeHoursNet, test, max, min, threeHoursIterator.getExampleLength());
+            resultSet = predictionService.predictPriceOneAhead(threeHoursNet, test, max, min, threeHoursIterator.getExampleLength(), nomeDoConjunto, threeHoursIterator);
             log.info(period + " done testing...");
             System.out.println("Time Elapsed: " + watch.getTime());
         }
-        return dataPointsList;
+        return resultSet;
     }
 }

@@ -1,33 +1,27 @@
 package br.com.codefleck.tradebot.models;
 
-import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
 public class DataPointsListResultSet {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Integer resultsetid;
 
     String nomeConjunto;
 
-    @OneToMany(mappedBy = "dataPointModelID")
-    private List<DataPointsModel> predictDataPointsModelList = new ArrayList<>();
+    private List<DataPoints> predictDataPointsList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "dataPointModelID")
-    private List<DataPointsModel> actualDataPointsModelList = new ArrayList<>();
+    private List<DataPoints> actualDataPointsList = new ArrayList<>();
 
     public DataPointsListResultSet() {
     }
 
-    public Integer getId() {
-        return id;
+    public Integer getResultsetid() {
+        return resultsetid;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setResultsetid(Integer resultsetid) {
+        this.resultsetid = resultsetid;
     }
 
     public String getNomeConjunto() {
@@ -38,29 +32,29 @@ public class DataPointsListResultSet {
         this.nomeConjunto = nomeConjunto;
     }
 
-    public List<DataPointsModel> getPredictDataPointsModelList() {
-        return predictDataPointsModelList;
+    public List<DataPoints> getPredictDataPointsList() {
+        return predictDataPointsList;
     }
 
-    public void setPredictDataPointsModelList(List<DataPointsModel> predictDataPointsModelList) {
-        this.predictDataPointsModelList = predictDataPointsModelList;
+    public void setPredictDataPointsList(List<DataPoints> predictDataPointsList) {
+        this.predictDataPointsList = predictDataPointsList;
     }
 
-    public List<DataPointsModel> getActualDataPointsModelList() {
-        return actualDataPointsModelList;
+    public List<DataPoints> getActualDataPointsList() {
+        return actualDataPointsList;
     }
 
-    public void setActualDataPointsModelList(List<DataPointsModel> actualDataPointsModelList) {
-        this.actualDataPointsModelList = actualDataPointsModelList;
+    public void setActualDataPointsList(List<DataPoints> actualDataPointsList) {
+        this.actualDataPointsList = actualDataPointsList;
     }
 
     @Override
     public String toString() {
         return "DataPointsListResultSet{" +
-                "id=" + id +
+                "Resultsetid=" + resultsetid +
                 ", nomeConjunto='" + nomeConjunto + '\'' +
-                ", predictDataPointsModelList=" + predictDataPointsModelList +
-                ", actualDataPointsModelList=" + actualDataPointsModelList +
+                ", predictDataPointsList=" + predictDataPointsList +
+                ", actualDataPointsList=" + actualDataPointsList +
                 '}';
     }
 }

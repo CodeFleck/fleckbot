@@ -19,7 +19,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Component
-public class OneMonthStockDataSetIterator implements DataSetIterator {
+public class OneMonthStockDataSetIterator extends GeneralStockDataSetIterator implements DataSetIterator {
 
     /** category and its index */
     private final Map<PriceCategory, Integer> featureMapIndex = ImmutableMap.of(PriceCategory.OPEN, 0, PriceCategory.CLOSE, 1,
@@ -41,6 +41,8 @@ public class OneMonthStockDataSetIterator implements DataSetIterator {
 
     /** mini-batch offset */
     public LinkedList<Integer> exampleStartOffsets = new LinkedList<>();
+
+    List<StockData> fullStockDataList;
 
     /** stock dataset for training */
     public List<StockData> train;
@@ -306,6 +308,17 @@ public class OneMonthStockDataSetIterator implements DataSetIterator {
 
     public void setSplit(int split) {
         this.split = split;
+    }
+
+
+    @Override
+    public List<StockData> getFullStockDataList() {
+        return fullStockDataList;
+    }
+
+    @Override
+    public void setFullStockDataList(List<StockData> fullStockDataList) {
+        this.fullStockDataList = fullStockDataList;
     }
 }
 

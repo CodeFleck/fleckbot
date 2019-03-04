@@ -1,17 +1,17 @@
 package br.com.codefleck.tradebot.controllers;
 
 import br.com.codefleck.tradebot.core.engine.TradingEngine;
-import br.com.codefleck.tradebot.daos.DataPointsModelDao;
+import br.com.codefleck.tradebot.daos.DataPointsDao;
 import br.com.codefleck.tradebot.daos.StockDataDao;
+import br.com.codefleck.tradebot.models.DataPoints;
 import br.com.codefleck.tradebot.models.DataPointsListResultSet;
-import br.com.codefleck.tradebot.models.DataPointsModel;
+import br.com.codefleck.tradebot.core.util.PlotUtil;
 import br.com.codefleck.tradebot.services.impl.PredictionServiceImpl;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-import org.ta4j.core.BaseTimeSeries;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
@@ -33,21 +33,23 @@ public class RedesNeuraisController {
     @Autowired
     PredictionServiceImpl predictionService;
     @Autowired
-    DataPointsModelDao dataPointsModelDao;
+    DataPointsDao dataPointsDao;
     @Autowired
     StockDataDao stockDataDao;
+    @Autowired
+    PlotUtil plotUtil;
 
     @GetMapping
     public ModelAndView redesNeuraisLandingPage(ModelAndView model) {
 
         model.addObject("botStatus", fleckBot.isRunning());
 
-        List<DataPointsModel> todosDataPoints = dataPointsModelDao.all();
+        List<DataPoints> todosDataPoints = dataPointsDao.all();
 
-        List<DataPointsModel> predictsList = new ArrayList<>();
-        List<DataPointsModel> actualsList = new ArrayList<>();
+        List<DataPoints> predictsList = new ArrayList<>();
+        List<DataPoints> actualsList = new ArrayList<>();
 
-        for (DataPointsModel dataPoint : todosDataPoints) {
+        for (DataPoints dataPoint : todosDataPoints) {
 
             if (dataPoint.getNomeConjunto().equals("LR0.001-15min_1ep_jun16jun17Prediction-Fechamento")){
                 predictsList.add(dataPoint);
@@ -90,12 +92,12 @@ public class RedesNeuraisController {
             e.printStackTrace();
         }
 
-        BaseTimeSeries customTimeSeries = predictionService.createCSVFileForNeuralNets(begingDate, endingDate, period);
+        predictionService.createCSVFileForNeuralNets(begingDate, endingDate, period);
 
-        List<String> dataPointList = null;
+        DataPointsListResultSet resultSet = null;
         try {
             try {
-                dataPointList = predictionService.initTraining(epocas, simbolo, categoria, period);
+                resultSet = predictionService.initTraining(epocas, simbolo, categoria, period, nomeDoConjunto);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -103,10 +105,12 @@ public class RedesNeuraisController {
             e.printStackTrace();
         }
 
+        List<String> dataPointsStringList = plotUtil.plot(resultSet);
+
         ModelAndView model = new ModelAndView();
         model.setViewName("admin/redes-neurais");
-        model.addObject("predictsDataPoints", dataPointList.get(0));
-        model.addObject("actualsDataPoints", dataPointList.get(1));
+        model.addObject("predictsDataPoints", dataPointsStringList.get(0));
+        model.addObject("actualsDataPoints", dataPointsStringList.get(1));
         model.addObject("epocas", epocas);
         model.addObject("beginDate", beginDate);
         model.addObject("endDate", endDate);
@@ -115,11 +119,10 @@ public class RedesNeuraisController {
         String cat = categoria;
         model.addObject("categoria", cat);
 
-        DataPointsListResultSet dataPointsListResultSet = predictionService.prepareDataPointToBeSaved(dataPointList, nomeDoConjunto, customTimeSeries);
-        Double errorPercentageAvg = predictionService.calculateErrorPercentageAverage(dataPointsListResultSet);
-        Double errorPercentageLastDay = predictionService.calculateErrorPercentageLastDay(dataPointsListResultSet);
-        Double majorError = predictionService.calculateMajorError(dataPointsListResultSet);
-        Double minorError = predictionService.calculateMinorError(dataPointsListResultSet);
+        Double errorPercentageAvg = predictionService.calculateErrorPercentageAverage(resultSet);
+        Double errorPercentageLastDay = predictionService.calculateErrorPercentageLastDay(resultSet);
+        Double majorError = predictionService.calculateMajorError(resultSet);
+        Double minorError = predictionService.calculateMinorError(resultSet);
 
         NumberFormat formatter = new DecimalFormat("#0.00");
 
@@ -127,7 +130,6 @@ public class RedesNeuraisController {
         model.addObject("errorPercentageLastDay", formatter.format(errorPercentageLastDay));
         model.addObject("majorError", formatter.format(majorError));
         model.addObject("minorError", formatter.format(minorError));
-
 
         return model;
     }

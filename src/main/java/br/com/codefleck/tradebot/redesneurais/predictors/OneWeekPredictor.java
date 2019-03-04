@@ -1,5 +1,6 @@
 package br.com.codefleck.tradebot.redesneurais.predictors;
 
+import br.com.codefleck.tradebot.models.DataPointsListResultSet;
 import br.com.codefleck.tradebot.models.PriceCategory;
 import br.com.codefleck.tradebot.redesneurais.iterators.OneWeekStockDataSetIterator;
 import br.com.codefleck.tradebot.redesneurais.recurrentnets.OneWeekRecurrentNets;
@@ -27,9 +28,9 @@ public class OneWeekPredictor {
     @Autowired
     PredictionServiceImpl predictionService;
 
-    public List<String> predictOneWeek(String simbolo, String period, int batchSize, double splitRatio, PriceCategory category, int epochs, double learningRate) throws IOException, InterruptedException {
+    public DataPointsListResultSet predictOneWeek(String simbolo, String period, int batchSize, double splitRatio, PriceCategory category, int epochs, double learningRate, String nomeDoConjunto) throws IOException, InterruptedException {
 
-        List<String> dataPointsList;
+        DataPointsListResultSet resultSet;
 
         StopWatch watch = new StopWatch();
         OneWeekStockDataSetIterator oneWeekIterator = predictionService.getOneWeekStockDataSetIterator(simbolo, predictionService.getCSVFilePathForTrainingNeuralNets(period), batchSize, splitRatio, category);
@@ -66,10 +67,10 @@ public class OneWeekPredictor {
         } else {
             double max = oneWeekIterator.getMaxNum(category);
             double min = oneWeekIterator.getMinNum(category);
-            dataPointsList = predictionService.predictPriceOneAhead(oneWeekNet, test, max, min, oneWeekIterator.getExampleLength());
+            resultSet = predictionService.predictPriceOneAhead(oneWeekNet, test, max, min, oneWeekIterator.getExampleLength(), nomeDoConjunto, oneWeekIterator);
             log.info(period + " done testing...");
             System.out.println("Time Elapsed: " + watch.getTime());
         }
-        return dataPointsList;
+        return resultSet;
     }
 }

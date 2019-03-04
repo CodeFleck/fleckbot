@@ -1,5 +1,6 @@
 package br.com.codefleck.tradebot.redesneurais.predictors;
 
+import br.com.codefleck.tradebot.models.DataPointsListResultSet;
 import br.com.codefleck.tradebot.models.PriceCategory;
 import br.com.codefleck.tradebot.redesneurais.iterators.FifteenMinutesStockDataSetIterator;
 import br.com.codefleck.tradebot.redesneurais.recurrentnets.FifteenMinutesRecurrentNets;
@@ -27,9 +28,9 @@ public class FifteenMinutesPredictor {
     @Autowired
     PredictionServiceImpl predictionService;
 
-    public List<String> predictFifteenMinutes(String simbolo, String period, int batchSize, double splitRatio, PriceCategory category, int epochs, double learningRate) throws IOException, InterruptedException {
+    public DataPointsListResultSet predictFifteenMinutes(String simbolo, String period, int batchSize, double splitRatio, PriceCategory category, int epochs, double learningRate, String nomeDoConjunto) throws IOException, InterruptedException {
 
-        List<String> dataPointsList;
+        DataPointsListResultSet resultSet;
 
         StopWatch watch = new StopWatch();
         FifteenMinutesStockDataSetIterator fifteenMinutesStockDataSetIterator = predictionService.getFifteenMinutesStockDataSetIterator(simbolo, predictionService.getCSVFilePathForTrainingNeuralNets(period), batchSize, splitRatio, category);
@@ -66,10 +67,10 @@ public class FifteenMinutesPredictor {
         } else {
             double max = fifteenMinutesStockDataSetIterator.getMaxNum(category);
             double min = fifteenMinutesStockDataSetIterator.getMinNum(category);
-            dataPointsList = predictionService.predictPriceOneAhead(fifteenMinutesNet, test, max, min, fifteenMinutesStockDataSetIterator.getExampleLength());
+            resultSet = predictionService.predictPriceOneAhead(fifteenMinutesNet, test, max, min, fifteenMinutesStockDataSetIterator.getExampleLength(), nomeDoConjunto, fifteenMinutesStockDataSetIterator);
             log.info(period + " done testing...");
             System.out.println("Time Elapsed: " + watch.getTime());
         }
-        return dataPointsList;
+        return resultSet;
     }
 }
