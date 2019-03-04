@@ -79,22 +79,23 @@
 
           $(function () {
             var chart = new CanvasJS.Chart("chartContainer", {
+                backgroundColor: null,
               title: {
-                text: "Preço Bitcoin"
+                text: "Preço Bitcoin",
+                  fontFamily: "verdana",
+                  fontSize: 25
               },
-              subtitles: [
-                {
-                  text: "Margem de erro "
-                }
-              ],
               animationEnabled: true,
               axisY: {
-                titleFontFamily: "arial",
-                titleFontSize: 12,
+                titleFontFamily: "verdana",
+                titleFontSize: 25,
                 includeZero: false
               },
               toolTip: {
                 shared: true
+              },
+              axisX: {
+                  labelAngle: -45
               },
               data: [
                 {
@@ -112,6 +113,9 @@
               ],
               legend: {
                 cursor: "pointer",
+                  fontSize: 25,
+                  fontFamily: "verdana",
+                  fontWeight: "lighter",
                 itemclick: function (e) {
                   if (typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
                     e.dataSeries.visible = false;
