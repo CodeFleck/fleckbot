@@ -50,6 +50,8 @@ public class PlotUtil {
 
         formattedDataPointsString.append("]");
 
+        System.out.println(formattedDataPointsString.toString());
+
         return formattedDataPointsString.toString();
     }
 }
