@@ -310,16 +310,6 @@ public class OneMonthStockDataSetIterator extends GeneralStockDataSetIterator im
         this.split = split;
     }
 
-
-    @Override
-    public List<StockData> getFullStockDataList() {
-        return fullStockDataList;
-    }
-
-    @Override
-    public void setFullStockDataList(List<StockData> fullStockDataList) {
-        this.fullStockDataList = fullStockDataList;
-    }
 }
 
 

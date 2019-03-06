@@ -68,6 +68,18 @@ public class GeneralStockDataSetIterator implements DataSetIterator {
         initializeOffsets();
     }
 
+    public GeneralStockDataSetIterator(List<StockData> stockData, int miniBatchSize, int exampleLength, double splitRatio, PriceCategory category) {
+        List<StockData> stockDataList = stockData;
+        this.fullStockDataList = stockDataList;
+        this.miniBatchSize = miniBatchSize;
+        this.exampleLength = exampleLength;
+        this.category = category;
+        int split = (int) Math.round(stockDataList.size() * splitRatio);
+        train = stockDataList.subList(0, split);
+        test = generateTestDataSet(stockDataList.subList(split, stockDataList.size()));
+        initializeOffsets();
+    }
+
     /** initialize the mini-batch offsets */
     private void initializeOffsets () {
         exampleStartOffsets.clear();

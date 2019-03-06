@@ -41,7 +41,7 @@ public class AnaliseController {
     PredictionServiceImpl predictionService;
 
     @GetMapping
-    public ModelAndView analiseLandingPage(ModelAndView model) throws ExchangeNetworkException, TradingApiException, IOException {
+    public ModelAndView analiseLandingPage(ModelAndView model) throws IOException, InterruptedException {
 
         model.addObject("botStatus", fleckBot.isRunning());
         model.setViewName("analise");
@@ -62,7 +62,8 @@ public class AnaliseController {
         BaseTimeSeries customBaseTimeSeriesMock = barsLoader.createMockDataForForecast();
         List<StockData> stockDataList = predictionService.transformBarInStockData(customBaseTimeSeriesMock);
 
-        HashMap<String, Double> predictions = forecastService.initializeForecasts(stockDataList, PriceCategory.CLOSE, customBaseTimeSeriesMock);
+        HashMap<String, Double> predictions = forecastService.initializeForecasts(stockDataList, PriceCategory.CLOSE);
+
 
         model.addObject("oneMinute", predictions.get("oneMinute"));
         model.addObject("fifteenMinutes", predictions.get("fifteenMinutes"));

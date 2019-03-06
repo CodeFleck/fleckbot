@@ -45,6 +45,8 @@
                             <td><input type="date" class="form-control" name="endDate" min="2015-01-01" max="2018-01-08" value="2018-01-01"></td>
                             <td><select class="form-control selectpicker" name="period">
                                 <option>1 minuto</option>
+                                <option>5 minutos</option>
+                                <option>10 minutos</option>
                                 <option>15 minutos</option>
                                 <option>30 minutos</option>
                                 <option>1 hora</option>
@@ -61,17 +63,26 @@
                     </table>
                     <button type="submit" class="btn btn-primary">Treinar Redes Neurais</button>
                 </form:form>
-            </div><br><br>
-            <p>Categoria: ${categoria}</p>
-            <p>Porcentagem média de erro: ${errorPercentageAvg}%</p>
-            <p>Porcentagem de erro no último dia: ${errorPercentageLastDay}%</p>
-            <p>Número de épocas: ${epocas}</p>
-            <p>Data de inicio: ${beginDate}</p>
-            <p>Data final: ${endDate}</p>
-            <p>Período: ${period}</p>
-            <p>Maior erro: ${majorError}%</p>
-            <p>Menor erro: ${minorError}%</p>
-
+            </div><br>
+            <div>
+                <p>Nome do conjunto: ${nomeConjunto}</p>
+                <c:if test="${categoria} != null%">
+                    <p>Categoria: ${categoria}</p></c:if>
+                <c:if test="${errorPercentageAvg} != null%">
+                <p>Porcentagem média de erro: ${errorPercentageAvg}%</p></c:if>
+                <c:if test="${errorPercentageLastDay} != null%">
+                    <p>Porcentagem de erro no último dia: ${errorPercentageLastDay}%</p></c:if>
+                <c:if test="${epocas} != null%">
+                    <p>Número de épocas: ${epocas}</p></c:if>
+                <p>Data de inicio: ${beginDate}</p>
+                <p>Data final: ${endDate}</p>
+                <c:if test="${period} != null%">
+                    <p>Período: ${period}</p></c:if>
+                <c:if test="${majorError} != null%">
+                    <p>Maior erro: ${majorError}%</p></c:if>
+                <c:if test="${minorError} != null%">
+                    <p>Menor erro: ${minorError}%</p></c:if>
+            </div>
             <div id='chartContainer'></div><br>
         </div>
 

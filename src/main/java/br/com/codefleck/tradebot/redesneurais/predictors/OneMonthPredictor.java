@@ -67,7 +67,7 @@ public class OneMonthPredictor {
         } else {
             double max = oneMonthIterator.getMaxNum(category);
             double min = oneMonthIterator.getMinNum(category);
-            resultSet = predictionService.predictPriceOneAhead(oneMonthNet, test, max, min, oneMonthIterator.getExampleLength(), nomeDoConjunto, oneMonthIterator);
+            resultSet = predictionService.predictPriceOneAhead(oneMonthNet, test, max, min, (oneMonthIterator.getExampleLength()), nomeDoConjunto, oneMonthIterator);
             log.info(period + " done testing...");
             System.out.println("Time Elapsed: " + watch.getTime());
         }

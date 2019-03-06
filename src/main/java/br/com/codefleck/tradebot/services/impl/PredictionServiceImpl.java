@@ -190,7 +190,7 @@ public class PredictionServiceImpl {
         List<StockData> stockDataList = oneMinuteStockDataSetIterator.readStockDataFromFile(filePath, simbolo);
         oneMinuteStockDataSetIterator.setFullStockDataList(stockDataList);
         oneMinuteStockDataSetIterator.setMiniBatchSize(batchSize);
-        oneMinuteStockDataSetIterator.setExampleLength(180);
+        oneMinuteStockDataSetIterator.setExampleLength(80);
         oneMinuteStockDataSetIterator.setCategory(category);
         oneMinuteStockDataSetIterator.setSplit((int) Math.round(stockDataList.size() * splitRatio));
         oneMinuteStockDataSetIterator.setTrain(stockDataList.subList(0, oneMinuteStockDataSetIterator.getSplit()));
@@ -232,7 +232,7 @@ public class PredictionServiceImpl {
         List<StockData> stockDataList = fifteenMinutesStockDataSetIterator.readStockDataFromFile(filePath, simbolo);
         fifteenMinutesStockDataSetIterator.setFullStockDataList(stockDataList);
         fifteenMinutesStockDataSetIterator.setMiniBatchSize(batchSize);
-        fifteenMinutesStockDataSetIterator.setExampleLength(180);
+        fifteenMinutesStockDataSetIterator.setExampleLength(80);
         fifteenMinutesStockDataSetIterator.setCategory(category);
         fifteenMinutesStockDataSetIterator.setSplit((int) Math.round(stockDataList.size() * splitRatio));
         fifteenMinutesStockDataSetIterator.setTrain(stockDataList.subList(0, fifteenMinutesStockDataSetIterator.getSplit()));
@@ -246,7 +246,7 @@ public class PredictionServiceImpl {
         List<StockData> stockDataList = thirtyMinutesIterator.readStockDataFromFile(filePath, simbolo);
         thirtyMinutesIterator.setFullStockDataList(stockDataList);
         thirtyMinutesIterator.setMiniBatchSize(batchSize);
-        thirtyMinutesIterator.setExampleLength(280);
+        thirtyMinutesIterator.setExampleLength(80);
         thirtyMinutesIterator.setCategory(category);
         thirtyMinutesIterator.setSplit((int) Math.round(stockDataList.size() * splitRatio));
         thirtyMinutesIterator.setTrain(stockDataList.subList(0, thirtyMinutesIterator.getSplit()));
@@ -274,7 +274,7 @@ public class PredictionServiceImpl {
         List<StockData> stockDataList = twoHoursIterator.readStockDataFromFile(filePath, simbolo);
         twoHoursIterator.setFullStockDataList(stockDataList);
         twoHoursIterator.setMiniBatchSize(batchSize);
-        twoHoursIterator.setExampleLength(80);
+        twoHoursIterator.setExampleLength(50);
         twoHoursIterator.setCategory(category);
         twoHoursIterator.setSplit((int) Math.round(stockDataList.size() * splitRatio));
         twoHoursIterator.setTrain(stockDataList.subList(0, twoHoursIterator.getSplit()));
@@ -284,31 +284,31 @@ public class PredictionServiceImpl {
     }
 
     public ThreeHoursStockDataSetIterator getThreeHoursStockDataSetIterator(String simbolo, String filePath, int batchSize, double splitRatio, PriceCategory category) {
-        ThreeHoursStockDataSetIterator threeHoursStockDataSetIterator = ThreeHoursStockDataSetIterator.getInstance();
-        List<StockData> stockDataList = threeHoursStockDataSetIterator.readStockDataFromFile(filePath, simbolo);
-        threeHoursStockDataSetIterator.setFullStockDataList(stockDataList);
-        threeHoursStockDataSetIterator.setMiniBatchSize(batchSize);
-        threeHoursStockDataSetIterator.setExampleLength(50);
-        threeHoursStockDataSetIterator.setCategory(category);
-        threeHoursStockDataSetIterator.setSplit((int) Math.round(stockDataList.size() * splitRatio));
-        threeHoursStockDataSetIterator.setTrain(stockDataList.subList(0, threeHoursStockDataSetIterator.getSplit()));
-        threeHoursStockDataSetIterator.setTest(threeHoursStockDataSetIterator.generateTestDataSet(stockDataList.subList(threeHoursStockDataSetIterator.getSplit(), stockDataList.size())));
-        threeHoursStockDataSetIterator.initializeOffsets();
-        return threeHoursStockDataSetIterator;
+        ThreeHoursStockDataSetIterator threeHoursIterator = ThreeHoursStockDataSetIterator.getInstance();
+        List<StockData> stockDataList = threeHoursIterator.readStockDataFromFile(filePath, simbolo);
+        threeHoursIterator.setFullStockDataList(stockDataList);
+        threeHoursIterator.setMiniBatchSize(batchSize);
+        threeHoursIterator.setExampleLength(50);
+        threeHoursIterator.setCategory(category);
+        threeHoursIterator.setSplit((int) Math.round(stockDataList.size() * splitRatio));
+        threeHoursIterator.setTrain(stockDataList.subList(0, threeHoursIterator.getSplit()));
+        threeHoursIterator.setTest(threeHoursIterator.generateTestDataSet(stockDataList.subList(threeHoursIterator.getSplit(), stockDataList.size())));
+        threeHoursIterator.initializeOffsets();
+        return threeHoursIterator;
     }
 
     public FourHoursStockDataSetIterator getFourHoursStockDataSetIterator(String simbolo, String filePath, int batchSize, double splitRatio, PriceCategory category) {
-        FourHoursStockDataSetIterator fourHoursStockDataSetIterator = FourHoursStockDataSetIterator.getInstance();
-        List<StockData> stockDataList = fourHoursStockDataSetIterator.readStockDataFromFile(filePath, simbolo);
-        fourHoursStockDataSetIterator.setFullStockDataList(stockDataList);
-        fourHoursStockDataSetIterator.setMiniBatchSize(batchSize);
-        fourHoursStockDataSetIterator.setExampleLength(40);
-        fourHoursStockDataSetIterator.setCategory(category);
-        fourHoursStockDataSetIterator.setSplit((int) Math.round(stockDataList.size() * splitRatio));
-        fourHoursStockDataSetIterator.setTrain(stockDataList.subList(0, fourHoursStockDataSetIterator.getSplit()));
-        fourHoursStockDataSetIterator.setTest(fourHoursStockDataSetIterator.generateTestDataSet(stockDataList.subList(fourHoursStockDataSetIterator.getSplit(), stockDataList.size())));
-        fourHoursStockDataSetIterator.initializeOffsets();
-        return fourHoursStockDataSetIterator;
+        FourHoursStockDataSetIterator fourHoursIterator = FourHoursStockDataSetIterator.getInstance();
+        List<StockData> stockDataList = fourHoursIterator.readStockDataFromFile(filePath, simbolo);
+        fourHoursIterator.setFullStockDataList(stockDataList);
+        fourHoursIterator.setMiniBatchSize(batchSize);
+        fourHoursIterator.setExampleLength(40);
+        fourHoursIterator.setCategory(category);
+        fourHoursIterator.setSplit((int) Math.round(stockDataList.size() * splitRatio));
+        fourHoursIterator.setTrain(stockDataList.subList(0, fourHoursIterator.getSplit()));
+        fourHoursIterator.setTest(fourHoursIterator.generateTestDataSet(stockDataList.subList(fourHoursIterator.getSplit(), stockDataList.size())));
+        fourHoursIterator.initializeOffsets();
+        return fourHoursIterator;
     }
 
     public OneDayStockDataSetIterator getOneDayStockDataSetIterator(String simbolo, String filePath, int batchSize, double splitRatio, PriceCategory category) {
@@ -328,7 +328,6 @@ public class PredictionServiceImpl {
     public OneWeekStockDataSetIterator getOneWeekStockDataSetIterator(String simbolo, String filePath, int batchSize, double splitRatio, PriceCategory category) {
         OneWeekStockDataSetIterator oneWeekIterator = OneWeekStockDataSetIterator.getInstance();
         List<StockData> stockDataList = duplicate(oneWeekIterator.readStockDataFromFile(filePath, simbolo));
-        oneWeekIterator.setFullStockDataList(stockDataList);
         oneWeekIterator.setMiniBatchSize(batchSize);
         oneWeekIterator.setExampleLength(30);
         oneWeekIterator.setCategory(category);
@@ -342,7 +341,6 @@ public class PredictionServiceImpl {
     public OneMonthStockDataSetIterator getOneMonthStockDataSetIterator(String simbolo, String filePath, int batchSize, double splitRatio, PriceCategory category) {
         OneMonthStockDataSetIterator oneMonthIterator = OneMonthStockDataSetIterator.getInstance();
         List<StockData> stockDataList = duplicate(oneMonthIterator.readStockDataFromFile(filePath, simbolo));
-        oneMonthIterator.setFullStockDataList(stockDataList);
         oneMonthIterator.setMiniBatchSize(batchSize);
         oneMonthIterator.setExampleLength(30);
         oneMonthIterator.setCategory(category);
@@ -390,8 +388,6 @@ public class PredictionServiceImpl {
         resultSet.setActualDataPointsList(actualDataPointsList);
         resultSet.setNomeConjunto(nomeDoConjunto);
 
-
-
         for (int i = 0; i < testData.size(); i++) {
             predicts[i] = net.rnnTimeStep(testData.get(i).getKey()).getDouble(exampleLength - 1) * (max - min) + min;
             actuals[i] = testData.get(i).getValue().getDouble(0);
@@ -414,10 +410,6 @@ public class PredictionServiceImpl {
             dataPointsDao.save(actuaDataPoint);
             actualDataPointsList.add(actuaDataPoint);
         }
-
-        log.info("Print out Predictions and Actual Values...");
-        log.info("Predict,Actual");
-        for (int i = 0; i < predicts.length; i++) log.info(predicts[i] + "," + actuals[i]);
 
         return resultSet;
     }
@@ -453,9 +445,6 @@ public class PredictionServiceImpl {
             actualDataPoint.setX(i);
             actualDataPointsList.add(actualDataPoint);
         }
-        log.info("Print out Predictions and Actual Values...");
-        log.info("Predict,Actual");
-        for (int i = 0; i < predicts.length; i++) log.info(predicts[i] + "," + actuals[i]);
 
         resultSet.setPredictDataPointsList(predictDataPointsList);
         resultSet.setActualDataPointsList(actualDataPointsList);
@@ -471,10 +460,6 @@ public class PredictionServiceImpl {
             predicts[i] = net.rnnTimeStep(testData.get(i).getKey()).getRow(exampleLength - 1).mul(max.sub(min)).add(min);
             actuals[i] = testData.get(i).getValue();
         }
-        log.info("Print out Predictions and Actual Values...");
-        log.info("Predict\tActual");
-        for (int i = 0; i < predicts.length; i++) log.info(predicts[i] + "\t" + actuals[i]);
-        log.info("Plot...");
 
         for (int n = 0; n < 5; n++) {
             double[] pred = new double[predicts.length];

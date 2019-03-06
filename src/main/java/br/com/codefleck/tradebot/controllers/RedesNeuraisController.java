@@ -1,13 +1,13 @@
 package br.com.codefleck.tradebot.controllers;
 
 import br.com.codefleck.tradebot.core.engine.TradingEngine;
+import br.com.codefleck.tradebot.core.util.PlotUtil;
 import br.com.codefleck.tradebot.daos.DataPointsDao;
 import br.com.codefleck.tradebot.daos.StockDataDao;
 import br.com.codefleck.tradebot.models.DataPoints;
 import br.com.codefleck.tradebot.models.DataPointsListResultSet;
-import br.com.codefleck.tradebot.core.util.PlotUtil;
+import br.com.codefleck.tradebot.models.DataPointsListType;
 import br.com.codefleck.tradebot.services.impl.PredictionServiceImpl;
-import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -44,26 +44,32 @@ public class RedesNeuraisController {
 
         model.addObject("botStatus", fleckBot.isRunning());
 
-        List<DataPoints> todosDataPoints = dataPointsDao.all();
+        List<DataPoints> todosDataPoints = dataPointsDao.ListLatest(1000);
 
         List<DataPoints> predictsList = new ArrayList<>();
         List<DataPoints> actualsList = new ArrayList<>();
 
         for (DataPoints dataPoint : todosDataPoints) {
 
-            if (dataPoint.getNomeConjunto().equals("LR0.001-15min_1ep_jun16jun17Prediction-Fechamento")){
+            if (dataPoint.getDataPointsListType().equals(DataPointsListType.PREDICTDATAPOINTSLIST)){
                 predictsList.add(dataPoint);
-            }
-            if (dataPoint.getNomeConjunto().equals("LR0.001-15min_1ep_jun16jun17Actual-Fechamento")) {
+            } else {
                 actualsList.add(dataPoint);
+
             }
         }
 
-        Gson gsonPredict = new Gson();
-        Gson gsonActual = new Gson();
+        DataPointsListResultSet resultSet = new DataPointsListResultSet();
+        resultSet.setPredictDataPointsList(predictsList);
+        resultSet.setActualDataPointsList(actualsList);
 
-        model.addObject("predictsDataPoints", gsonPredict.toJson(predictsList));
-        model.addObject("actualsDataPoints", gsonActual.toJson(actualsList));
+        List<String> dataPointsStringList = plotUtil.plot(resultSet);
+
+        model.addObject("nomeConjunto", predictsList.get(0).getNomeConjunto());
+        model.addObject("beginDate", predictsList.get(0).getLocalDateTime().toLocalDate().toString());
+        model.addObject("endDate", predictsList.get(predictsList.size()-1).getLocalDateTime().toLocalDate().toString());
+        model.addObject("predictsDataPoints", dataPointsStringList.get(0));
+        model.addObject("actualsDataPoints", dataPointsStringList.get(1));
 
         return model;
     }
@@ -109,6 +115,7 @@ public class RedesNeuraisController {
 
         ModelAndView model = new ModelAndView();
         model.setViewName("admin/redes-neurais");
+        model.addObject("nomeConjunto", nomeDoConjunto);
         model.addObject("predictsDataPoints", dataPointsStringList.get(0));
         model.addObject("actualsDataPoints", dataPointsStringList.get(1));
         model.addObject("epocas", epocas);

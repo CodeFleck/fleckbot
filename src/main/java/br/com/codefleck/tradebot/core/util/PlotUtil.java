@@ -30,7 +30,6 @@ public class PlotUtil {
 
         StringBuilder formattedDataPointsString = new StringBuilder();
 
-
         for( int j = 0; j < x.length; j++ ){
 
             if (j == 0){
@@ -49,8 +48,6 @@ public class PlotUtil {
         }
 
         formattedDataPointsString.append("]");
-
-        System.out.println(formattedDataPointsString.toString());
 
         return formattedDataPointsString.toString();
     }

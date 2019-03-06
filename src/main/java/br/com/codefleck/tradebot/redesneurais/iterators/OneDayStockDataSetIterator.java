@@ -19,7 +19,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Component
-public class OneDayStockDataSetIterator extends  GeneralStockDataSetIterator implements DataSetIterator {
+public class OneDayStockDataSetIterator extends GeneralStockDataSetIterator implements DataSetIterator {
 
     /** category and its index */
     private final Map<PriceCategory, Integer> featureMapIndex = ImmutableMap.of(PriceCategory.OPEN, 0, PriceCategory.CLOSE, 1,

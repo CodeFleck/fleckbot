@@ -309,15 +309,6 @@ public class OneWeekStockDataSetIterator extends GeneralStockDataSetIterator imp
         this.split = split;
     }
 
-    @Override
-    public List<StockData> getFullStockDataList() {
-        return fullStockDataList;
-    }
-
-    @Override
-    public void setFullStockDataList(List<StockData> fullStockDataList) {
-        this.fullStockDataList = fullStockDataList;
-    }
 }
 
 
