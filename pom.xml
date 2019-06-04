@@ -94,24 +94,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <!--<dependency>-->
-        <!--<groupId>org.slf4j</groupId>-->
-        <!--<artifactId>slf4j-api</artifactId>-->
-        <!--<version>1.7.25</version>-->
-        <!--<scope>compile</scope>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-        <!--<groupId>org.slf4j</groupId>-->
-        <!--<artifactId>jcl-over-slf4j</artifactId>-->
-        <!--<version>1.7.25</version>-->
-        <!--<scope>runtime</scope>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-        <!--<groupId>org.slf4j</groupId>-->
-        <!--<artifactId>slf4j-log4j12</artifactId>-->
-        <!--<version>1.7.25</version>-->
-        <!--<scope>runtime</scope>-->
-        <!--</dependency>-->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
@@ -275,6 +257,32 @@
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-config</artifactId>
             <version>4.2.0.RELEASE</version>
+        </dependency>
+        <!--jackson xml-->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.7.4</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-annotations</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>2.7.4</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>2.7.4</version>
         </dependency>
     </dependencies>
     <build>
