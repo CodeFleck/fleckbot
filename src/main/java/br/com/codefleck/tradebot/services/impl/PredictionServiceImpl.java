@@ -420,7 +420,11 @@ public class PredictionServiceImpl {
                     DataPointsModel dataPoints = new DataPointsModel();
                     dataPoints.setNomeConjunto(nomeDoConjunto);
                     dataPoints.setX(Double.valueOf(predictIndex));
-                    dataPoints.setLocalDateTime(customTimeSeries.getBar(predictIndex).getEndTime().toLocalDateTime());
+                    if (customTimeSeries != null) {
+                        dataPoints.setLocalDateTime(customTimeSeries.getBar(predictIndex).getEndTime().toLocalDateTime());
+                    } else {
+                        dataPoints.setLocalDateTime(LocalDateTime.now());
+                    }
                     dataPoints.setY(Double.valueOf(predictsDataPointsArray[i].replaceAll("\"", "").replace("y:", "").replace("]", "")));
                     dataPoints.setDataPointModelistType(DataPointModelistType.PREDICTDATAPOINTSMODELLIST);
                     predictsDataPointsModelListXY.add(dataPoints);
@@ -441,7 +445,11 @@ public class PredictionServiceImpl {
                     DataPointsModel dataPoints = new DataPointsModel();
                     dataPoints.setNomeConjunto(nomeDoConjunto);
                     dataPoints.setX(Double.valueOf(actualIndex));
-                    dataPoints.setLocalDateTime(customTimeSeries.getBar(actualIndex).getEndTime().toLocalDateTime());
+                    if (customTimeSeries != null) {
+                        dataPoints.setLocalDateTime(customTimeSeries.getBar(predictIndex).getEndTime().toLocalDateTime());
+                    } else {
+                        dataPoints.setLocalDateTime(LocalDateTime.now());
+                    }
                     dataPoints.setY(Double.valueOf(actualsDataPointsArray[i].replaceAll("\"", "").replace("y:", "").replace("]", "")));
                     dataPoints.setDataPointModelistType(DataPointModelistType.ACTUALDATAPOINTSMODELLIST);
                     predictsDataPointsModelListXY.add(dataPoints);

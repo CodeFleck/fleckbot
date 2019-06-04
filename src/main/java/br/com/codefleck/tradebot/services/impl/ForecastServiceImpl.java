@@ -4,7 +4,6 @@ import br.com.codefleck.tradebot.models.DataPointsListResultSet;
 import br.com.codefleck.tradebot.models.PriceCategory;
 import br.com.codefleck.tradebot.models.StockData;
 import br.com.codefleck.tradebot.redesneurais.iterators.OneDayStockDataSetIterator;
-import br.com.codefleck.tradebot.redesneurais.iterators.OneHourStockDataSetIterator;
 import javafx.util.Pair;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.deeplearning4j.util.ModelSerializer;
@@ -15,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.ta4j.core.BaseTimeSeries;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,20 +34,17 @@ public class ForecastServiceImpl {
     @Autowired
     PredictionServiceImpl predictionService;
 
-    final Logger log = LoggerFactory.getLogger(ForecastServiceImpl.class);
+    private final Logger log = LoggerFactory.getLogger(ForecastServiceImpl.class);
 
-    public HashMap<String, Double> initializeForecasts(List<StockData> lastStockData, PriceCategory category, BaseTimeSeries customBaseTimeSeriesMock) throws IOException {
+    public HashMap<String, Double> initializeForecasts(List<StockData> lastStockData) throws IOException {
 
-        PriceCategory priceCategory = category;
-        List<StockData> latestStockDataList = lastStockData;    //stock data initialization;
-        String nomeDoConjunto = "forecastMockName";
+        PriceCategory priceCategory = PriceCategory.CLOSE;
         
         //TODO: create forecast for all time periods
-//        List<String> oneHourResults = forecastOneHour(latestStockDataList, category);
-        List<String> oneDayResults = forecastOneDay(latestStockDataList, category);
+        List<String> oneDayResults = forecastOneDay(lastStockData, priceCategory);
 
-//        DataPointsListResultSet dataPointsList = predictionService.prepareDataPointToBeSaved(oneHourResults, nomeDoConjunto,customBaseTimeSeriesMock);
-        DataPointsListResultSet oneDayDataPointsList = predictionService.prepareDataPointToBeSaved(oneDayResults, nomeDoConjunto,customBaseTimeSeriesMock);
+        String nomeDoConjunto = "oneDayForecast";
+        DataPointsListResultSet oneDayDataPointsList = predictionService.prepareDataPointToBeSaved(oneDayResults, nomeDoConjunto, null);
         Collections.reverse(oneDayDataPointsList.getPredictDataPointsModelList());
 
         NumberFormat formatter = new DecimalFormat("#0.00");
@@ -59,36 +54,11 @@ public class ForecastServiceImpl {
         predictions.put("fifteenMinutes", 15.0);
         predictions.put("thirtyMinutes", 30.0);
         predictions.put("oneHour", 1.0);
-//        predictions.put("oneHour", Double.valueOf(formatter.format(dataPointsList.getPredictDataPointsModelList().get(0).getY())));
         predictions.put("twoHours", 2.0);
         predictions.put("fourHours", 4.0);
         predictions.put("twentyFourHours", Double.valueOf(formatter.format(oneDayDataPointsList.getPredictDataPointsModelList().get(0).getY())));
 
         return predictions;
-    }
-
-
-    private List<String> forecastOneHour(List<StockData> init, PriceCategory category) throws IOException {
-
-        String period = "1 hora";
-        log.info("Loading model...");
-        File FileLocation = new File(System.getProperty("user.home") + "/models/StockPriceLSTM_".concat(period.replace(" ", "")).concat("_").concat(String.valueOf(category)).concat(".zip"));
-        MultiLayerNetwork oneHournet = ModelSerializer.restoreMultiLayerNetwork(FileLocation);
-
-        Collections.reverse(init);
-        OneHourStockDataSetIterator oneHourIterator = OneHourStockDataSetIterator.getInstance();
-        List<Pair<INDArray, INDArray>> pairList = oneHourIterator.generateTestDataSet(init);
-        oneHourIterator.setTest(pairList);
-        oneHournet.fit(oneHourIterator.next()) ;
-        oneHourIterator.reset();
-        oneHournet.rnnClearPreviousState();
-        log.info("Forecasting one hour...");
-        double max = oneHourIterator.getMaxNum(category);
-        double min = oneHourIterator.getMinNum(category);
-        List<String> dataPointsList = predictionService.predictPriceOneAhead(oneHournet, oneHourIterator.getTest(), max, min, oneHourIterator.getExampleLength());
-        log.info("Done forecasting one hour");
-
-        return dataPointsList;
     }
 
     private List<String> forecastOneDay(List<StockData> init, PriceCategory category) throws IOException {

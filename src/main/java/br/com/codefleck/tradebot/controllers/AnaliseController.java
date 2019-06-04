@@ -19,6 +19,7 @@ import org.ta4j.core.BaseTimeSeries;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -47,20 +48,12 @@ public class AnaliseController {
 
         fleckBot.initConfig();
 
-//        <---- gather market current ticker --->
         final Ticker ticker = fleckBot.getExchangeAdapter().getTicker("BTCUSD");
         StockData stockData = predictionService.transformTickerInStockData(ticker);
         stockDataDao.save(stockData);
-//        List<StockData> stockDataList = stockDataDao.ListLatest(1440);
+        List<StockData> stockDataListLast24h = stockDataDao.ListLatest(1440);
 
-
-//        <---- start mock stockDataList --->
-        CsvBarsLoader barsLoader = new CsvBarsLoader();
-        BaseTimeSeries customBaseTimeSeriesMock = barsLoader.createMockDataForForecast();
-        List<StockData> stockDataListMock = predictionService.transformBarInStockData(customBaseTimeSeriesMock);
-//         <---- end mock stockDataList  --->
-
-        HashMap<String, Double> predictions = forecastService.initializeForecasts(stockDataListMock, PriceCategory.CLOSE, customBaseTimeSeriesMock);
+        HashMap<String, Double> predictions = forecastService.initializeForecasts(stockDataListLast24h);
 
         model.addObject("oneMinute", predictions.get("oneMinute"));
         model.addObject("fifteenMinutes", predictions.get("fifteenMinutes"));
