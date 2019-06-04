@@ -74,8 +74,8 @@ public class CsvFileWriter {
         for (int i=0; i<customTimeSeries.getEndIndex();i++){
             linesList.add(customTimeSeries.getBar(i));
         }
-        
-        String csvFileForTrainingNeuralNets = getFilePathNameAccordingToPeriod(period);
+
+        String filePathName = "C:\\Users\\daniel\\projetos\\fleckbot21out\\fleckbot\\src\\main\\resources\\coinBaseDataForTrainingNeuralNets.csv";
 
         FileWriter fileWriter = null;
 
@@ -116,56 +116,6 @@ public class CsvFileWriter {
                 e.printStackTrace();
             }
 
-    private String getFilePathNameAccordingToPeriod(String period) {
-
-        if (period.equals("1 minuto")) {
-            String filePathName = System.getProperty("user.home") + "/csv/OneMinuteDataForTrainingNeuralNets.csv";
-            return filePathName;
         }
-        if (period.equals("5 minutos")) {
-            String filePathName = System.getProperty("user.home") + "/csv/FiveMinutesDataForTrainingNeuralNets.csv";
-            return filePathName;
-        }
-        if (period.equals("10 minutos")) {
-            String filePathName = System.getProperty("user.home") + "/csv/TenMinutesDataForTrainingNeuralNets.csv";
-            return filePathName;
-        }
-        if (period.equals("15 minutos")) {
-            String filePathName = System.getProperty("user.home") + "/csv/FifteenMinutesDataForTrainingNeuralNets.csv";
-            return filePathName;
-        }
-        if (period.equals("30 minutos")) {
-            String filePathName = System.getProperty("user.home") + "/csv/ThirtyMinutesDataForTrainingNeuralNets.csv";
-            return filePathName;
-        }
-        if (period.equals("1 hora")) {
-            String filePathName = System.getProperty("user.home") + "/csv/OneHourDataForTrainingNeuralNets.csv";
-            return filePathName;
-        }
-        if (period.equals("2 horas")) {
-            String filePathName = System.getProperty("user.home") + "/csv/TwoHoursDataForTrainingNeuralNets.csv";
-            return filePathName;
-        }
-        if (period.equals("3 horas")) {
-            String filePathName = System.getProperty("user.home") + "/csv/ThreeHoursDataForTrainingNeuralNets.csv";
-            return filePathName;
-        }
-        if (period.equals("4 horas")) {
-            String filePathName = System.getProperty("user.home") + "/csv/FourHoursDataForTrainingNeuralNets.csv";
-            return filePathName;
-        }
-        if (period.equals("1 dia")) {
-            String filePathName = System.getProperty("user.home") + "/csv/OneDayDataForTrainingNeuralNets.csv";
-            return filePathName;
-        }
-        if (period.equals("1 semana")) {
-            String filePathName = System.getProperty("user.home") + "/csv/OneWeekDataForTrainingNeuralNets.csv";
-            return filePathName;
-        }
-        if (period.equals("1 mês")) {
-            String filePathName = System.getProperty("user.home") + "/csv/OneMonthDataForTrainingNeuralNets.csv";
-            return filePathName;
-        }
-        return null;
     }
 }

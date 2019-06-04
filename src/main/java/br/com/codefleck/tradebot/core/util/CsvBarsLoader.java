@@ -1,15 +1,8 @@
 package br.com.codefleck.tradebot.core.util;
 
-import br.com.codefleck.tradebot.models.StockData;
-import br.com.codefleck.tradebot.services.impl.PredictionServiceImpl;
-import com.opencsv.CSVReader;
-import org.ta4j.core.Bar;
-import org.ta4j.core.BaseBar;
-import org.ta4j.core.BaseTimeSeries;
-import org.ta4j.core.TimeSeries;
-import ta4jexamples.loaders.CsvTradesLoader;
-
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -37,13 +30,7 @@ public class CsvBarsLoader {
 
     public static TimeSeries loadCoinBaseSeries(Date beginDate, Date endDate) {
 
-        String resourcePath = System.getProperty("user.home") + "/csv/coinbaseUSD_1-min_data_2014-12-01_to_2018-01-08.csv";
-        InputStream stream = null;
-        try {
-            stream = new FileInputStream(resourcePath);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+        InputStream stream = CsvBarsLoader.class.getClassLoader().getResourceAsStream("coinbaseUSD_1-min_data_2014-12-01_to_2018-01-08.csv");
 
         List<Bar> bars = new ArrayList<>();
 
@@ -81,13 +68,7 @@ public class CsvBarsLoader {
 
     public static void editCoinBaseSeriesForNeuralNets(List<SMA> smaList) {
 
-        String resourcePath = System.getProperty("user.home") + "/csv/coinbaseUSD_1-min_data_2014-12-01_to_2018-01-08.csv";
-        InputStream stream = null;
-        try {
-            stream = new FileInputStream(resourcePath);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+        InputStream stream = CsvBarsLoader.class.getClassLoader().getResourceAsStream("coinBaseForNeuralNet.csv");
 
         List<CustomBaseBar> customBaseBars = new ArrayList<>();
 
@@ -123,29 +104,7 @@ public class CsvBarsLoader {
 
     public BaseTimeSeries createCSVFileForNeuralNets(Date beginDate, Date endDate, String period) {
 
-        String period = "4 horas";
-        SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
-
-        Date beginDate = null;
-        try {
-            beginDate = formato.parse("2017-07-01");
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        Date endDate = null;
-        try {
-            endDate = formato.parse("2018-01-01");
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        String resourcePath = System.getProperty("user.home") + "/csv/coinbaseUSD_1-min_data_2014-12-01_to_2018-01-08.csv";
-        InputStream stream = null;
-        try {
-            stream = new FileInputStream(resourcePath);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+        InputStream stream = CsvBarsLoader.class.getClassLoader().getResourceAsStream("coinbaseUSD_1-min_data_2014-12-01_to_2018-01-08.csv");
 
         List<Bar> bars = new ArrayList<>();
 

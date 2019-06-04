@@ -62,41 +62,6 @@ public class PredictionServiceImpl {
             iterator.reset(); // reset iterator
             net.rnnClearPreviousState(); // clear previous state
         }
-        if (period.equals("5 minutos")) {
-            return new ClassPathResource("FiveMinutesDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
-        }
-        if (period.equals("10 minutos")){
-            return new ClassPathResource("TenMinutesDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
-        }
-        if (period.equals("15 minutos")){
-            return new ClassPathResource("FifteenMinutesDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
-        }
-        if (period.equals("30 minutos")){
-            return new ClassPathResource("ThirtyMinutesDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
-        }
-        if (period.equals("1 hora")){
-            return new ClassPathResource("OneHourDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
-        }
-        if (period.equals("2 horas")){
-            return new ClassPathResource("TwoHoursDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
-        }
-        if (period.equals("3 horas")){
-            return new ClassPathResource("ThreeHoursDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
-        }
-        if (period.equals("4 horas")){
-            return new ClassPathResource("FourHoursDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
-        }
-        if (period.equals("1 dia")){
-            return System.getProperty("user.home") + "/csv/OneDayDataForTrainingNeuralNets.csv";
-        }
-        if (period.equals("1 semana")){
-            return new ClassPathResource("OneWeekDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
-        }
-        if (period.equals("1 mês")){
-            return new ClassPathResource("OneMonthDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
-        }
-        return null;
-    }
 
         log.info("Saving model...");
         File locationToSave = new File(System.getProperty("user.home") + "\\projetos\\fleckbot21out\\fleckbot\\src\\main\\resources\\StockPriceLSTM_".concat(String.valueOf(category)).concat(".zip"));
