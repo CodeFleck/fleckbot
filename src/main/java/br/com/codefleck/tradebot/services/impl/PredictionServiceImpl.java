@@ -160,7 +160,7 @@ public class PredictionServiceImpl {
             return new ClassPathResource("FourHoursDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
         }
         if (period.equals("1 dia")){
-            return new ClassPathResource("OneDayDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
+            return System.getProperty("user.home") + "/csv/OneDayDataForTrainingNeuralNets.csv";
         }
         if (period.equals("1 semana")){
             return new ClassPathResource("OneWeekDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();

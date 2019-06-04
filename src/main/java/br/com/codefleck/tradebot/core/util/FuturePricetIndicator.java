@@ -37,8 +37,6 @@ public class FuturePricetIndicator extends CachedIndicator<Decimal> {
             }
         }
 
-
-
         if (smaList.get(smaListIndex) != null && smaList.get(smaListIndex).getValor() != null ){
             futurePriceAmount = smaList.get(smaListIndex).getValor();
         } else {
