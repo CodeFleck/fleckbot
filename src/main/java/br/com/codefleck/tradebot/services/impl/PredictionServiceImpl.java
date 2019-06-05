@@ -1,7 +1,6 @@
 package br.com.codefleck.tradebot.services.impl;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Date;
@@ -35,7 +34,9 @@ public class PredictionServiceImpl {
     private static int exampleLength = 178; // time series length for 1 prediction
 
     public List<String> initTraining(int epocas, String simbolo, String categoria, BaseTimeSeries customTimeSeries) throws IOException {
-        String file = new ClassPathResource("coinBaseDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
+
+        String file = System.getProperty("user.home").concat("/csv/coinBaseDataForTrainingNeuralNets.csv");
+
         String symbol = simbolo; // stock name
         int batchSize = 64; // mini-batch size
         double splitRatio = 0.8; // 80% for training, 20% for testing
@@ -64,7 +65,8 @@ public class PredictionServiceImpl {
         }
 
         log.info("Saving model...");
-        File locationToSave = new File(System.getProperty("user.home") + "\\projetos\\fleckbot21out\\fleckbot\\src\\main\\resources\\StockPriceLSTM_".concat(String.valueOf(category)).concat(".zip"));
+        File locationToSave = new File(System.getProperty("user.home").concat("/models/").concat("StockPriceLSTM_").concat(String.valueOf(category)).concat(".zip"));
+
         // saveUpdater: i.e., the state for Momentum, RMSProp, Adagrad etc. Save this to train your network more in the future
         ModelSerializer.writeModel(net, locationToSave, true);
 

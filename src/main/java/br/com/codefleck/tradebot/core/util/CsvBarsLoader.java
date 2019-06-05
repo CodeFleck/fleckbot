@@ -1,8 +1,6 @@
 package br.com.codefleck.tradebot.core.util;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -30,7 +28,13 @@ public class CsvBarsLoader {
 
     public static TimeSeries loadCoinBaseSeries(Date beginDate, Date endDate) {
 
-        InputStream stream = CsvBarsLoader.class.getClassLoader().getResourceAsStream("coinbaseUSD_1-min_data_2014-12-01_to_2018-01-08.csv");
+        String resourcePath = System.getProperty("user.home").concat("/csv/coinbaseUSD_1-min_data_2014-12-01_to_2018-01-08.csv");
+        InputStream stream = null;
+        try {
+            stream = new FileInputStream(resourcePath);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
 
         List<Bar> bars = new ArrayList<>();
 
@@ -68,7 +72,13 @@ public class CsvBarsLoader {
 
     public static void editCoinBaseSeriesForNeuralNets(List<SMA> smaList) {
 
-        InputStream stream = CsvBarsLoader.class.getClassLoader().getResourceAsStream("coinBaseForNeuralNet.csv");
+        String resourcePath = System.getProperty("user.home").concat("/csv/coinBaseForNeuralNet.csv");
+        InputStream stream = null;
+        try {
+            stream = new FileInputStream(resourcePath);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
 
         List<CustomBaseBar> customBaseBars = new ArrayList<>();
 
@@ -104,7 +114,13 @@ public class CsvBarsLoader {
 
     public BaseTimeSeries createCSVFileForNeuralNets(Date beginDate, Date endDate, String period) {
 
-        InputStream stream = CsvBarsLoader.class.getClassLoader().getResourceAsStream("coinbaseUSD_1-min_data_2014-12-01_to_2018-01-08.csv");
+        String resourcePath = System.getProperty("user.home").concat("/csv/coinbaseUSD_1-min_data_2014-12-01_to_2018-01-08.csv");
+        InputStream stream = null;
+        try {
+            stream = new FileInputStream(resourcePath);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
 
         List<Bar> bars = new ArrayList<>();
 
