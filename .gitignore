@@ -43,3 +43,6 @@ proguard/
 build/
 bin/
 src/main/resources/.DS_Store
+
+*.sh
+/classes/*

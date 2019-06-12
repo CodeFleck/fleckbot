@@ -26,6 +26,4 @@ public class AnaliseController {
 
         return model;
     }
-
-
 }
