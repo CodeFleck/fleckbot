@@ -335,7 +335,6 @@ public class ForecastServiceImpl {
         String period = "1 hora";
         log.info("Loading model...");
         File FileLocation = new File(System.getProperty("user.home") + "/models/StockPriceLSTM_".concat(period.replace(" ", "")).concat("_").concat(String.valueOf(category)).concat(".zip"));
-        MultiLayerNetwork oneHournet = ModelSerializer.restoreMultiLayerNetwork(FileLocation);
 
         if (FileLocation.exists()) {
             MultiLayerNetwork oneHournet = ModelSerializer.restoreMultiLayerNetwork(FileLocation);
@@ -454,7 +453,6 @@ public class ForecastServiceImpl {
         String period = "1 dia";
         log.info("Loading model...");
         File FileLocation = new File(System.getProperty("user.home") + "/models/StockPriceLSTM_".concat(period.replace(" ", "")).concat("_").concat(String.valueOf(category)).concat(".zip"));
-        MultiLayerNetwork oneDayNet = ModelSerializer.restoreMultiLayerNetwork(FileLocation);
 
         if (FileLocation.exists()) {
             MultiLayerNetwork oneDayNet = ModelSerializer.restoreMultiLayerNetwork(FileLocation);

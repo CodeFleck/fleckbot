@@ -1,7 +1,5 @@
 package br.com.codefleck.tradebot.core.util;
 
-import br.com.codefleck.tradebot.models.StockData;
-import br.com.codefleck.tradebot.services.impl.PredictionServiceImpl;
 import com.opencsv.CSVReader;
 import org.ta4j.core.Bar;
 import org.ta4j.core.BaseBar;
