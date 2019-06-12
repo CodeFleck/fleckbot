@@ -171,8 +171,7 @@ public class PredictionServiceImpl {
             return new ClassPathResource("FourHoursDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
         }
         if (period.equals("1 dia")){
-            TimeUnit.SECONDS.sleep(10);
-            return new ClassPathResource("OneDayDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
+            return System.getProperty("user.home") + "/csv/OneDayDataForTrainingNeuralNets.csv";
         }
         if (period.equals("1 semana")){
             TimeUnit.SECONDS.sleep(10);

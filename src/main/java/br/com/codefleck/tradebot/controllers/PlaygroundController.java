@@ -1,22 +1,5 @@
 package br.com.codefleck.tradebot.controllers;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import javax.transaction.Transactional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
-import org.ta4j.core.*;
-import org.ta4j.core.analysis.criteria.NumberOfBarsCriterion;
-
 import br.com.codefleck.tradebot.core.engine.TradingEngine;
 import br.com.codefleck.tradebot.core.util.*;
 import br.com.codefleck.tradebot.daos.SMADao;
@@ -24,9 +7,23 @@ import br.com.codefleck.tradebot.exchanges.trading.CustomBaseBarForGraph;
 import br.com.codefleck.tradebot.services.impl.EventServiceImpl;
 import br.com.codefleck.tradebot.services.impl.TradeServiceImpl;
 import br.com.codefleck.tradebot.strategies.DailyPredictionTradeStrategy;
-import br.com.codefleck.tradebot.strategies.LSTMPredictionStrategy;
 import br.com.codefleck.tradebot.strategies.LSTMPredictionStrategyForPlayground;
 import br.com.codefleck.tradebot.strategies.SMADuplo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
+import org.ta4j.core.*;
+import org.ta4j.core.analysis.criteria.NumberOfBarsCriterion;
+
+import javax.transaction.Transactional;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @Controller
 @RequestMapping("/playground")
