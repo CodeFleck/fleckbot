@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+<!--
+
+Exchange Adapter config.
+
+See the README "How do I write my own Exchange Adapter?" section for more details.
+All elements are mandatory unless stated otherwise.
+Only 1 exchange element can be specified.
+
+Sample config below currently set to run against Bitfinex.
+
+-->
+<exchange>
+
+    <!--
+    A friendly name for the Exchange. It is used in log statements and by FleckBot UI to display the Exchange name.
+    Value must be an alphanumeric string. Spaces are allowed.
+    -->
+    <name>Bitfinex</name>
+
+    <!--
+    For the adapter value, you must specify the fully qualified name of your Exchange Adapter class so the Trading Engine
+    can load and execute it. The class must be on the runtime classpath.
+    -->
+    <adapter>br.com.codefleck.tradebot.exchanges.BitfinexExchangeAdapter</adapter>
+
+    <!--
+    See "Authentication" section: https://www.bitfinex.com/account/apis to get your Bitfinex Trading API credentials.
+    -->
+    <authentication-config>
+        <config-item>
+            <name>key</name>
+            <value></value>
+        </config-item>
+        <config-item>
+            <name>secret</name>
+            <value></value>
+        </config-item>
+    </authentication-config>
+
+    <network-config>
+
+        <!--
+        This value is in SECONDS. It is the timeout value that the exchange adapter will wait on socket connect/socket read
+        when communicating with the exchange. Once this threshold has been breached, the exchange adapter will give up and
+        throw a Trading API TimeoutException.
+
+        The exchange adapter is single threaded: if one request gets blocked, it will block all subsequent requests from
+        getting to the exchange. This timeout prevents an indefinite block.
+
+        You'll need to experiment with values here.
+        -->
+        <connection-timeout>40</connection-timeout>
+
+        <!-- Optional HTTP status codes that will trigger the adapter to throw a non-fatal ExchangeNetworkException
+        if the exchange returns any of the below in an API call response:
+        -->
+        <non-fatal-error-codes>
+            <code>502</code>
+            <code>503</code>
+            <code>504</code>
+            <code>520</code>
+            <code>522</code>
+            <code>525</code>
+        </non-fatal-error-codes>
+
+        <!--
+        Optional java.io exception messages that will trigger the adapter to throw a non-fatal ExchangeNetworkException
+        if the exchange returns any of the below in an API call response:
+        -->
+        <non-fatal-error-messages>
+            <message>Connection reset</message>
+            <message>Connection refused</message>
+            <message>Remote host closed connection during handshake</message>
+            <message>Unexpected end of file from server</message>
+        </non-fatal-error-messages>
+    </network-config>
+
+</exchange>

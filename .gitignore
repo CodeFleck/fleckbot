@@ -42,3 +42,5 @@ proguard/
 .gradle/
 build/
 bin/
+/classes/*
+*.xsd
