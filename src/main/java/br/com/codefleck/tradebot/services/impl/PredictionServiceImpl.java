@@ -79,7 +79,7 @@ public class PredictionServiceImpl {
 
     public DataPointsListResultSet initTraining(int epocas, String simbolo, String categoria, String period, String nomeDoConjunto) throws IOException, InterruptedException {
 
-        double learningRate = 0.001;
+        double learningRate = 0.5;
         int batchSize = 32; // mini-batch size
         double splitRatio = 0.8; // 80% for training, 10% for testing
         String chosenCategory = categoria;
@@ -135,51 +135,40 @@ public class PredictionServiceImpl {
     public String getCSVFilePathForTrainingNeuralNets(String period) throws IOException, InterruptedException {
 
         if (period.equals("1 minuto")) {
-            TimeUnit.SECONDS.sleep(10);
-            return new ClassPathResource("OneMinuteDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
+            return System.getProperty("user.home") + "/csv/OneMinuteDataForTrainingNeuralNets.csv";
         }
         if (period.equals("5 minutos")) {
-            TimeUnit.SECONDS.sleep(10);
-            return new ClassPathResource("FiveMinutesDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
+            return System.getProperty("user.home") + "/csv/FiveMinutesDataForTrainingNeuralNets.csv";
         }
         if (period.equals("10 minutos")){
-            TimeUnit.SECONDS.sleep(10);
-            return new ClassPathResource("TenMinutesDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
+            return System.getProperty("user.home") + "/csv/TenMinutesDataForTrainingNeuralNets.csv";
         }
         if (period.equals("15 minutos")){
-            TimeUnit.SECONDS.sleep(10);
-            return new ClassPathResource("FifteenMinutesDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
+            return System.getProperty("user.home") + "/csv/FifteenMinutesDataForTrainingNeuralNets.csv";
         }
         if (period.equals("30 minutos")){
-            TimeUnit.SECONDS.sleep(10);
-            return new ClassPathResource("ThirtyMinutesDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
+            return System.getProperty("user.home") + "/csv/ThirtyMinutesDataForTrainingNeuralNets.csv";
         }
         if (period.equals("1 hora")){
-            TimeUnit.SECONDS.sleep(10);
-            return new ClassPathResource("OneHourDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
+            return System.getProperty("user.home") + "/csv/OneHourDataForTrainingNeuralNets.csv";
         }
-        if (period.equals("2 horas")){
-            TimeUnit.SECONDS.sleep(10);
-            return new ClassPathResource("TwoHoursDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
+        if (period.equals("2 horas")) {
+            return System.getProperty("user.home") + "/csv/TwoHoursDataForTrainingNeuralNets.csv";
         }
         if (period.equals("3 horas")){
-            TimeUnit.SECONDS.sleep(10);
-            return new ClassPathResource("ThreeHoursDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
+            return System.getProperty("user.home") + "/csv/ThreeHoursDataForTrainingNeuralNets.csv";
         }
         if (period.equals("4 horas")){
-            TimeUnit.SECONDS.sleep(10);
-            return new ClassPathResource("FourHoursDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
+            return System.getProperty("user.home") + "/csv/FourHoursDataForTrainingNeuralNets.csv";
         }
         if (period.equals("1 dia")){
             return System.getProperty("user.home") + "/csv/OneDayDataForTrainingNeuralNets.csv";
         }
         if (period.equals("1 semana")){
-            TimeUnit.SECONDS.sleep(10);
-            return new ClassPathResource("OneWeekDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
+            return System.getProperty("user.home") + "/csv/OneWeekDataForTrainingNeuralNets.csv";
         }
         if (period.equals("1 mes")){
-            TimeUnit.SECONDS.sleep(10);
-            return new ClassPathResource("OneMonthDataForTrainingNeuralNets.csv").getFile().getAbsolutePath();
+            return System.getProperty("user.home") + "/csv/OneMonthDataForTrainingNeuralNets.csv";
         }
         return null;
     }
