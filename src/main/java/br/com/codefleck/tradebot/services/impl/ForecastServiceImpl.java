@@ -148,7 +148,7 @@ public class ForecastServiceImpl {
     private DataPointsListResultSet forecastOneMinute(List<StockData> init, PriceCategory category) throws IOException{
         String period = "1 minuto";
         log.info("Loading model...");
-        File FileLocation = new File(System.getProperty("user.home") + "/projects/tcc/fleckbot-11-09-2017/fleckbot/src/main/resources/StockPriceLSTM_".concat(period.replace(" ", "")).concat("_").concat(String.valueOf(category)).concat(".zip"));
+        File FileLocation = new File(System.getProperty("user.home") + "/models/StockPriceLSTM_".concat(period.replace(" ", "")).concat("_").concat(String.valueOf(category)).concat(".zip"));
         if (FileLocation.exists()) {
             MultiLayerNetwork oneMinutenet = ModelSerializer.restoreMultiLayerNetwork(FileLocation);
             Collections.reverse(init);
@@ -185,7 +185,7 @@ public class ForecastServiceImpl {
     private DataPointsListResultSet forecastFiveMinutes(List<StockData> init, PriceCategory category) throws IOException{
         String period = "5 minutos";
         log.info("Loading model...");
-        File FileLocation = new File(System.getProperty("user.home") + "/projects/tcc/fleckbot-11-09-2017/fleckbot/src/main/resources/StockPriceLSTM_".concat(period.replace(" ", "")).concat("_").concat(String.valueOf(category)).concat(".zip"));
+        File FileLocation = new File(System.getProperty("user.home") + "/models/StockPriceLSTM_".concat(period.replace(" ", "")).concat("_").concat(String.valueOf(category)).concat(".zip"));
         if (FileLocation.exists()) {
             MultiLayerNetwork fiveMinutesNet = ModelSerializer.restoreMultiLayerNetwork(FileLocation);
             Collections.reverse(init);
@@ -222,7 +222,7 @@ public class ForecastServiceImpl {
     private DataPointsListResultSet forecastTenMinutes(List<StockData> init, PriceCategory category) throws IOException{
         String period = "10 minutos";
         log.info("Loading model...");
-        File FileLocation = new File(System.getProperty("user.home") + "/projects/tcc/fleckbot-11-09-2017/fleckbot/src/main/resources/StockPriceLSTM_".concat(period.replace(" ", "")).concat("_").concat(String.valueOf(category)).concat(".zip"));
+        File FileLocation = new File(System.getProperty("user.home") + "/models/StockPriceLSTM_".concat(period.replace(" ", "")).concat("_").concat(String.valueOf(category)).concat(".zip"));
         if (FileLocation.exists()) {
             MultiLayerNetwork tenMinutesNet = ModelSerializer.restoreMultiLayerNetwork(FileLocation);
             Collections.reverse(init);
@@ -259,7 +259,7 @@ public class ForecastServiceImpl {
     private DataPointsListResultSet forecastFifteenMinutes(List<StockData> init, PriceCategory category) throws IOException {
         String period = "15 minutos";
         log.info("Loading model...");
-        File FileLocation = new File(System.getProperty("user.home") + "/projects/tcc/fleckbot-11-09-2017/fleckbot/src/main/resources/StockPriceLSTM_".concat(period.replace(" ", "")).concat("_").concat(String.valueOf(category)).concat(".zip"));
+        File FileLocation = new File(System.getProperty("user.home") + "/models/StockPriceLSTM_".concat(period.replace(" ", "")).concat("_").concat(String.valueOf(category)).concat(".zip"));
         if (FileLocation.exists()){
             MultiLayerNetwork fifteenMinutesNet = ModelSerializer.restoreMultiLayerNetwork(FileLocation);
             Collections.reverse(init);
@@ -296,7 +296,7 @@ public class ForecastServiceImpl {
     private DataPointsListResultSet forecastThirtyMinutes(List<StockData> init, PriceCategory category) throws IOException {
         String period = "30 minutos";
         log.info("Loading model...");
-        File FileLocation = new File(System.getProperty("user.home") + "/projects/tcc/fleckbot-11-09-2017/fleckbot/src/main/resources/StockPriceLSTM_".concat(period.replace(" ", "")).concat("_").concat(String.valueOf(category)).concat(".zip"));
+        File FileLocation = new File(System.getProperty("user.home") + "/models/StockPriceLSTM_".concat(period.replace(" ", "")).concat("_").concat(String.valueOf(category)).concat(".zip"));
         if (FileLocation.exists()) {
             MultiLayerNetwork thirtyMinutesNet = ModelSerializer.restoreMultiLayerNetwork(FileLocation);
             Collections.reverse(init);
@@ -374,7 +374,7 @@ public class ForecastServiceImpl {
     private DataPointsListResultSet forecastTwoHours(List<StockData> init, PriceCategory category) throws IOException {
         String period = "2 horas";
         log.info("Loading model...");
-        File FileLocation = new File(System.getProperty("user.home") + "/projects/tcc/fleckbot-11-09-2017/fleckbot/src/main/resources/StockPriceLSTM_".concat(period.replace(" ", "")).concat("_").concat(String.valueOf(category)).concat(".zip"));
+        File FileLocation = new File(System.getProperty("user.home") + "/models/StockPriceLSTM_".concat(period.replace(" ", "")).concat("_").concat(String.valueOf(category)).concat(".zip"));
 
         if (FileLocation.exists()) {
 
@@ -414,7 +414,7 @@ public class ForecastServiceImpl {
     private DataPointsListResultSet forecastFourHours(List<StockData> init, PriceCategory category) throws IOException, InterruptedException  {
         String period = "4 horas";
         log.info("Loading model...");
-        File FileLocation = new File(System.getProperty("user.home") + "/projects/tcc/fleckbot-11-09-2017/fleckbot/src/main/resources/StockPriceLSTM_".concat(period.replace(" ", "")).concat("_").concat(String.valueOf(category)).concat(".zip"));
+        File FileLocation = new File(System.getProperty("user.home") + "/models/StockPriceLSTM_".concat(period.replace(" ", "")).concat("_").concat(String.valueOf(category)).concat(".zip"));
 
         if (FileLocation.exists()) {
             MultiLayerNetwork fourHoursnet = ModelSerializer.restoreMultiLayerNetwork(FileLocation);
@@ -489,7 +489,7 @@ public class ForecastServiceImpl {
     private DataPointsListResultSet forecastOneWeek(List<StockData> init, PriceCategory category) throws IOException {
         String period = "1 semana";
         log.info("Loading model...");
-        File FileLocation = new File(System.getProperty("user.home") + "/projects/tcc/fleckbot-11-09-2017/fleckbot/src/main/resources/StockPriceLSTM_".concat(period.replace(" ", "")).concat("_").concat(String.valueOf(category)).concat(".zip"));
+        File FileLocation = new File(System.getProperty("user.home") + "/models/StockPriceLSTM_".concat(period.replace(" ", "")).concat("_").concat(String.valueOf(category)).concat(".zip"));
 
         if (FileLocation.exists()) {
             MultiLayerNetwork oneWeekNet = ModelSerializer.restoreMultiLayerNetwork(FileLocation);
@@ -526,7 +526,7 @@ public class ForecastServiceImpl {
     private DataPointsListResultSet forecastOneMonth(List<StockData> init, PriceCategory category) throws IOException  {
         String period = "1 mes";
         log.info("Loading model...");
-        File FileLocation = new File(System.getProperty("user.home") + "/projects/tcc/fleckbot-11-09-2017/fleckbot/src/main/resources/StockPriceLSTM_".concat(period.replace(" ", "")).concat("_").concat(String.valueOf(category)).concat(".zip"));
+        File FileLocation = new File(System.getProperty("user.home") + "/models/StockPriceLSTM_".concat(period.replace(" ", "")).concat("_").concat(String.valueOf(category)).concat(".zip"));
         if (FileLocation.exists()) {
             MultiLayerNetwork oneMonthNet = ModelSerializer.restoreMultiLayerNetwork(FileLocation);
             Collections.reverse(init);
