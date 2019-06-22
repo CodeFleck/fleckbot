@@ -278,4 +278,13 @@ public class CsvBarsLoader {
             }
         } while (barEndTime.isBefore(endTime));
     }
+
+    public List<StockData> transportDataFromCsvIntoDatabase(){
+        System.out.println("Loading csv data...");
+        BaseTimeSeries baseTimeSeries = loadFullCoinbaseSeries();
+        System.out.println("Persisting data into database...");
+        Converter converter = new Converter();
+        List<StockData> stockDataList = converter.transformTimeSeriesIntoStockData(baseTimeSeries);
+        return stockDataList;
+    }
 }

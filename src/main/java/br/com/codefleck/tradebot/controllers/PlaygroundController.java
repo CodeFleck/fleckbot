@@ -37,7 +37,7 @@ public class PlaygroundController {
     @Autowired
     private TradeServiceImpl tradeService;
     @Autowired
-    private  SMADao smaDao;
+    private SMADao smaDao;
 
     @GetMapping
     public ModelAndView playgroundLandingDataProvider(ModelAndView model) {

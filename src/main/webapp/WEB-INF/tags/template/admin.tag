@@ -53,6 +53,11 @@
             <li class="nav-item">
                 <a class="nav-link" href="<c:url value='/trading'/>">Logs</a>
             </li>
+                <li class= "nav-item">
+                    <c:if test="${pageContext.request.isUserInRole('ADMIN')}">
+                        <a class='nav-link' href="<c:url value='/admin/configuration'/>"><c:out value="Configuracoes" /></a>
+                    </c:if>
+                </li>
         </ul>
         <form class="form-inline my-5 my-lg-0">
             <div dataPointModelID="botStatus">
