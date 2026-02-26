@@ -14,6 +14,8 @@
         <spark.version>2.2.3</spark.version>
         <nd4j.version>0.9.1</nd4j.version>
         <slf4j.version>1.7.21</slf4j.version>
+        <!-- Temporary compatibility override for Apple Silicon local builds -->
+        <javacpp.platform>macosx-x86_64</javacpp.platform>
     </properties>
     <dependencyManagement />
     <dependencies>
@@ -179,7 +181,7 @@
         </dependency>
         <dependency>
             <groupId>org.nd4j</groupId>
-            <artifactId>nd4j-native</artifactId>
+            <artifactId>nd4j-native-platform</artifactId>
             <version>${deeplearning4j.version}</version>
         </dependency>
         <dependency>
